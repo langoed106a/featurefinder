@@ -17,6 +17,7 @@ import java.util.Properties;
 
 import java.net.URLDecoder;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.springframework.stereotype.Component;
@@ -59,14 +60,15 @@ public class AsyncFinishedHandler implements AsyncHandler<String>  {
      ConcurrentLinkedQueue<String> queue; 
      String serverId;
 
-     public AsyncHandler(String serverId, Queue queue) {
+     public AsyncFinishedHandler(String serverId, ConcurrentLinkedQueue<String> queue) {
 	this.serverId = serverId;
-        this.queue = queue
+        this.queue = queue;
      }
 
     @Override
-    public Response onCompleted(Response response) throws IOException {
-         queue.push(this.serverId);
+    public String onCompleted() throws Exception {
+         queue.add(this.serverId);
+         return this.serverId;
     }
  
     @Override

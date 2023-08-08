@@ -64,14 +64,14 @@ public class NodeController {
         queue = new ConcurrentLinkedQueue<>();
         client = new DefaultAsyncHttpClient();
         for (int i=0; i<serverUrls.length; i++) {
-           queue.push(serverUrls[i]);
+           queue.add(serverUrls[i]);
         } 
      }
 
     public void startJobs(String documentgroupname) {
        // get all documents
        Boolean finished = false;
-       String serverId = "";
+       String serverId = "", document="";
        while (!finished) {
            serverId = (String)queue.poll();
            document = this.getDocument();
@@ -83,14 +83,17 @@ public class NodeController {
        }
     }   
 
-   public void callServerNode(String serverId, Document document) {
-      StringEntity entity = new StringEntity(jsonParams.toString());
+   public void callServerNode(String serverId, String document) {
+      String entity = document;
       String reply ="";
-      Future<String> response = client.preparePost(Url)
+      Future<String> response = client.preparePost(serverId)
                                       .addHeader("Content-Type", "application/json")
                                       .setBody(entity)
-                                      .execute(new AsyncHandler(serverId, queue));
+                                      .execute(new AsyncFinishedHandler(serverId, queue));
+     }
 
-     
+   private String getDocument() {
+     String document="";
+     return document;
    }
 }

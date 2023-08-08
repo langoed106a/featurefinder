@@ -34,6 +34,11 @@ public class DocumentDatabase {
             return featureDocument;
 	}
 
+        public Integer getNumberOfDocumentByName(String name) {
+	    Integer number=0;
+	    number = this.remoteDatabase.getNumberOfDocumentByType(name);
+	}
+
         public Integer getNumberOfDocumentByName(String name, String type) {
 	    Integer number=0;
 	    number = this.remoteDatabase.getNumberOfDocumentByName(name, type);

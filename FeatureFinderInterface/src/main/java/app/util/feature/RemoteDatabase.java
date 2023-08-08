@@ -130,6 +130,11 @@ public class RemoteDatabase {
 	  return document;	
 	}
 
+        public Integer getNumberOfDocumentByType(String type) {
+           Integer number = 0;
+           return number;
+        }
+
 	public List<FeatureDocument> getDocumentByType(String type) {
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
@@ -150,9 +155,9 @@ public class RemoteDatabase {
 	}
 
 	
-	public String deleteDocument(Integer id) {
+	public String deleteDocument(String id) {
 		String result="";
-        return result;
+                return result;
 	}
 
 	public String updateDocument(Integer id, String name, String type, String contents, String description) {

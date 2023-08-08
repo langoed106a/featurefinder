@@ -1,10 +1,10 @@
 package app.util.feature;
 
-public class NodeServer {
-   private String url
+public class RegexLibrary {
+   private String url;
    private Boolean busy;
    
-   public NodeServer(String url) {
+   public RegexLibrary(String url) {
       this.url = url;
       this.busy = false;
    }

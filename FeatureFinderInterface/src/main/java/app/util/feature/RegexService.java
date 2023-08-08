@@ -117,7 +117,6 @@ public class RegexService {
 	  Integer count=0;
 	  RegexFeature regexFeature=null;
 	  featureFunction.initialise();
-	  regexLibrary.setDependencies(documentDatabase);
 	  Section section = new Section();
 	  if (text.length()>0) {
 		  text = General.decode(text);
@@ -157,7 +156,6 @@ public class RegexService {
 	  List<WordToken> tokens=null;
 	  Matcher matcher = null;
 	  Object object = null;
-	  regexLibrary.setDependencies(documentDatabase);
 	  featureFunction.initialise();
 	  featureFunction.setFeatureStore(documentDatabase);
 	  //featureFunction.setRemoteParser(remoteParser);

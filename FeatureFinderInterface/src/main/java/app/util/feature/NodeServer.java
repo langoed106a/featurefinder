@@ -1,7 +1,7 @@
 package app.util.feature;
 
 public class NodeServer {
-   private String url
+   private String url;
    private Boolean busy;
    
    public NodeServer(String url) {
