@@ -1,0 +1,57 @@
+var form_str=""
+       var chosen_model=""
+       var features_input=""
+       var features_arr=""
+       var features_list=[]
+       var feature=""
+       var results_arr=""
+       var results_input=""
+       var results_list=[]
+       var results_line=""
+       var result=""
+       var modeldata_input=""
+       var number_features=0
+       var last_column=0
+       event.preventDefault();
+       features_input = features.current.value
+       if (features_input) {
+           features_list = features_input.split(",")
+           number_features = features_list.length
+           features_arr=""
+           for (let i=0; i<features_list.length; i++) {
+               feature = features_list[i]
+               features_arr = features_arr + "\""+ feature+"\","
+           }
+           if (features_arr.endsWith(",")) {
+               features_arr = features_arr.substring(0, features_arr.length-1)
+           }
+       } else {
+           features_arr = ""
+       }
+       features_arr = "["+features_arr+"],"
+       results_input = results.current.value
+       if ((results_input) && (number_features>0)) {
+           results_list = results_input.split("\n")
+           results_arr=""
+           for (let i=0; i<results_list.length; i++) {
+              result = results_list[i]
+              result = result.replace(/(\r\n|\n|\r)/gm,"")
+              last_column = result.lastIndexOf(",")
+              results_line = result.substring(0,last_column) + ",\""+result.substring(last_column+1,result.length)+"\""
+              results_arr = results_arr + "["+ results_line+"],"
+           }
+           if (results_arr.endsWith(",")) {
+              results_arr = results_arr.substring(0, results_arr.length-1)
+           }
+       } else {
+          results_arr = ""
+       }
+       modeldata_input = "["+features_arr+results_arr+"]"
+       if (modelname) {
+          chosen_model = modelname
+       } else {
+          chosen_model = model_arr[0].name
+       }
+       form_str = "{\"modelname\":\""+chosen_model+"\",\"modeldata\":"+modeldata_input+"}"
+       console.log(form_str)
+       form.data_input = JSON.parse(form_str)

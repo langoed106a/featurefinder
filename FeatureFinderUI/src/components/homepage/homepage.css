@@ -1,0 +1,22 @@
+.root {
+      display: 'flex'
+};
+
+.appBar {
+      margin-left: drawerWidth;
+};
+
+content {
+      flex-grow: 1;
+      padding: 3
+};
+
+.choirpic {
+      height: 40%;
+      width: 100%;
+}
+
+.coatofarms {
+      height: 50px;
+      width: 50px;
+}
