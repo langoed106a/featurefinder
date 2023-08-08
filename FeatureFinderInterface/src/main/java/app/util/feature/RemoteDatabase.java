@@ -112,7 +112,25 @@ public class RemoteDatabase {
 	  return document;	
 	}
 
-	public List<FeatureDocument> getDocumentsByType(String type) {
+
+        public FeatureDocument getDocumentByName(String name, String type) {
+		HttpHeaders headers = null;
+		HttpEntity<String> httpEntity = null;
+		FeatureDocument document = null;
+		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
+		String result="";
+		String urlencodedtext="";
+		if (destinationUrl != null) {
+           headers = new HttpHeaders();
+           headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+           httpEntity = new HttpEntity<String>(headers);
+		   destinationUrl = destinationUrl.replace("%1","getdocumentbyname?name="+name+"&type="+type); 
+           document = restTemplate.getForObject(destinationUrl, FeatureDocument.class);
+		}
+	  return document;	
+	}
+
+	public List<FeatureDocument> getDocumentByType(String type) {
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
 		List<FeatureDocument> documentList = null;
@@ -124,18 +142,13 @@ public class RemoteDatabase {
            headers = new HttpHeaders();
            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
            httpEntity = new HttpEntity<String>(headers);
-		   destinationUrl = destinationUrl.replace("%1","getdocumentsbytype?type="+type); 
+		   destinationUrl = destinationUrl.replace("%1","getdocumentbytype?type="+type); 
            //featureDocumentList = restTemplate.getForObject(destinationUrl, FeatureDocumentList.class);
 		//   documentList = featureDocumentList.getDocumentList();
 		}
 	  return documentList;	
 	}
 
-
-	public FeatureDocument getDocument(String name, String type) {
-		FeatureDocument featureDocument=null;
-		return featureDocument;
-	}
 	
 	public String deleteDocument(Integer id) {
 		String result="";

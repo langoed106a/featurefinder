@@ -82,7 +82,7 @@ public class RemoteBatch {
 	}
      
     public String runsyncgroupagainstdocument(String runname, String description, String language, String featuregroupname, String documentgroupname) {	
-    	String destinationUrl = serviceLocator.getService(SERVICE_NAME); 
+    	String[] destinationUrls = this.getServerUrls(); 
     	String response="";
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
@@ -100,20 +100,18 @@ public class RemoteBatch {
        return response;
     }
 
-	public String runasyncgroupagainstdocument(String runname, String description, String language, String featuregroupname, String documentgroupname) {	
-    	String destinationUrl = serviceLocator.getService(SERVICE_NAME); 
-    	String reply="batch job sent";
-    	destinationUrl = destinationUrl.replace("%1","runasyncgroupagainstdocument?runname="+runname+"&description="+description+"&language="+language+"&groupname="+featuregroupname+"&documentname="+documentgroupname);    
-    	Request request = new RequestBuilder(HttpConstants.Methods.GET).setUrl(destinationUrl).build();
-    	Response response = null;
-    	Future<Response> responseFuture = httpClient.executeRequest(request);
-    	try {
-    	      response = responseFuture.get();
-    	} catch (Exception exception) {
-    		exception.printStackTrace();
-    		reply="Batch run failed";
-    	}
-       return reply;
-    }
+   private String[] getServerUrls() {
+      String batchUrl = serviceLocator.getService(SERVICE_NAME); 
+      String[] serverUrls = batchUrl.split(",");
+      return serverUrls;
+   }
+
+   private Integer getDocumentGroupCount() {
+      String batchUrl = serviceLocator.getService(SERVICE_NAME); 
+      String[] serverUrls = batchUrl.split(",");
+      return serverUrls;
+   }
+
+
     
 }
