@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Batch Results</title>
+        <style>
+            .styled-table {
+                  border-collapse: collapse;
+                  margin: 25px 0;
+                  font-size: 1.2em;
+                  font-family: sans-serif;
+                  min-width: 400px;
+                  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            }
+            .styled-table thead tr {
+                  background-color: #007bff;
+                  color: #ffffff;
+                  text-align: left;
+            }
+            .styled-table tbody tr {
+                  border-bottom: 1px solid #dddddd;
+            }
+            .styled-table tbody tr:nth-of-type(even) {
+                  background-color: #f3f3f3;
+            }
+            .styled-table tbody tr:last-of-type {
+                  border-bottom: 2px solid #007bff;
+            }
+        </style>
+    </head>
+    <body>
+        <table id="tableresults" class="styled-table">
+            <thead>
+                <tr>
+                    <th>Filename</th>
+                    <th>Hits</th>
+                    <th>Feature</th>
+                    <th>Matches</th>
+                    <th>Group</th>
+                </tr>
+            </thead>
+            <tbody id="rawresults"></tbody>
+        </table>
+        <script>
+            var data=localStorage.getItem("ffresults");
+            var table = document.getElementById("rawresults");
+            var count=0;
+            var row;
+            var cell1,cell2,cell3,cell4,cell5,item;
+            var rowsArray=[];
+            var rowdata;
+            data.split('\n').map(function(value) {
+                rowsArray.push(JSON.parse(value));
+            });
+            
+            for (var x=0;x<rowsArray.length;x++) {
+                row = table.insertRow(count);
+                item = rowsArray[x];
+                cell1 = row.insertCell(0); 
+                cell2 = row.insertCell(1); 
+                cell3 = row.insertCell(2); 
+                cell4 = row.insertCell(3); 
+                cell5 = row.insertCell(4); 
+                cell1.innerHTML = item.file; 
+                cell2.innerHTML = item.hits; 
+                cell3.innerHTML = item.feature; 
+                cell4.innerHTML = item.match; 
+                cell5.innerHTML = item.group;  
+            }
+            localStorage.removeItem("ffresults");
+        </script>
+    </body>
+</html>

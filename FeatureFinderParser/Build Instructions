@@ -1,0 +1,22 @@
+FeatureFinderEnglish folder - contains the src and bin folders. It also contains a "pom.xml" which you'd use to build the resulting package.
+ 
+2. FeatureFinderFunctions.jar - dependency file for the build above. You need to install this into your repo so the build can pick it up.
+ 
+3. FeatureFinderRegex.jar -dependency file for the above build.
+ 
+Sequence of steps to get this service running
+ 
+1. Using Maven 3, Java 1.8, build the FeatureFinderEnglish-1.0.jar file
+    cd FeatureFinderEnglish
+    mvn install:install-file -Dfile=../FeatureFinderFunctions-1.0.jar
+    mvn install:install-file -Dfile=../FeatureFinderRegex-1.0.jar
+    mvn clean install
+    mvn package
+2. Copy the above "jar" file into the "bin" folder
+    chmod 777 target/FeatureFinderEnglish-1.0.jar
+    cd bin
+    cp ../target/FeatureFinderEnglish-1.0.jar .
+3. In the "bin" folder use "run.bat" to run a spring boot instance of the FeatureFinderEnglish service
+    chmod 777 run.bat
+    java -jar -Dserver.port=8050 FeatureFinderEnglish-1.0.jar
+4. Open a browser and you should be able to access the Swagger API with the URL: http://<IP>:8050/swagger-ui.html

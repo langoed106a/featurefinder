@@ -1,0 +1,2 @@
+{"name":"irish","description":"all features which are unique to the irish heritage","regex":"[\"tryto\",\"cause\",\"surely\"]"}
+{"name":"mentalhealth","description":"all features which are unique to those suffering mental health","regex":"[\"negativeadverbs\",\"negativeimperative\",\"wordsofseparation\"]"}
