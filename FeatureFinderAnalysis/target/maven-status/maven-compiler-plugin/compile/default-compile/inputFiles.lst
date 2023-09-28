@@ -1,0 +1,12 @@
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/feature/NativeWeighting.java
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/feature/WekaModelGenerator.java
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/feature/ArffLoader.java
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/database/FeatureDocument.java
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/feature/AnalysisController.java
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/feature/Model.java
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/database/DocumentDatabase.java
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/database/RemoteDatabase.java
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/database/SQLDialect.java
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/feature/SwaggerConfig.java
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/feature/AnalysisApplication.java
+/home/vboxuser/featurefinder/FeatureFinderAnalysis/src/main/java/app/util/database/FeatureDocumentPreparedStatement.java

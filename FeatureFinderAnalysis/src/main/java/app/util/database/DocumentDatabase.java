@@ -41,6 +41,16 @@ public class DocumentDatabase {
         return result;
     }
 
+    public List<FeatureDocument> getDocumentByGroup(String groupname) {
+        List<FeatureDocument> documents=null;
+        return documents;
+    }
+
+    public FeatureDocument getDocumentByName(String type, String name) {
+        FeatureDocument document=null;
+        return document;
+    }
+
     public String updateDocument(Integer id, String name, String type, String contents, String description) {
         FeatureDocument featureDocument = new FeatureDocument(id, name, type, contents, description);
         String query = "UPDATE featuredocumentstore SET name=?,type=?,contents=?,description=? WHERE id=?";

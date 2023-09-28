@@ -1,5 +1,22 @@
 package app.util.feature;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
+import weka.core.Instances;
+import weka.core.SerializationHelper;
+import weka.gui.beans.DataSource;
+
+import libsvm.svm_parameter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class WekaModelGenerator { 
    private static final Logger logger = LoggerFactory.getLogger(WekaModelGenerator.class);
 
@@ -9,7 +26,7 @@ public class WekaModelGenerator {
 
    public Instances buildDataset(String data) {
        ArffLoader loader = null;
-       Datasource source = null;
+       DataSource source = null;
        Instances dataSet = null;
        InputStream inputStream = null;
        try {
@@ -38,9 +55,9 @@ public class WekaModelGenerator {
             instanceDataset = this.buildDataset(arffStr);
             folds = 5;
             eval = new Evaluation(instanceDataset);
-            eval.crossValidateModel(model, instanceDataset, folds, rand);
+            eval.crossValidateModel(model, instanceDataset, folds, random);
             matrix = eval.toMatrixString();
-       } catch (Exception execption) {
+       } catch (Exception exception) {
            logger.error("Failed to get confusion matrix:"+exception.getMessage());
        }
      return matrix;
@@ -102,7 +119,7 @@ public class WekaModelGenerator {
        while ((index<data.size()) && (data.size()>=index)) {
            dataRow = data.get(index);
            columns = dataRow.split(",");
-           className = columns[column.length-1];
+           className = columns[columns.length-1];
            className = className.toLowerCase();
            found = false;
            for (int p=0; p<classNames.size();p++) {
@@ -150,13 +167,12 @@ public class WekaModelGenerator {
        Integer resultIndex=0;
        Double doubleResult = null;
        try {
-            arffData = this.convertTpArff(results, namesList, hasHeader);
+            arffData = this.convertToArff(results, namesList, hasHeader);
             arffStr = this.convertArffToString(arffData);
             instanceDataset = this.buildDataset(arffStr);
-            model=this.loadModelfromFile(modelname);
+            model=this.loadModelFromFile(modelname);
             if ((model!=null) && (instanceDataset!=null)) {
-                result = model.classifiyInstance(instanceDataset.firstInstance());
-                doubleResult = doubleResult.intValue();
+                doubleResult = model.classifiyInstance(instanceDataset.firstInstance());
                 resultIndex = doubleResult.intValue();
                 if (resultIndex>=0) {
                     resultValue = namesList.get(resultIndex);
