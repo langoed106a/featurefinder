@@ -1,24 +1,28 @@
-package app.util;
+package app.util.feature;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Formatter;
 
+import org.json.simple.JSONValue;
+
 public class NativeWeighting {
     private Formatter formatter;
     private String[] ROUNDED_LIST={"comma","uniquewords","uniquecommon","uncommonwords","infinitive","mainverb","meansentencelength","passives","participle"};
     private List<String> featuresToDisplay;
+    private Model model;
 
     public NativeWeighting(String modelName, String fileLocation){
         ModelStore modelStore = new ModelStore(fileLocation);
+        Model model = null;
         modelStore.loadModelList();
-        JsonValue jsonValue = modelList.get(modelName);
+        JSONValue jsonValue = modelStore.get(modelName);
         if (jsonValue != null) {
             model = new Model(modelName);
             model.fromJson(jsonValue);
         }
-        featuresTDisplay = model.getFeatureList();
+        featuresToDisplay = model.getFeatureList();
     }
 
     public StringBuffer getHeading(StringBuffer csvBuffer) {

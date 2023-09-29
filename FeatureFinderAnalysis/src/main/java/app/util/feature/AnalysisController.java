@@ -63,7 +63,7 @@ public class AnalysisController {
     @RequestMapping(value = "/buildclassifierfromfile", method = RequestMethod.GET, produces="application/json")
     public ResponseEntity<Boolean> buildClassifierFromFile(@RequestParam String modellocation) {
 	   Boolean success = false;
-	   Model model = null;
+	   String model = null;
        if ((modellocation!=null) && (modellocation.length()>0)) {
           try {
             model = this.readjsonModel(modellocation);
@@ -90,9 +90,9 @@ public class AnalysisController {
 	}
 
 	@RequestMapping(value = "/getdocumentsbytype", method = RequestMethod.GET)
-	public List<FeatureDocument> getDocumentsByType(@RequestParam String type) {
+	public List<FeatureDocument> getDocumentByType(@RequestParam String type) {
 		List<FeatureDocument> documents = null;
-		documents = documentDatabase.getDocuments(type);
+		documents = documentDatabase.getDocumentByType(type);
 		return documents;
 	}
 
@@ -113,14 +113,14 @@ public class AnalysisController {
 	@RequestMapping(value = "/deletedocument", method = RequestMethod.GET)
 	public String deletedocument(@RequestParam String documentid) {
 		String reply = null;
-		reply = documentDatabase.deleteDocument(Integer.valueOf(documentid));
+		reply = documentDatabase.deleteDocument(documentid);
 		return reply;
 	}
 
 	@RequestMapping(value = "/getdocumentbyid", method = RequestMethod.GET)
     public FeatureDocument getDocumentById(@RequestParam String documentid) {
         FeatureDocument document = null;
-		document = documentDatabase.getDocumentById(Integer.valueOf(documentid));
+		document = documentDatabase.getDocumentById(documentid);
 		return document;
     }
 
@@ -181,5 +181,10 @@ public class AnalysisController {
         }
 	  return success;
 	}
+
+    private String readjsonModel(String name) {
+        String jsonModel = "";
+        return jsonModel;
+    }
 	 
 }

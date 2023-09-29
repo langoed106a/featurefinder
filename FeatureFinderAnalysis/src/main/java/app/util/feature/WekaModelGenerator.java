@@ -8,6 +8,7 @@ import java.io.InputStream;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.functions.LibSVM;
 import weka.core.Instances;
 import weka.core.SerializationHelper;
 import weka.gui.beans.DataSource;
@@ -42,7 +43,7 @@ public class WekaModelGenerator {
    }
 
    public String getConfusionMatrix(String filepath, List<String> data, List<String> namesList) {
-       Classifier mode = null;
+       Classifier model = null;
        Evaluation eval = null;
        Instances instanceDataset = null;
        List<String> arffData = null;
@@ -172,7 +173,7 @@ public class WekaModelGenerator {
             instanceDataset = this.buildDataset(arffStr);
             model=this.loadModelFromFile(modelname);
             if ((model!=null) && (instanceDataset!=null)) {
-                doubleResult = model.classifiyInstance(instanceDataset.firstInstance());
+                doubleResult = model.classifyInstance(instanceDataset.firstInstance());
                 resultIndex = doubleResult.intValue();
                 if (resultIndex>=0) {
                     resultValue = namesList.get(resultIndex);

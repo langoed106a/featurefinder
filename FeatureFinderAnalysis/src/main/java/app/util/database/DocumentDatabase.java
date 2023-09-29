@@ -7,75 +7,56 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DocumentDatabase {
-    JdbcTemplate jdbcTemplate;
+    RemoteDatabase remoteDatabase;
 
     public DocumentDatabase() {
 
     }
 
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public void setRemoteDatabase(RemoteDatabase remoteDatabase) {
+        this.remoteDatabase = remoteDatabase;
     }
 
-    public FeatureDocument getDocument(Integer id) {
-        List<FeatureDocument> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE id="+id,(resultSet, rowNum) -> new FeatureDocument(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getBinaryStream("contents"),resultSet.getString("description")));
-        if ((documents!=null) && (documents.size()>=0)) {
-            return documents.get(0);
-        } else {
-            return null;
-        }
+    public FeatureDocument getDocumentById(String id) {
+       FeatureDocument featureDocument=null;
+       featureDocument = remoteDatabase.getDocumentById(id);
+       return featureDocument;
     }
 
-    public FeatureDocument getDocumentById(Integer id) {
-        List<FeatureDocument> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE id="+id,(resultSet, rowNum)-> new FeatureDocument(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getBinaryStream("contents"),resultSet.getString("description")));
-        if ((documents!=null) && (documents.size()>=0)) {
-            return documents.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    public String deleteDocument(Integer id) {
-        Integer row = jdbcTemplate.update("DELETE FROM featuredocumentstore WHERE id="+id);
-        String result = "Document has been deleted from row:"+row;
-        return result;
+    public String deleteDocument(String id) {
+       String reply;
+       reply = remoteDatabase.deleteDocument(id);
+       return reply;
     }
 
     public List<FeatureDocument> getDocumentByGroup(String groupname) {
-        List<FeatureDocument> documents=null;
-        return documents;
+       List<FeatureDocument> featureDocumentList=null;
+       featureDocumentList = remoteDatabase.getDocumentByGroup(groupname);
+       return featureDocumentList;
+    }
+
+    public List<FeatureDocument> getDocumentByType(String type) {
+       List<FeatureDocument> featureDocumentList=null;
+       featureDocumentList = remoteDatabase.getDocumentByType(type);
+       return featureDocumentList;
     }
 
     public FeatureDocument getDocumentByName(String type, String name) {
-        FeatureDocument document=null;
-        return document;
+       FeatureDocument featureDocument=null;
+       featureDocument = remoteDatabase.getDocumentByName(type, name);
+       return featureDocument;
     }
 
     public String updateDocument(Integer id, String name, String type, String contents, String description) {
-        FeatureDocument featureDocument = new FeatureDocument(id, name, type, contents, description);
-        String query = "UPDATE featuredocumentstore SET name=?,type=?,contents=?,description=? WHERE id=?";
-        Boolean result = jdbcTemplate.execute(query, new FeatureDocumentPreparedStatement(featureDocument));
-        String reply = "Document has been updated";
-        return reply;
+       String reply="";
+       reply = remoteDatabase.updateDocument(id, name, type, contents, description);
+       return reply;
     }
-
+   
     public String addDocument(String name, String type, String contents, String description) {
-        byte[] contentBlob;
-        FeatureDocument featureDocument = new FeatureDocument(null, name, type, contents, description);
-        String query = "INSERT INTO featuredocumentstore (name, type, contents, description) VALUES (?,?,?,?)";
-        Boolean result = jdbcTemplate.execute(query, new FeatureDocumentPreparedStatement(featureDocument));
-        String reply = "Document has been stored";
-        return reply;
+       String reply="";
+       reply = remoteDatabase.addDocument(name, type, contents, description);
+       return reply;
     }
-
-    public List<FeatureDocument> getDocuments(String type) {
-        List<FeatureDocument> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE type=\""+type+"\"",(resultSet, rowNum) -> new FeatureDocument(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getBinaryStream("contents"),resultSet.getString("description")));
-        if ((documents!=null) && (documents.size()>=0)) {
-            return documents;
-        } else {
-            return null;
-        }
-    }
-
 
 }

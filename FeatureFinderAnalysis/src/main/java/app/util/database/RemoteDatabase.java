@@ -77,7 +77,7 @@ public class RemoteDatabase {
 		this.restTemplate = restTemplate;
     } 
      
-    public List<FeatureDocument> getDocumentGroup(String groupname) {
+    public List<FeatureDocument> getDocumentByGroup(String groupname) {
     	HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
 		List<FeatureDocument> documentList = null;
