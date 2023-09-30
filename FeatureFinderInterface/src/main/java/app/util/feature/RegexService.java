@@ -74,8 +74,6 @@ public class RegexService {
 	@Autowired
 	private RemoteSpellChecker remoteSpellChecker;
 	@Autowired
-	RegexLibrary  regexLibrary;
-	@Autowired
 	Documentation documentation;
 	@Autowired
 	DocumentDatabase documentDatabase;
@@ -267,8 +265,7 @@ public class RegexService {
 	  Object object=null;
 	  Section section=null, sectionFirst=null, sectionSecond=null;
 	  SentenceCompare sentenceCompare=null;
-	  regexLibrary.setDependencies(documentDatabase);
-
+	  
 	  if (text.length()>0) {
 		  featureFunction.setFeatureStore(documentDatabase);
 		  featureFunction.setWordStorage(wordStorage);
@@ -374,16 +371,18 @@ public class RegexService {
 	@RequestMapping(value = "/runfeature", method = RequestMethod.GET)
     public String runfeature(@RequestParam String featurename, @RequestParam String text, @RequestParam String granularity, @RequestParam String language) { 
 	  featureFunction.initialise();
+	  FeatureDocument featureDocument=null;
 	  RegexFeature regexFeature=null;
 	  Matcher matcher=null;
 	  String response="";
 	  Integer matches=0;
 	  Section section=new Section();
-	  regexLibrary.setDependencies(documentDatabase);
-	  String featureRegex = regexLibrary.getFeatureRegexContents(featurename);
-	  if (featureRegex.length()>0) {
+	  String featureRegex ="";
+	  if (featurename.length()>0) {
 		  featureFunction.setFeatureStore(documentDatabase);
 		  featureFunction.setWordStorage(wordStorage);
+		  featureDocument = documentDatabase.getDocumentByName("regex", featurename);
+		  featureRegex = featureDocument.getContents();
 	      response = remoteParser.parseTextToText(language, text);
 	      section.fromJson(response);
 		  regexFeature = new RegexFeature(featurename, "test", "test", featureRegex, granularity, "", "");
@@ -577,18 +576,8 @@ public class RegexService {
          }  
       return response;
     }
-	
-	@RequestMapping(value = "/runsyncgroupagainstdocument", method = RequestMethod.GET)
-    public String runsyncgroupagainstdocument(@RequestParam String runname, @RequestParam String description,  @RequestParam String language, @RequestParam String featuregroupname, @RequestParam String documentgroupname) throws InterruptedException { 
-	  String path="", response="";
-	  remoteBatch.setFeatureStore(documentDatabase);
-      response = remoteBatch.runsyncgroupagainstdocument(runname, description, language, featuregroupname, documentgroupname);	 
-	  System.out.println("Interface returning:"+response); 
-	  System.out.println("Interface returning:"+(new Date()).toString());
-	  return response;
-    }
 
-	@RequestMapping(value = "/runasyncgroupagainstdocument", method = RequestMethod.GET)
+	@RequestMapping(value = "/runasyncgroupagainstdocument", method = RequestMethod.GET) 
     public String runasyncgroupagainstdocument(@RequestParam String runname, @RequestParam String description,  @RequestParam String language, @RequestParam String featuregroupname, @RequestParam String documentgroupname) throws InterruptedException { 
 	  String path="", response="";
 	  remoteBatch.setFeatureStore(documentDatabase);
@@ -606,7 +595,7 @@ public class RegexService {
 	@RequestMapping(value = "/getdocument", method = RequestMethod.GET)
     public String getdocument(@RequestParam String documentid) { 
 		 FeatureDocument document = null;
-		 document = documentDatabase.getDocumentById(Integer.valueOf(documentid));
+		 document = documentDatabase.getDocumentById(documentid);
 	     return document.toString();
     }
 	
@@ -614,7 +603,7 @@ public class RegexService {
 	@RequestMapping(value = "/getdocuments", method = RequestMethod.GET)
     public List<FeatureDocument> getdocuments(@RequestParam String type) { 
 		 List<FeatureDocument> documents = null;
-		 documents = documentDatabase.getDocuments(type);
+		 documents = documentDatabase.getDocumentByType(type);
 	     return documents;
     }
 	
@@ -628,7 +617,7 @@ public class RegexService {
 	@RequestMapping(value = "/deletedocument", method = RequestMethod.GET)
     public String deletedocument(@RequestParam String documentid) { 
 		 String reply = null;
-		 reply = documentDatabase.deleteDocument(Integer.valueOf(documentid));
+		 reply = documentDatabase.deleteDocument(documentid);
 	     return reply;
     }
 	
@@ -651,11 +640,9 @@ public class RegexService {
 	@RequestMapping(value = "/featurelist", method = RequestMethod.GET)
     public String featurelist(@RequestParam String type) {
 	  String result="";
-	  // documentDatabase.setJdbcTemplate(jdbcTemplate);
-	  regexLibrary.setDependencies(documentDatabase);
-	  Map<String,String> featureMap = regexLibrary.getFeatures(type, wordStorage);	
-	  for (String feature:featureMap.values()) {
-           result = result + feature + ",";
+	  List<FeatureDocument> featureDocumentList = documentDatabase.getDocumentByType("regex");	
+	  for (FeatureDocument featureDocument:featureDocumentList) {
+           result = result + featureDocument.toString() + ",";
 	  }
 	  result = result.substring(0,result.length()-1);
 	  result = "[" + result + "]";

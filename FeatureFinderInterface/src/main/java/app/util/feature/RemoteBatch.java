@@ -81,9 +81,8 @@ public class RemoteBatch {
 		 this.documentDatabase = documentDatabase;
 	}
      
-    public String runsyncgroupagainstdocument(String runname, String description, String language, String featuregroupname, String documentgroupname) {	
-    	String[] destinationUrls = this.getServerUrls(); 
-    	String response="";
+    public String runasyncgroupagainstdocument(String runname, String description, String language, String featuregroupname, String documentgroupname) {	
+    	String response="", destinationUrl="";
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
     	destinationUrl = destinationUrl.replace("%1","runsyncgroupagainstdocument?runname="+runname+"&description="+description+"&language="+language+"&groupname="+featuregroupname+"&documentname="+documentgroupname);    
@@ -100,18 +99,4 @@ public class RemoteBatch {
        return response;
     }
 
-   private String[] getServerUrls() {
-      String batchUrl = serviceLocator.getService(SERVICE_NAME); 
-      String[] serverUrls = batchUrl.split(",");
-      return serverUrls;
-   }
-
-   private Integer getDocumentGroupCount() {
-      String batchUrl = serviceLocator.getService(SERVICE_NAME); 
-      String[] serverUrls = batchUrl.split(",");
-      return serverUrls;
-   }
-
-
-    
 }
