@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -156,18 +155,14 @@ public class RegexService {
 	  Object object = null;
 	  featureFunction.initialise();
 	  featureFunction.setFeatureStore(documentDatabase);
-	  //featureFunction.setRemoteParser(remoteParser);
-	  //featureFunction.setWordStorage(wordStorage);
+	  featureFunction.setWordStorage(wordStorage);
 	  Section section = new Section();
-	  result = "{\"tokens\":[{\"token\":\"the\",\"postag\":\"p1\",\"wordindex\":1},{\"token\":\"cat\",\"postag\":\"p2\",\"wordindex\":2},{\"token\":\"sat\",\"postag\":\"p3\",\"wordindex\":3},{\"token\":\"on\",\"postag\":\"p4\",\"wordindex\":4},{\"token\":\"the\",\"postag\":\"p5\",\"wordindex\":5},{\"token\":\"mat\",\"postag\":\"p6\",\"wordindex\":6},{\"token\":\"poo\",\"postag\":\"p7\",\"wordindex\":5}], \"matches\":[{\"start\":3,\"end\":5}]}";
-	  try {  
-               TimeUnit.MINUTES.sleep(2);
-          /*
+	  try {
          jsonParser = new JSONParser();
 		 object = jsonParser.parse(body);
 	     if (object != null) {
 			 object = jsonParser.parse(body);
-                         jsonObject = (JSONObject)object;
+             jsonObject = (JSONObject)object;
 			 text = (String) jsonObject.get("text");
              regex = (String) jsonObject.get("regex");
 			 highlight = (String) jsonObject.get("highlight");
@@ -204,7 +199,7 @@ public class RegexService {
 				 }
 				 if (valid) {
 					matches = null;
-                                        regexFeature = new RegexFeature(); 
+                    regexFeature = new RegexFeature(); 
 					// regexFeature = new RegexFeature("test", "test", "test", regex, granularity, precondition, postcondition, invariant);
                     //contractFunction.setLanguage(language);
 					matcher = new Matcher(regexFeature, featureFunction, wordStorage, contractFunction);
@@ -234,10 +229,9 @@ public class RegexService {
 		               matchesStr = "\"matches\":"+"[" + "]";
 	                }	   
 	            result = "{"+tokensStr+","+matchesStr+"}";
-		      }
-			}  
-		  }
-                 */
+		        }
+			  }  
+		    }
 		} catch (Exception regexException) {
 			result = "{\"error\":\""+regexException.getMessage()+"\"}";
 		}	

@@ -17,7 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"app.util.feature"})
+@ComponentScan(basePackages = {"app.util.feature","app.util.database"})
 public class RegexApplication implements CommandLineRunner {
 
 	@Bean
