@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,12 +42,16 @@ public class WordStorage {
     public void readWordLists() {
        List<String> wordsList=new ArrayList<>();
        List<String> fileList=new ArrayList<>();
+       Path path = null;
        String listname="";
 
        URL url = WordStorage.class.getClassLoader().getResource("/");
-       Path path = Paths.get(url.toURI());
-       Files.walk(path, 5).forEach(p -> fileList.add(p.toString()));
-
+       try {
+            path = Paths.get(url.toURI());
+            Files.walk(path, 5).forEach(p -> fileList.add(p.toString()));
+       } catch (Exception exception) {
+            exception.printStackTrace();
+       }
        for (String str: fileList) {
             wordsList = new ArrayList<>();
             wordsList = this.readResource(str);
