@@ -1,3 +1,3 @@
 #!/bin/bash
-nohup java -jar /home/vboxuser/featurefinder/FeatureFinderEnglish/bin/FeatureFinderEnglish-1.0.jar > /home/vboxuser/featurefinder/FeatureFinderEnglish/bin/log.txt 2>&1 &
+nohup java -Dserver.port=8050 -jar /home/vboxuser/featurefinder/FeatureFinderEnglish/bin/FeatureFinderEnglish-1.0.jar > /home/vboxuser/featurefinder/FeatureFinderEnglish/bin/log.txt 2>&1 &
 echo $! > /home/vboxuser/featurefinder/FeatureFinderEnglish/bin/pid.file
