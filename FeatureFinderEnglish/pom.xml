@@ -75,21 +75,16 @@
          <artifactId>commons-text</artifactId>
          <version>1.9</version>
       </dependency>
-		<dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.16.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>5.4.20.Final</version>
-        </dependency>
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
-		</dependency>
+	  <dependency>
+         <groupId>org.asynchttpclient</groupId>
+         <artifactId>async-http-client</artifactId>
+         <version>2.2.0</version>
+      </dependency>
+	  <dependency>
+		  <groupId>com.googlecode.json-simple</groupId>
+		  <artifactId>json-simple</artifactId>
+		  <version>1.1.1</version>
+	  </dependency>
 	</dependencies>
 
 </project>

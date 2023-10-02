@@ -4,7 +4,6 @@ import javax.annotation.PostConstruct;
 
 import app.util.database.DocumentDatabase;
 import app.util.database.FeatureDocument;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,8 +29,6 @@ public class EnglishController {
 	private EnglishParser englishParser;
 	@Autowired
 	private DocumentDatabase documentDatabase;
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
     @Autowired
 	private WebApplicationContext applicationContext;
    
