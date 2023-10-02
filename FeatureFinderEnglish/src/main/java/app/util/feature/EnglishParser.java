@@ -64,10 +64,9 @@ public class EnglishParser {
         Properties props = new Properties();
         sentenceSplitter = new SentenceSplitter();
         try {
-               props.setProperty("annotators","tokenize,ssplit,pos,lemma,parse,deparse");
+               props.setProperty("annotators","tokenize,ssplit,pos,lemma,parse");
                props.setProperty("tokenize.options","ptb3Escaping=false");
                props.setProperty("parse.maxlen","10000");
-               props.setProperty("depparse,extradependencies","SUBJ_ONLY");
                props.setProperty("coref.algorithm","neural");
                stanfordParser = new StanfordCoreNLP(props);
         } catch (Exception exception) {
