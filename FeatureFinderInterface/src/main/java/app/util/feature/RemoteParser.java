@@ -79,21 +79,19 @@ public class RemoteParser {
 		Boolean result=false;
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
-		ResponseEntity<String> responseEntity = null;
+		ResponseEntity<Boolean> responseEntity = null;
 		Section section = new Section();
 		String destinationUrl = serviceLocator.getService(language);
 		String urlencodedtext="";
+
 		if (destinationUrl != null) {
            headers = new HttpHeaders();
 		   destinationUrl = destinationUrl.replace("%1","wordexists?listname="+listname+",&word="+text);
            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-           httpEntity = new HttpEntity<String>(headers);
-		   try {
-		         urlencodedtext = URLEncoder.encode(text, StandardCharsets.UTF_8.toString());
-		   } catch (Exception exception) {
-			   exception.printStackTrace();
-		   }	
-		   result = restTemplate.getForObject(destinationUrl, Boolean.class); 
+		   headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+           httpEntity = new HttpEntity<String>(text, headers);
+		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, Boolean.class); 
+           result = (Boolean)responseEntity.getBody();	
      	}
 	return result;	   
    }
