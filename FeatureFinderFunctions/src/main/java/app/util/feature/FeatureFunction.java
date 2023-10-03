@@ -39,6 +39,7 @@ public class FeatureFunction {
 											   "gerund:identifies whether a word is a gerund:function:none:function",
 											   "intransitiveverb:identifies whether a word is an intransitive verb:function:none:function",
 											   "irregularverb:identifies whether a word is an irregular word:function:none:function",
+											   "emoji:identifies whether a word is an emoji:none:function",
 											   "lengthmorethan:identifies whether the number of characters is more than the given parameter:function:none:function",
 											   "manyword:skips over many words until it finds its match:function:none:function",
 											   "misspeltdoublevowel:identifies whether a word has a double vowel by accident:function:none:function",

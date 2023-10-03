@@ -101,6 +101,20 @@ public class FeatureFunctionList {
 		return found; 
 	}
 
+	public boolean emoji(String part, WordToken wordToken, Section section, List<String> parameters) {
+        boolean found = false;
+		String word = wordToken.getToken();
+		int length = word.length(), type=0;
+
+        for (int i = 0; i < length; i++) {
+           type = Character.getType(word.charAt(i));
+           if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
+               found = true;
+            }
+        }
+      return found;
+     }
+
 	public boolean contains(String part, WordToken wordToken, Section section, List<String> params) {
 		boolean found = false, match = false, dependency=false;
 		String previousItem = "", param = "", token = "";
