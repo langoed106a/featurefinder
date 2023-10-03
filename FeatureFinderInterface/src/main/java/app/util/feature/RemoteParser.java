@@ -63,9 +63,29 @@ public class RemoteParser {
 		Section section = new Section();
 		String destinationUrl = serviceLocator.getService(language);
 		String result="";
+		if (destinationUrl != null) {
+           headers = new HttpHeaders();
+		   destinationUrl = destinationUrl.replace("%1","parsetext");
+           headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		   headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+           httpEntity = new HttpEntity<String>(text, headers);
+		   responseEntity = restTemplate.postForEntity(destinationUrl, httpEntity, String.class); 
+           result = (String)responseEntity.getBody();
+		}
+	return result;	   
+   }
+
+   public Boolean wordexists(String language, String listname, String text) {	
+		Boolean result=false;
+		HttpHeaders headers = null;
+		HttpEntity<String> httpEntity = null;
+		ResponseEntity<String> responseEntity = null;
+		Section section = new Section();
+		String destinationUrl = serviceLocator.getService(language);
 		String urlencodedtext="";
 		if (destinationUrl != null) {
            headers = new HttpHeaders();
+		   destinationUrl = destinationUrl.replace("%1","wordexists?listname="+listname+",&word="+text);
            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
            httpEntity = new HttpEntity<String>(headers);
 		   try {
@@ -73,9 +93,8 @@ public class RemoteParser {
 		   } catch (Exception exception) {
 			   exception.printStackTrace();
 		   }	
-		   responseEntity = restTemplate.postForEntity(destinationUrl, urlencodedtext, String.class); 
-           result = (String)responseEntity.getBody();
-		}
+		   result = restTemplate.getForObject(destinationUrl, Boolean.class); 
+     	}
 	return result;	   
    }
 	

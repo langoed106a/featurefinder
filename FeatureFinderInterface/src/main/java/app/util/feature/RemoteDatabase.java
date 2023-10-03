@@ -80,7 +80,7 @@ public class RemoteDatabase {
     public List<FeatureDocument> getDocumentGroup(String groupname) {
     	HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
-		List<FeatureDocument> documentList = null;
+		List<FeatureDocument> documentList = new ArrayList<>();
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		String result="";
 		String urlencodedtext="";
@@ -130,15 +130,10 @@ public class RemoteDatabase {
 	  return document;	
 	}
 
-        public Integer getNumberOfDocumentByType(String type) {
-           Integer number = 0;
-           return number;
-        }
-
 	public List<FeatureDocument> getDocumentByType(String type) {
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
-		List<FeatureDocument> documentList = null;
+		List<FeatureDocument> documentList = new ArrayList<>();
 		//FeatureDocumentList featureDocumentList = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		String result="";

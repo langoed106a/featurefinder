@@ -48,7 +48,7 @@ import app.util.database.FeatureDocument;
 @CrossOrigin
 @RestController
 public class RegexService { 
-	private static String RESULTS_LOCATION="serverurls.properties";
+	private static String RESULTS_LOCATION="/tmp";
 	private static String DEFAULT_LANGUAGE="english";
 	private static String DEFAULT_GRANULARITY="text";
 	private static String PROPERTIES_NAME="server.properties";
@@ -96,10 +96,8 @@ public class RegexService {
 
 		remoteBatch.setRestTemplate(restLoadBalancedTemplate);
 		remoteBatch.setServiceLocator(serviceLocator);
-		// wordStorage = new WordStorage(remoteParser);
-                wordStorage = new WordStorage();
 		contractFunction = new ContractFunction(featureFunction, wordStorage);
-		// documentDatabase.setRemoteDatabase(remoteDatabase);
+		documentDatabase.setRemoteDatabase(remoteDatabase);
 	}
 	
 	@RequestMapping(value = "/health", method = RequestMethod.GET)
