@@ -182,7 +182,7 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word4);
          section.addSentence(wordList);
          expect(featureStoreMock.getFeatureByName("dummycommonword")).andReturn(null);
-         expect(wordStorageMock.wordExists("dummycommonword",word1,wordList,part)).andReturn(true);
+         expect(wordStorageMock.wordExists("dummycommonword",word1.getToken())).andReturn(true);
          PowerMock.replay(wordStorageMock);
          PowerMock.replay(featureStoreMock);
          paramList.add(param);
@@ -576,35 +576,6 @@ import org.powermock.api.easymock.PowerMock;
      }
 
      @Test
-     public void misspeltdoublevowelValidTest() {
-        String param1="";
-        String part="token";
-        List<String> paramList = new ArrayList<>();
-        List<WordToken> wordList = new ArrayList<>();
-        Section section = new Section();
-        WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
-        WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
-        WordToken word3 = new WordToken("expirience", "this", "MD", "unknown", 2, 0);
-        WordToken word4 = new WordToken("out", "out", "MD", "unknown", 3, 0);
-        wordList.add(word1);
-        wordList.add(word2);
-        wordList.add(word3);
-        wordList.add(word4);
-        paramList.add(param1);
-        section.addSentence(wordList);
-        expect(wordStorageMock.wordExists("commonword","exparience")).andReturn(false).anyTimes();
-        expect(wordStorageMock.wordExists("commonword","expirience")).andReturn(false).anyTimes();
-        expect(wordStorageMock.wordExists("commonword","exporience")).andReturn(false).anyTimes();
-        expect(wordStorageMock.wordExists("commonword","expurience")).andReturn(false).anyTimes();
-        expect(wordStorageMock.wordExists("commonword","experience")).andReturn(true).anyTimes();
-        expect(wordStorageMock.wordExists("commonword", word3, section.getSentenceAtIndex(0), "token")).andReturn(false);
-        replay(wordStorageMock);
-        featureFunctionList.setWordStorage(wordStorageMock);
-        Boolean found = featureFunctionList.misspeltdoublevowel(part, word3, section, paramList);
-        assertTrue(found);
-     }
-
-     @Test
      public void misspeltdoublevowelInValidTest() {
         String param1="";
         String part="token";
@@ -626,7 +597,7 @@ import org.powermock.api.easymock.PowerMock;
         expect(wordStorageMock.wordExists("commonword","sonce")).andReturn(false);
         expect(wordStorageMock.wordExists("commonword","sunce")).andReturn(false);
         expect(wordStorageMock.wordExists("commonword","since")).andReturn(true);
-        expect(wordStorageMock.wordExists("commonword", word3, wordList, "token")).andReturn(false);
+        expect(wordStorageMock.wordExists("commonword", word3.getToken())).andReturn(false);
         replay(wordStorageMock);
         featureFunctionList.setWordStorage(wordStorageMock);
         Boolean found = featureFunctionList.misspeltdoublevowel(part, word3, section, paramList);

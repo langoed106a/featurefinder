@@ -64,10 +64,29 @@ public class WordStorage {
     
     public Boolean wordExists(String word, String listname) {	
     	String destinationUrl = serviceLocator.getService(SERVICE_NAME); 
-    	Boolean response="";
+    	Boolean response=false;
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
     	destinationUrl = destinationUrl.replace("%1","wordexists?listname="+listname+"&word="+word);    
+		if (destinationUrl != null) {
+			headers = new HttpHeaders();
+			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+			httpEntity = new HttpEntity<String>(headers);
+			try {	 
+			       response = restTemplate.getForObject(destinationUrl, Boolean.class);
+		    } catch (Exception exception) {
+			       exception.printStackTrace();
+		    }	
+		 }
+       return response;
+    }
+
+	public Boolean listExists(String listname) {	
+    	String destinationUrl = serviceLocator.getService(SERVICE_NAME); 
+    	Boolean response=false;
+		HttpHeaders headers = null;
+		HttpEntity<String> httpEntity = null;
+    	destinationUrl = destinationUrl.replace("%1","listexists?listname="+listname);    
 		if (destinationUrl != null) {
 			headers = new HttpHeaders();
 			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));

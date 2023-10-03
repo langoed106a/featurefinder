@@ -58,7 +58,7 @@ public class FeatureFunctionList {
 		String[] parts=null;
 	    if (wordStorage.listExists(name)) {
 		    sentence = wordToken.getSentence();
-		    if (wordStorage.wordExists(name, wordToken, section.getSentenceAtIndex(sentence), part)) {
+		    if (wordStorage.wordExists(name, wordToken.getToken())) {
 			    found = true;
 		    }
 	    } 
@@ -230,58 +230,6 @@ public class FeatureFunctionList {
 		  found = !finish;
 		    return found; 
 	}
-	public boolean transitiveverb(String part, WordToken wordToken, Section section, List<String> parameters) {
-		String content = General.getValue("postag", wordToken);
-		WordToken nextToken=null;
-		Integer wordIndex = wordToken.getIndex();
-		Boolean found = false;
-		Boolean isVerb = false;
-		if (wordStorage.getPostagSearch().isPostag(content,"verb")) {
-			            isVerb = true;
-		}
-		if ((isVerb) && ((wordIndex+1)<section.getWordLimit())) {
-			  nextToken = section.getCurrentSentence().get(wordIndex +1);
-			    content = General.getValue("postag", nextToken);
-			      if (wordStorage.getPostagSearch().isDeterminer(content)) {
-				        if ((wordIndex+2)<section.getWordLimit()) {
-						  nextToken = section.getCurrentSentence().get(wordIndex + 2);
-						    content = General.getValue("postag", nextToken);
-						      if (wordStorage.getPostagSearch().isPostag(content,"noun")) {
-							                       found = true;
-									         }
-					} else if (wordStorage.getPostagSearch().isPostag(content,"noun")) {
-						                found = true;
-					}
-					  }
-			        } 
-		  return found; 
-	}
-	public boolean intransitiveverb(String part, WordToken wordToken, Section section, List<String> parameters) {
-		String content = General.getValue("postag", wordToken);
-		WordToken nextToken=null;
-		Integer wordIndex = wordToken.getIndex();
-		Boolean found = false;
-		Boolean isVerb = false;
-		if (wordStorage.getPostagSearch().isPostag(content,"verb")) {
-			            isVerb = true;
-		}
-		if ((isVerb) && ((wordIndex+1)<section.getWordLimit())) {
-			  nextToken = section.getCurrentSentence().get(wordIndex +1);
-			    content = General.getValue("postag", nextToken);
-			      if (wordStorage.getPostagSearch().isDeterminer(content)) {
-				        if ((wordIndex+2)<section.getWordLimit()) {
-						  nextToken = section.getCurrentSentence().get(wordIndex + 2);
-						    content = General.getValue("postag", nextToken);
-						      if (!wordStorage.getPostagSearch().isPostag(content,"noun")) {
-							                       found = true;
-									         }
-					} else if (!wordStorage.getPostagSearch().isPostag(content,"noun")) {
-						                found = true;
-					}
-					  }
-			        } 
-		  return found; 
-	}
 
 	public boolean lengthmorethan(String part, WordToken wordToken, Section section, List<String> parameters) {
 		String content = "", param="";
@@ -330,7 +278,7 @@ public class FeatureFunctionList {
 		if (part.equalsIgnoreCase("token")) {
 			sentenceIndex = wordToken.getSentence();
 			sentence = section.getSentenceAtIndex(sentenceIndex);
-			if (!wordStorage.wordExists("commonword", wordToken, sentence, part)) {
+			if (!wordStorage.wordExists("commonword", wordToken.getToken())) {
 				content = wordToken.getToken();
 				if (params.size()==0) {
 					params = vowelList;
@@ -937,49 +885,6 @@ public class FeatureFunctionList {
 		found = this.contains(part, wordToken, section, params);
 		return !found;
 	}
-	public boolean clause(String part, WordToken wordToken, Section section, List<String> params) {
-		boolean found = false;
-		String lemma = wordToken.getLemma();
-		Integer sentenceIndex = wordToken.getSentence();
-		Integer wordIndex = wordToken.getIndex();
-		if (this.wordStorage.wordExists("conjunction", wordToken, section.getSentenceAtIndex(sentenceIndex), "lemma")) {
-			found = true;
-		}
-		return found;
-	}
-
-	public boolean coordinatingconjunction(String part, WordToken wordToken, Section section, List<String> params) {
-		boolean found = false;
-		String lemma = wordToken.getLemma();
-		Integer sentenceIndex = wordToken.getSentence();
-		if (this.wordStorage.wordExists("conjunction", wordToken, section.getSentenceAtIndex(sentenceIndex), "lemma")) {
-			found = true;
-		}
-		return found;
-	}
-
-	public boolean active(String part, WordToken wordToken, Section section, List<String> params) {
-		boolean found=false, isVerb=false, pastParticiple=false, isAuxiliary=false, isGerund = false, isLinked=false;
-		Integer wordIndex = wordToken.getIndex();
-		Integer sentenceIndex = wordToken.getSentence();
-		String postagCurrent = wordToken.getPostag(), nextPostag="";
-		String lemmaCurrent = "";
-		String tokenCurrent = "";
-		lemmaCurrent = wordToken.getLemma();
-		postagCurrent = wordToken.getPostag();
-		tokenCurrent = wordToken.getToken();
-		  isVerb = this.verb("postag", wordToken, section, params);
-		    pastParticiple = wordStorage.getPostagSearch().isPostag(postagCurrent, "verb", "pastparticiple");
-		      isGerund = wordStorage.getPostagSearch().isGerund(tokenCurrent, postagCurrent);
-		        isAuxiliary = wordStorage.wordExists("auxiliary", wordToken, section.getSentenceAtIndex(sentenceIndex), "lemma");
-			  isLinked = this.verblinked("postag", wordToken, section, params);
-			          if (this.perfectpasttense(part,wordToken,section,params)) {
-					          found = true;
-						          } else if ((isVerb || isGerund) && (!isLinked) && (!isAuxiliary) && (!pastParticiple) && (!passive(part, wordToken, section, params))) {
-								      found = true;
-							  }
-				        return found;
-	}
 
 	public boolean spacingleft(String part, WordToken wordToken, Section section, List<String> params) {
 		Boolean found=false, quit=false;
@@ -1022,66 +927,8 @@ public class FeatureFunctionList {
 				  }
 		 return isLinked; 
 	}
-	public boolean passive(String part, WordToken wordToken, Section section, List<String> params) {
-		boolean found=false, auxExist=false, pastParticiple=false, adverb=false;
-		Integer wordIndex = wordToken.getIndex(), beforeIndex = 0;
-		Integer sentenceIndex = wordToken.getSentence();
-		String postagCurrent = wordToken.getPostag();
-		String lemmaBefore = "", lemmaCurrent = "", postagBefore="";
-		WordToken previousToken = null;
-		lemmaCurrent = wordToken.getLemma();
-		  pastParticiple = wordStorage.getPostagSearch().isPostag(postagCurrent, "verb", "pastparticiple");
-		    if (pastParticiple) {
-			        if ((wordIndex-1)>0) {
-					    beforeIndex = wordIndex-1;
-					        previousToken = section.getCurrentSentence().get(beforeIndex);
-						   lemmaBefore = previousToken.getLemma();
-						      postagBefore = previousToken.getPostag();
-						                      adverb = wordStorage.getPostagSearch().isPostag(postagBefore, "adverb");
-								                      while ((adverb) && ((beforeIndex-1)>0)) {
-											                     beforeIndex = beforeIndex-1;
-													                    previousToken = section.getCurrentSentence().get(beforeIndex);
-															           lemmaBefore = previousToken.getLemma();
-																          postagBefore = previousToken.getPostag();
-																	                      adverb = wordStorage.getPostagSearch().isPostag(postagBefore, "adverb");
-																			                      }
-										                      if (beforeIndex>=0) {
-													                          previousToken = section.getCurrentSentence().get(beforeIndex);
-																         lemmaBefore = previousToken.getLemma();
-																	        auxExist = wordStorage.wordExists("auxiliary", wordToken, section.getSentenceAtIndex(sentenceIndex), "lemma");
-																		                }
-												         }
-				   if (auxExist) {
-					         auxExist = wordStorage.wordExists("auxiliary", wordToken, section.getSentenceAtIndex(sentenceIndex), "lemma");
-						       if ((!auxExist) && (!perfectpasttense(part, wordToken, section, params))) {
-							             found = true;
-								           }
-						             }
-		    }
-		          return found;
-	}
-	public boolean causative(String part, WordToken wordToken, Section section, List<String> params) {
-		/* The causative is formed with 'have + object + past participle' */
-		/* The causative structure: <subject> + <causative_verb> + <agent> + <verb> + <subject> */
-		/* causative verbs: have, make, let, get, ask */ 
-		boolean found=false, auxExist=false, foundVerb=false, adverb=false;
-		Integer wordIndex = wordToken.getIndex(), afterIndex = 0;
-		Integer wordLimit = section.getWordLimit();
-		String[] causative_verbs= {"let","permit","allow","make","force","require","have","get","help"};
-		String postagCurrent = wordToken.getPostag();
-		String lemmaBefore = "", lemmaCurrent = "", postagBefore="";
-		List<String> causativeList = Arrays.asList(causative_verbs);
-		WordToken previousToken = null;
-		      return found;
-	}
-	public boolean futureTense(String part, WordToken wordToken, Section section, List<String >parameters) {
-		WordToken nextWordToken = null;
-		String[] options= {"will [not] have been <presentparticiple>", 
-			          "will [you] have <pastparticiple>|won't have <pastparticiple", 
-				            "will [I] be <>|'ll be <presentparticiple>|won't be <presentparticiple>",
-					              "will [NOT] <baseverb>|won't <baseverb>"};
-		return true;
-	}
+	
+	
 	public boolean preposition(String part, WordToken wordToken, Section section, List<String >parameters) {
 		Boolean found = false, verb=false;
 		String[] preposition_words= {"through", "since","to", "of", "at", "by", "for", "from", "into", "in", "under", "on", "off", "out", "over", "down", "up", "with"};
@@ -1124,25 +971,7 @@ public class FeatureFunctionList {
 		}
 		  return found;
 	}
-	public boolean presentparticiple(String part, WordToken wordToken, Section section, List<String >parameters) {
-		Boolean found = false, verb=false;
-		Integer wordIndex = wordToken.getIndex(), nextIndex = 0;
-		WordToken nextWordToken = null, previousToken = null;
-		String word = wordToken.getToken(), postagBefore="", lemmaBefore="";
-		if (word.endsWith("ing")) {
-			nextIndex = wordIndex-1;
-			   previousToken = this.getWordToken(section, nextIndex);
-			      if (previousToken!=null) {
-				         lemmaBefore = previousToken.getLemma();
-					    postagBefore = previousToken.getPostag();
-					                   verb = wordStorage.getPostagSearch().isPostag(postagBefore, "verb");
-							                  if (verb) {
-										                  found = true;
-												                 }
-									     } 
-		}
-		  return found;
-	}
+
 	public boolean subject(String part, WordToken wordToken, Section section, List<String >parameters) {
 		Boolean found = false;
 		String dependency="";
@@ -1152,11 +981,7 @@ public class FeatureFunctionList {
 		}
 		   return found;
 	}
-	public boolean gerund(String part, WordToken wordToken, Section section, List<String >parameters) {
-		Boolean found = false;
-		found = wordStorage.getPostagSearch().isGerund(wordToken.getToken(), wordToken.getPostag());
-		   return found;
-	}
+	
 	public boolean object(String part, WordToken wordToken, Section section, List<String> params) {
 		Boolean found = false;
 		String dependency="";
@@ -1165,30 +990,6 @@ public class FeatureFunctionList {
 			found = true;
 		}
 		   return found;
-	}
-	public boolean perfectpasttense(String part, WordToken wordToken, Section section, List<String> params) {
-		boolean found=false, pastExist=false, pastParticiple=false, auxExist=false;
-		Integer wordIndex = wordToken.getIndex();
-		Integer sentenceIndex = wordToken.getSentence();
-		String postagCurrent = wordToken.getPostag();
-		String lemmaBefore = "", lemmaCurrent = "";
-		WordToken previousToken = null;
-		if (((wordIndex-1)>0) && ((wordIndex-1)<section.getWordLimit())) {
-			previousToken = section.getCurrentSentence().get(wordIndex-1);
-			lemmaBefore = previousToken.getLemma();
-			if (lemmaBefore.equalsIgnoreCase("have")) {
-				pastExist=true;
-			}
-		}
-		if (pastExist) {
-			lemmaCurrent = wordToken.getLemma();
-			auxExist = wordStorage.wordExists("auxiliary", wordToken, section.getSentenceAtIndex(sentenceIndex), "lemma");
-			      pastParticiple = wordStorage.getPostagSearch().isPostag(postagCurrent, "verb", "pastparticiple");
-			            if ((!auxExist) && (pastParticiple)) {
-					          found = true;
-						        }
-		}
-		      return found;
 	}
 
 	public boolean validwithoutprefix(String part, WordToken wordToken, Section section, List<String> parameters) {
@@ -1420,7 +1221,7 @@ public class FeatureFunctionList {
 										}
 								}
 						} else {
-									         if (wordStorage.wordExists(value, wordToken, sentence, part)) {
+									         if (wordStorage.wordExists(value, wordToken.getToken())) {
 											   found = true;
 											      }
 										  }
@@ -1428,32 +1229,7 @@ public class FeatureFunctionList {
 			           return found;
 				         }
 
-	    public Section getClauses(Section section) {
-		        Integer wordIndex = 0, wordLimit = 0;
-			Section clausesSection = new Section();
-			String word = "";
-			    List<String> conjunctions = wordStorage.getWordList("conjuntion");
-			        List<WordToken> sentence = section.getCurrentSentence();
-				    List<WordToken> clause = new ArrayList<>();
-				        WordToken wordToken = null;
-					         clausesSection.setCurrentWordIndex(0);
-						          wordLimit = sentence.size();
-							      while (wordIndex<wordLimit) {
-								          wordToken = sentence.get(wordIndex);
-									      word = wordToken.getToken().toLowerCase();
-									          if ((conjunctions.contains(word) && (clause.size()>0))) {
-											      clausesSection.addSentence(clause);
-											          clause = new ArrayList<>();
-												      } else {
-													          clause.add(wordToken);
-														      }
-										      wordIndex++;
-										          }
-							          if (clause.size()>0) {
-									      clausesSection.addSentence(clause);
-									          }
-								      return clausesSection;
-								        }
+
 	    private Integer countOccurrencesOf(String content, String part) {
 		    Integer index, occurrences=0, partlength = part.length();
 		    Boolean finish = false;

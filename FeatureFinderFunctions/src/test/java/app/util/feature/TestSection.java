@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
         @Test
         public void toJsonValidTest() {
            List<WordToken> wordList = new ArrayList<>();
-           String outputStr= "[{\"linenumber\":\"0\",\"line\":[{\"token\":\"try\",\"lemma\":\"try\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"spacingleft\":\"\",\"index\":\"0\",\"sentence\":\"0\"},{\"token\":\"this\",\"lemma\":\"this\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"spacingleft\":\"\",\"index\":\"1\",\"sentence\":\"0\"},{\"token\":\"out\",\"lemma\":\"out\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"spacingleft\":\"\",\"index\":\"2\",\"sentence\":\"0\"}]}]";
+           String outputStr= "[{\"linenumber\":\"0\",\"line\":[{\"token\":\"try\",\"lemma\":\"try\",\"postag\":\"MD\",\"wordtype\":\"\",\"dependency\":\"unknown\",\"spacingleft\":\"\",\"index\":\"0\",\"sentence\":\"0\"},{\"token\":\"this\",\"lemma\":\"this\",\"postag\":\"MD\",\"wordtype\":\"\",\"dependency\":\"unknown\",\"spacingleft\":\"\",\"index\":\"1\",\"sentence\":\"0\"},{\"token\":\"out\",\"lemma\":\"out\",\"postag\":\"MD\",\"wordtype\":\"\",\"dependency\":\"unknown\",\"spacingleft\":\"\",\"index\":\"2\",\"sentence\":\"0\"}]}]";
            WordToken word1 = new WordToken("try", "try", "MD", "unknown", 0, 0);
            WordToken word2 = new WordToken("this", "this", "MD", "unknown", 1, 0);
            WordToken word3 = new WordToken("out", "out", "MD", "unknown", 2, 0); 

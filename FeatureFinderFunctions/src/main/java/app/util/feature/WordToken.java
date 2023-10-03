@@ -11,6 +11,7 @@ public class WordToken {
     private Integer index;
     private Integer sentence;
     private String spacingleft;
+    private String wordtype;
 
     public WordToken() {
         this.token="";
@@ -20,6 +21,7 @@ public class WordToken {
         this.index=0;
         this.sentence=0;
         this.spacingleft="";
+        this.wordtype="";
     }
 
     public WordToken(String token, String lemma, String postag, String dependency, Integer index, Integer sentence ) {
@@ -30,6 +32,7 @@ public class WordToken {
         this.index=index;
         this.sentence=sentence;
         this.spacingleft="";
+        this.wordtype="";
     }
 
     public String getPostag() {
@@ -46,6 +49,14 @@ public class WordToken {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getWordType() {
+        return wordtype;
+    }
+
+    public void setWordType(String wordtype) {
+        this.wordtype = wordtype;
     }
 
     public String getLemma() {
@@ -89,7 +100,7 @@ public class WordToken {
     }
 
     public String toString() {
-        return ("token:"+token+" lemma:"+lemma+" postag:"+postag+" dependency:"+dependency+" spacingleft:"+spacingleft+" index:"+index+" sentence:"+sentence);
+        return ("token:"+token+" lemma:"+lemma+" postag:"+postag+" wordtype:"+wordtype+" dependency:"+dependency+" spacingleft:"+spacingleft+" index:"+index+" sentence:"+sentence);
     }
 
     public String toJson() {
@@ -103,7 +114,7 @@ public class WordToken {
             word = "\\" + "\"";
             wordLemma = word;
         }
-        jsonString = jsonString +"\"token\":\""+word+"\",\"lemma\":\""+wordLemma+"\",\"postag\":\""+this.postag+"\",\"dependency\":\""+this.dependency+"\",\"spacingleft\":\""+this.spacingleft+"\",\"index\":\""+this.index+"\",\"sentence\":\""+this.sentence+"\"";
+        jsonString = jsonString +"\"token\":\""+word+"\",\"lemma\":\""+wordLemma+"\",\"postag\":\""+this.postag+"\",\"wordtype\":\""+this.wordtype+"\",\"dependency\":\""+this.dependency+"\",\"spacingleft\":\""+this.spacingleft+"\",\"index\":\""+this.index+"\",\"sentence\":\""+this.sentence+"\"";
         jsonString = jsonString + "}";
         return jsonString;
     }
@@ -113,6 +124,7 @@ public class WordToken {
         this.token = (String) jsonObject.get("token");
         this.lemma = (String) jsonObject.get("lemma");
         this.postag = (String) jsonObject.get("postag");
+        this.wordtype = (String) jsonObject.get("wordtype");
         this.dependency = (String) jsonObject.get("dependency");
         this.spacingleft = (String) jsonObject.get("spacingleft");
         if ((this.dependency==null) || (this.dependency.length()==0)) {
@@ -125,6 +137,14 @@ public class WordToken {
         this.index = Integer.valueOf(strIndex);
         strSentence = (String) jsonObject.get("sentence");
         this.sentence = Integer.valueOf(strSentence);
+    }
+
+    public WordToken clone() {
+        WordToken cloneToken=null;
+        cloneToken = new WordToken(this.token, this.lemma, this.postag, this.dependency, this.index, this.sentence );
+        cloneToken.setWordType(this.wordtype);
+        cloneToken.setSpacingLeft(this.spacingleft);
+        return cloneToken;
     }
 
 }
