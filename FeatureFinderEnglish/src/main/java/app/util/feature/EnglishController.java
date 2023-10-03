@@ -18,10 +18,14 @@ import java.util.Map;
 
 import org.json.simple.JSONArray;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.swagger.annotations.ApiOperation;
  
 @RestController
 public class EnglishController { 
+   private static final Logger logger=LoggerFactory.getLogger(EnglishController.class);
    private FeatureFunction featureFunction;
    private WordStorage wordStorage;
 
@@ -31,11 +35,11 @@ public class EnglishController {
 	private DocumentDatabase documentDatabase;
     @Autowired
 	private WebApplicationContext applicationContext;
-   
+	
    @PostConstruct
    public void initialise() {
         featureFunction = new FeatureFunction();
-        wordStorage = new WordStorage();
+        wordStorage = new WordStorage(applicationContext);
    }
 
 		

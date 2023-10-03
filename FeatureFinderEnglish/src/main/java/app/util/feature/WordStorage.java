@@ -1,6 +1,7 @@
 package app.util.feature;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
@@ -13,21 +14,31 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.context.WebApplicationContext;
+import  org.springframework.core.io.Resource;
     
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser; 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
     
 public class WordStorage {
+   private static final Logger logger=LoggerFactory.getLogger(WordStorage.class);
+   private static String WORD_LIST_FOLDER="wordlists";
+   private static String WORD_FILE_EXTENSION=".dat";
    private BigInteger[] commonHashWords;
    private Map<String, List<String>> wordsMap;
    private WordSearch wordSearch;
    private PostagSearch postagSearch;
        
-   public WordStorage() {
+   public WordStorage(WebApplicationContext applicationContext) {
         this.wordSearch = new WordSearch();
         this.postagSearch = new PostagSearch();
         wordsMap = new HashMap<>();
-        this.readWordLists();
+        this.readWordLists(applicationContext);
     }
 
     public Map<String, String> getNameofWordLists() {
@@ -39,25 +50,32 @@ public class WordStorage {
       return wordListMap;
     }
 
-    public void readWordLists() {
+    public void readWordLists(WebApplicationContext applicationContext) {
        List<String> wordsList=new ArrayList<>();
-       List<String> fileList=new ArrayList<>();
-       Path path = null;
-       String listname="";
-
-       URL url = WordStorage.class.getClassLoader().getResource("/");
+       Resource[] resourceList=null;
+       Resource resource = null;
+       String listname="", filename="", path="";
+       URL url = null;
        try {
-            path = Paths.get(url.toURI());
-            Files.walk(path, 5).forEach(p -> fileList.add(p.toString()));
+            resourceList = applicationContext.getResources("classpath:"+WORD_LIST_FOLDER+"/*"+WORD_FILE_EXTENSION);
        } catch (Exception exception) {
             exception.printStackTrace();
        }
-       for (String str: fileList) {
-            wordsList = new ArrayList<>();
-            wordsList = this.readResource(str);
-            listname = str.replace(".txt","");
-            wordsMap.put(listname, wordsList);
-        }
+       if (resourceList!=null) {
+           for (int i=0; i<resourceList.length; i++) {
+              resource = resourceList[i];
+              try {
+                   filename = resource.getFilename();
+              } catch (Exception exception) {
+                logger.error("Unable to get filename from resource:"+resource.toString());
+              }
+              wordsList = new ArrayList<>();
+              wordsList = this.readResource(resource);
+              listname = filename.replace(WORD_FILE_EXTENSION,"");
+              logger.info("Reading word list:"+listname);
+              wordsMap.put(listname, wordsList);
+           }
+       }
     }
 
     public Boolean addWordList(String listname, List<String> list) {
@@ -117,30 +135,31 @@ public class WordStorage {
     return exists;
     }
    
-    public List<String> readResource(String filename) {
-    BufferedReader bufferedReader=null;
-    InputStream inputStream=null;
-    InputStreamReader inputStreamReader = null;
-    List<String> wordsList = new ArrayList<>();
-    String line="";
-    try {
-    inputStream = WordStorage.class.getClassLoader().getResourceAsStream(filename);
-    inputStreamReader = new InputStreamReader(inputStream);
-    bufferedReader = new BufferedReader(inputStreamReader);
-    line = bufferedReader.readLine();
-    while (line!=null) {
-    if ((line!=null) && (line.length()>0)) {
-    wordsList.add(line);
+    public List<String> readResource(Resource resource) {
+       BufferedReader bufferedReader=null;
+       InputStream inputStream=null;
+       InputStreamReader inputStreamReader = null;
+       List<String> wordsList = new ArrayList<>();
+       String line="";
+       try {
+            inputStream = resource.getInputStream();
+            inputStreamReader = new InputStreamReader(inputStream);
+            bufferedReader = new BufferedReader(inputStreamReader);
+            line = bufferedReader.readLine();
+            while (line!=null) {
+                if ((line!=null) && (line.length()>0)) {
+                   wordsList.add(line);
+                }
+                line = bufferedReader.readLine();
+            }
+            bufferedReader.close();
+            inputStreamReader.close();
+        } catch (Exception exception) {
+              exception.printStackTrace();
+        }
+       return wordsList;
     }
-    line = bufferedReader.readLine();
-    }
-    bufferedReader.close();
-    inputStreamReader.close();
-    } catch (Exception exception) {
-    exception.printStackTrace();
-    }
-    return wordsList;
-    }
+
     public List<Object> readJsonResource(String filename) {
     BufferedReader bufferedReader=null;
     JSONParser parser = new JSONParser();
