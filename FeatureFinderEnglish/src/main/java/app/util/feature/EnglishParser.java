@@ -85,15 +85,21 @@ public class EnglishParser {
         List<WordToken> wordTokenList = null;
         List<WordToken> tokenList = null;
         List<String> wordList=null;
+        System.out.println("***********");
+        System.out.println(text);
+        System.out.println("************");
         List<String> sentences = this.getSentences(text);
         WordToken wordToken=null, itemToken=null;
         for (String line:sentences) {
+            System.out.println("**************");
+            System.out.println(line);
+            System.out.println("***************");
              document = new Annotation(line);
              stanfordParser.annotate(document);
              wordTokenList = new ArrayList<>();
              for (CoreLabel item: document.get(TokensAnnotation.class)) {
                   tag = item.get(CoreAnnotations.PartOfSpeechAnnotation.class);
-                  token = item.get(CoreAnnotations.TextAnnotation.class);
+                  token = item.originalText();
                   lemma = item.get(CoreAnnotations.LemmaAnnotation.class);
                   wordToken = new WordToken(token, lemma, tag, " ", wordIndex, sentenceIndex);
                   wordIndex++;
@@ -106,11 +112,11 @@ public class EnglishParser {
      return section;
      }
 
-     public List<String> getSentences(String text) {
-         return sentenceSplitter.getSentences(text);
-     }
+   //  public List<String> getSentences(String text) {
+   //      return sentenceSplitter.getSentences(text);
+   //  }
 
-     /*
+     
      public List<String> getSentences(String text) {
          List<String> sentences=new ArrayList<>();
          String[] delimiters={"。","?","？","!","！","！"};
@@ -145,7 +151,6 @@ public class EnglishParser {
        }
       return sentences;
     }
-   */
 
         
     private List<WordToken> getWordSpacing(List<WordToken> tokens, String text) {
