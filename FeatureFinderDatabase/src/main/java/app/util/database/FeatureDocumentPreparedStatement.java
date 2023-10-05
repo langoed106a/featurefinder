@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 
+import app.util.feature.FeatureDocument;
+
 public class FeatureDocumentPreparedStatement implements PreparedStatementCallback<Boolean> {
     FeatureDocument featureDocument;
 

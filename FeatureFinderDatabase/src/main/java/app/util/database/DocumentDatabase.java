@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import app.util.feature.FeatureDocument;
+
 @Component
 public class DocumentDatabase {
     JdbcTemplate jdbcTemplate;
@@ -59,7 +61,7 @@ public class DocumentDatabase {
     }
 
     public List<FeatureDocument> getDocumentByGroup(String groupname) {
-        List<FeatureDocument> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE type=\""+type+"\"",(resultSet, rowNum) -> new FeatureDocument(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getBinaryStream("contents"),resultSet.getString("description")));
+        List<FeatureDocument> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE type=\""+groupname+"\"",(resultSet, rowNum) -> new FeatureDocument(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getBinaryStream("contents"),resultSet.getString("description")));
         if ((documents!=null) && (documents.size()>=0)) {
             return documents;
         } else {

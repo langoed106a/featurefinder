@@ -3,7 +3,9 @@ package app.util.feature;
 import javax.annotation.PostConstruct;
 
 import app.util.database.DocumentDatabase;
-import app.util.database.FeatureDocument;
+import app.util.feature.FeatureDocument;
+import app.util.feature.FeatureDocumentList;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,17 +46,21 @@ public class DatabaseController {
 	}
 
 	@RequestMapping(value = "/getdocumentsbytype", method = RequestMethod.GET)
-	public List<FeatureDocument> getDocumentsByType(@RequestParam String type) {
+	public FeatureDocumentList getDocumentsByType(@RequestParam String type) {
+		FeatureDocumentList featureDocumentList = new FeatureDocumentList();
 		List<FeatureDocument> documents = null;
 		documents = documentDatabase.getDocuments(type);
-		return documents;
+		featureDocumentList.setFeatureDocumentList(documents);
+		return featureDocumentList;
 	}
 
 	@RequestMapping(value = "/getdocumentgroup", method = RequestMethod.GET)
-	public List<FeatureDocument> getDocumentsByGroup(@RequestParam String groupname) {
+	public FeatureDocumentList getDocumentsByGroup(@RequestParam String groupname) {
+		FeatureDocumentList featureDocumentList = new FeatureDocumentList();
 		List<FeatureDocument> documents = null;
 		documents = documentDatabase.getDocumentByGroup(groupname);
-		return documents;
+		featureDocumentList.setFeatureDocumentList(documents);
+		return featureDocumentList;
 	}
 
 	@RequestMapping(value = "/updatedocument", method = RequestMethod.GET)
