@@ -37,6 +37,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 import java.net.URLDecoder;
@@ -54,7 +55,8 @@ import app.util.database.DocumentDatabase;
 
 import app.util.feature.Section;
 import app.util.feature.WordToken;
-import app.util.database.FeatureDocument;
+import app.util.feature.FeatureDocument;
+import app.util.feature.FeatureDocumentList;
 import app.util.feature.ServiceLocator;
 
 @Component
@@ -80,75 +82,67 @@ public class RemoteDatabase {
     public List<FeatureDocument> getDocumentGroup(String groupname) {
     	HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
+		FeatureDocumentList featureDocumentList;
 		List<FeatureDocument> documentList = new ArrayList<>();
+		ResponseEntity<FeatureDocumentList> responseEntity = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		String result="";
 		String urlencodedtext="";
 		if (destinationUrl != null) {
-           headers = new HttpHeaders();
-           headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-           httpEntity = new HttpEntity<String>(headers);
-		   destinationUrl = destinationUrl.replace("%1","getdocumentgroup?groupname="+groupname); 
-           //result = restTemplate.getForObject(destinationUrl, FeatureDocumentList.class);
-	//	   documentList = result.getDocumentList();
+           httpEntity = this.getHeaders();
+           destinationUrl = destinationUrl.replace("%1","getdocumentgroup?groupname="+groupname); 
+           responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, FeatureDocumentList.class);
+      	   featureDocumentList = responseEntity.getBody();
+		   documentList = featureDocumentList.getFeatureDocumentList();
 		}
 	  return documentList;	
 	}
 
 	public FeatureDocument getDocumentById(String id) {
-		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
 		FeatureDocument document = null;
+		ResponseEntity<FeatureDocument> responseEntity = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
-		String result="";
-		String urlencodedtext="";
 		if (destinationUrl != null) {
-           headers = new HttpHeaders();
-           headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-           httpEntity = new HttpEntity<String>(headers);
-		   destinationUrl = destinationUrl.replace("%1","getdocumentbyid?documentid"+id); 
-           document = restTemplate.getForObject(destinationUrl, FeatureDocument.class);
+           httpEntity = this.getHeaders();
+    	   destinationUrl = destinationUrl.replace("%1","getdocumentbyid?documentid"+id); 
+		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, FeatureDocument.class);
+    	   document = responseEntity.getBody();
 		}
 	  return document;	
 	}
 
-
-        public FeatureDocument getDocumentByName(String name, String type) {
-		HttpHeaders headers = null;
+    public FeatureDocument getDocumentByName(String name, String type) {
 		HttpEntity<String> httpEntity = null;
 		FeatureDocument document = null;
+		ResponseEntity<FeatureDocument> responseEntity = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
-		String result="";
-		String urlencodedtext="";
 		if (destinationUrl != null) {
-           headers = new HttpHeaders();
-           headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-           httpEntity = new HttpEntity<String>(headers);
-		   destinationUrl = destinationUrl.replace("%1","getdocumentbyname?name="+name+"&type="+type); 
-           document = restTemplate.getForObject(destinationUrl, FeatureDocument.class);
+           httpEntity = this.getHeaders();
+           destinationUrl = destinationUrl.replace("%1","getdocumentbyname?name="+name+"&type="+type); 
+    	   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, FeatureDocument.class);
+    	   document = responseEntity.getBody();
 		}
 	  return document;	
 	}
 
 	public List<FeatureDocument> getDocumentByType(String type) {
-		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
+		FeatureDocumentList featureDocumentList;
 		List<FeatureDocument> documentList = new ArrayList<>();
-		//FeatureDocumentList featureDocumentList = null;
+		ResponseEntity<FeatureDocumentList> responseEntity = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		String result="";
 		String urlencodedtext="";
 		if (destinationUrl != null) {
-           headers = new HttpHeaders();
-           headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-           httpEntity = new HttpEntity<String>(headers);
-		   destinationUrl = destinationUrl.replace("%1","getdocumentbytype?type="+type); 
-           //featureDocumentList = restTemplate.getForObject(destinationUrl, FeatureDocumentList.class);
-		//   documentList = featureDocumentList.getDocumentList();
+           httpEntity = this.getHeaders();
+ 		   destinationUrl = destinationUrl.replace("%1","getdocumentbytype?type="+type); 
+           responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, FeatureDocumentList.class);
+      	   featureDocumentList = responseEntity.getBody();
+		   documentList = featureDocumentList.getFeatureDocumentList();
 		}
 	  return documentList;	
 	}
-
 	
 	public String deleteDocument(String id) {
 		String result="";
@@ -156,19 +150,15 @@ public class RemoteDatabase {
 	}
 
 	public String updateDocument(Integer id, String name, String type, String contents, String description) {
-		HttpHeaders headers = null;
-		HttpEntity<String> httpEntity = null;
-		List<FeatureDocument> documentList = null;
-		// FeatureDocumentList featureDocumentList = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		String result="";
-		String urlencodedtext="";
+		HttpEntity httpEntity=null;
+		ResponseEntity<String> responseEntity = null;
 		if (destinationUrl != null) {
-           headers = new HttpHeaders();
-           headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-           httpEntity = new HttpEntity<String>(headers);
-		   destinationUrl = destinationUrl.replace("%1","updatedocument?id="+type+"&name="+name+"&type="+type+"&contents="+contents+"&description="+description); 
-           result = restTemplate.getForObject(destinationUrl, String.class);
+           destinationUrl = destinationUrl.replace("%1","updatedocument?id="+type+"&name="+name+"&type="+type+"&contents="+contents+"&description="+description); 
+		   httpEntity = this.getHeaders();
+		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, String.class);
+      	   result = responseEntity.getBody();
 		}
 	  return result;
 	}
@@ -178,22 +168,13 @@ public class RemoteDatabase {
         return reply;
 	}
 
-    public String doHTTPCall(String destinationUrl, String url) {	
-    	String response="";
-		HttpHeaders headers = null;
-		HttpEntity<String> httpEntity = null;
-    	destinationUrl = destinationUrl.replace("%1",url);    
-		if (destinationUrl != null) {
-			headers = new HttpHeaders();
-			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			httpEntity = new HttpEntity<String>(headers);
-			try {	 
-			       response = restTemplate.getForObject(destinationUrl, String.class);
-		    } catch (Exception exception) {
-			       exception.printStackTrace();
-		    }	
-		 }
-       return response;
-    }
+	private HttpEntity getHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity httpEntity = null;
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        httpEntity = new HttpEntity<String>(headers);
+		return httpEntity; 
+	}
 	
 }

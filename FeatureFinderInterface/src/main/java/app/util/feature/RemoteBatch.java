@@ -54,7 +54,7 @@ import app.util.database.DocumentDatabase;
 
 import app.util.feature.Section;
 import app.util.feature.WordToken;
-import app.util.database.FeatureDocument;
+import app.util.feature.FeatureDocument;
 import app.util.feature.ServiceLocator;
 
 @Component

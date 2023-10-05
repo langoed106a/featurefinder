@@ -7,6 +7,7 @@ import java.net.URLDecoder;
 
 import app.util.feature.FeatureStore;
 import app.util.feature.Feature;
+import app.util.feature.FeatureDocument;
 import app.util.feature.RegexFeature;
 import app.util.feature.RemoteDatabase;
 

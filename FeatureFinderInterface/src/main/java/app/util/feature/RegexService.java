@@ -43,7 +43,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import app.util.database.DocumentDatabase;
-import app.util.database.FeatureDocument;
+import app.util.feature.FeatureDocument;
  
 @CrossOrigin
 @RestController

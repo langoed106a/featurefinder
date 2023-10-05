@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import app.util.database.FeatureDocument;
+import app.util.feature.FeatureDocument;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
