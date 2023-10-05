@@ -49,7 +49,7 @@ public class DatabaseController {
 	public FeatureDocumentList getDocumentsByType(@RequestParam String type) {
 		FeatureDocumentList featureDocumentList = new FeatureDocumentList();
 		List<FeatureDocument> documents = null;
-		documents = documentDatabase.getDocuments(type);
+		documents = documentDatabase.getDocumentByType(type);
 		featureDocumentList.setFeatureDocumentList(documents);
 		return featureDocumentList;
 	}

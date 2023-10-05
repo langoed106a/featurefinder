@@ -69,7 +69,7 @@ public class DocumentDatabase {
         }
     }
 
-    public List<FeatureDocument> getDocuments(String type) {
+    public List<FeatureDocument> getDocumentByType(String type) {
         List<FeatureDocument> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE type=\""+type+"\"",(resultSet, rowNum) -> new FeatureDocument(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getBinaryStream("contents"),resultSet.getString("description")));
         if ((documents!=null) && (documents.size()>=0)) {
             return documents;
