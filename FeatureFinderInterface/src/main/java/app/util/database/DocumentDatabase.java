@@ -28,30 +28,30 @@ public class DocumentDatabase implements FeatureStore {
 	
 	public FeatureDocument getDocumentById(String id) {
 	    FeatureDocument featureDocument = this.remoteDatabase.getDocumentById(id);
-            return featureDocument;
+        return featureDocument;
 	}
 	
 	public FeatureDocument getDocumentByName(String name, String type) {
 	    FeatureDocument featureDocument = this.remoteDatabase.getDocumentByName(name, type);
-            return featureDocument;
+        return featureDocument;
 	}
 
 	public String deleteDocument(String id) {
 	   String reply="";
-           reply = this.remoteDatabase.deleteDocument(id);
-           return reply;
+       reply = this.remoteDatabase.deleteDocument(id);
+       return reply;
 	}
 	
 	public String updateDocument(Integer id, String name, String type, String contents, String description) {
 	   String reply = "";
-           reply = this.remoteDatabase.updateDocument(id, name, type, contents, description);
-           return reply;
+       reply = this.remoteDatabase.updateDocument(id, name, type, contents, description);
+       return reply;
 	}
 	
 	public String addDocument(String name, String type, String contents, String description) {
 	   String reply="";
-           reply = this.remoteDatabase.addDocument(name, type, contents, description);
-           return reply;
+       reply = this.remoteDatabase.addDocument(name, type, contents, description);
+       return reply;
 	}
 	
 	public List<FeatureDocument> getDocumentByType(String type) {
