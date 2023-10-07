@@ -16,6 +16,14 @@ public class FeatureDocument implements Feature {
 	private String type;
 	private String name;
 	
+    public FeatureDocument() {
+		this.id=-1;
+		this.name="";
+		this.type="";
+		this.contents="";
+		this.description="";
+	}
+
 	public FeatureDocument(Integer id, String name, String type, String contents, String description) {
 		this.id=id;
 		this.name=name;
