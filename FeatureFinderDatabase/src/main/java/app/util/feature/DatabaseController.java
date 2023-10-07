@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import app.util.database.DocumentDatabase;
 import app.util.feature.FeatureDocument;
 import app.util.feature.FeatureDocumentList;
+import app.util.feature.FeatureFunction;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
  
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,8 @@ import io.swagger.annotations.ApiOperation;
  
 @RestController
 public class DatabaseController { 
-
+	private String[] functionList;
+	private static String FUNCTION_TYPE="function";
 	@Autowired
 	private DocumentDatabase documentDatabase;
 	@Autowired
@@ -36,6 +39,7 @@ public class DatabaseController {
     @PostConstruct
     public void initialise() {
 	  documentDatabase.setJdbcTemplate(jdbcTemplate);
+	  functionList = FeatureFunction.FUNCTION_FEATURES;
     }	
 
 	@RequestMapping(value = "/adddocument", method = RequestMethod.GET)
@@ -48,8 +52,20 @@ public class DatabaseController {
 	@RequestMapping(value = "/getdocumentsbytype", method = RequestMethod.GET)
 	public FeatureDocumentList getDocumentsByType(@RequestParam String type) {
 		FeatureDocumentList featureDocumentList = new FeatureDocumentList();
-		List<FeatureDocument> documents = null;
-		documents = documentDatabase.getDocumentByType(type);
+		FeatureDocument featureDocument = null;
+		List<FeatureDocument> documents = new ArrayList<>();
+		String[] parts=null;
+		String function="";
+		if (type.equalsIgnoreCase(FUNCTION_TYPE)) {
+            for (int i=0; i<functionList.length; i++) {
+			   function = functionList[i];
+			   parts = function.split(":");
+               featureDocument = new FeatureDocument(null, parts[0], FUNCTION_TYPE, parts[3], parts[1]);
+               documents.add(featureDocument);
+			}
+		} else {
+		      documents = documentDatabase.getDocumentByType(type);
+		}
 		featureDocumentList.setFeatureDocumentList(documents);
 		return featureDocumentList;
 	}
