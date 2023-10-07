@@ -53,7 +53,7 @@ public class FeatureFunction {
 											   "notnext:identifies whether a word is not followd by another word:function:none:function",
 											   "notin:identifies whether a word is not in a given list:function:none:function",
 											   "notsymbol:identifies whether a word is not a symbol:function:none:function",
-											   "notlowercase:identifies whether a word is not in strict lowercase",
+											   "notlowercase:identifies whether a word is not in strict lowercase:function:none:function",
 											   "numbertokens:checks whether text contains a certain amount of words '=?', '>?', '<?':function:none:function",
 											   "object:identifies whether a word is classed as an object:function:none:function",
 											   "perfectpasttense:identifies whether a phrase is in the perfect past tense:function:none:function",
@@ -76,7 +76,7 @@ public class FeatureFunction {
 											   "validafterreplace:identifies whether a word is still a known word when text is replaced:function:none:function",
 											   "verblinked:identifies whether a word islinked to a verb:function:none:function",
 											   "verb:identifies whether a word is a verb:function:none:function",
-											   "wordslice:removes a portion of a word and check whether the remaining is aknown token,postag or lemma"};
+											   "wordslice:removes a portion of a word and check whether the remaining is aknown token,postag or lemma:function:none:function"};
 	private WordStorage wordStorage;
 	private FeatureStore featureStore;
 	private List<String> definedRegexList;
