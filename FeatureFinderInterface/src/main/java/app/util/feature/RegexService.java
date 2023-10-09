@@ -585,10 +585,10 @@ public class RegexService {
     }
 	
 	@RequestMapping(value = "/getdocument", method = RequestMethod.GET)
-    public String getdocument(@RequestParam String documentid) { 
+    public FeatureDocument getdocument(@RequestParam String documentid) { 
 		 FeatureDocument document = null;
 		 document = documentDatabase.getDocumentById(documentid);
-	     return document.toString();
+	     return document;
     }
 	
 	@CrossOrigin(origins = "*")

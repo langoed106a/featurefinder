@@ -136,7 +136,7 @@ public class RemoteDatabase {
 		String urlencodedtext="";
 		if (destinationUrl != null) {
            httpEntity = this.getHeaders();
- 		   destinationUrl = destinationUrl.replace("%1","getdocumentbytype?type="+type); 
+ 		   destinationUrl = destinationUrl.replace("%1","getdocumentsbytype?type="+type); 
            responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, FeatureDocumentList.class);
       	   featureDocumentList = responseEntity.getBody();
 		   documentList = featureDocumentList.getFeatureDocumentList();
