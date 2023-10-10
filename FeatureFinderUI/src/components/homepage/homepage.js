@@ -2,6 +2,7 @@ import React from 'react';
 import {Route, Routes, Switch, BrowserRouter} from 'react-router-dom';
 import AnalyseRun from '../analysis/analyserun';
 import FeatureList from '../features/featurelist';
+import FeatureDetail from '../features/featuredetail';
 import FeatureExperiment from '../features/featureexperiment';
 import FeatureNew from '../features/featurenew';
 import FeatureGroup from '../features/featuregroup';
@@ -25,6 +26,7 @@ function HomePage() {
                     <Routes>
                        <Route path="/" element={<FeatureList />} exact />
                          <Route path="/featureanalysis" element={<AnalyseRun />} exact />
+                         <Route path="/featuredetail" element={<FeatureDetail />} exact />
                          <Route path="/featurenew" element={<FeatureNew />} exact />
                          <Route path="/featurelist" element={<FeatureList />} exact />
                          <Route path="/featuresearch" element={<FeatureSearch />} exact />

@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {Button, Col, Container, Form, Row} from 'react-bootstrap';
+import {useNavigate} from 'react-router-dom';
 import { useStoreState, useStoreActions } from 'easy-peasy'
 import TopNavBar from '../navbar/topnavbar';
 import FeatureSideBar from '../navbar/featuresidebar';
@@ -9,52 +10,55 @@ import words_img from '../../images/featurefinder.jpg';
 
 function FeatureNew() {
     const[spinner, setSpinner] = useState(false)
-    const add_document = useStoreActions(actions => actions.addDocument)
+    const add_document = useStoreActions(actions => actions.add_document)
     const matchreply = useStoreState(state => state.matchreply);
+    const name = React.createRef()
     const regex = React.createRef()
+    const description = React.createRef()
     const granularity = React.createRef()
     const precondition = React.createRef()
     const postcondition = React.createRef()
     const invariant = React.createRef()
-    const language = React.createRef()
-    const textinput = React.createRef()
-    const highlight = React.createRef()
+    const navigate=useNavigate()
 
    const perform_add = () => {
        var form={}
+       var form_field=""
+       var content = {}
        if (regex.current.value) {
-           form.reg_input = encodeURIComponent(regex.current.value)
-           if (textinput.current.value) {
-               form.text_input = textinput.current.value
-               if (granularity.current.value) {
-                   form.gran_input = granularity.current.value
-               } else {
-                   form.gran_input = "text"
-               }
-               if (precondition.current.value) {
-                   form.pre_input = encodeURIComponent(precondition.current.value)
-               } else {
-                  form.pre_input = "undefined"
-               }
-               if (postcondition.current.value) {
-                  form.post_input = encodeURIComponent(postcondition.current.value)
-               } else {
-                  form.post_input = "undefined"
-               }
-              if (invariant.current.value) {
-                 form.inv_input = encodeURIComponent(invariant.current.value)
-              } else {
-                 form.inv_input = "undefined"
-              }
-              if (language.current.value) {
-                form.lang_input = language.current.value
-              } else {
-                form.lang_input = "english"
-              }
-              form.high_input = highlight.current.value
-              add_document(form)
-            }
+           form_field = encodeURIComponent(regex.current.value)
+           content["regex"] = form_field
+           form.name_input = name.current.value
+           form.type_input = "regex"
+           if (granularity.current.value) {
+                   form_field = granularity.current.value
+           } else {
+                   form_field = "text"
+           }
+           content["granularity"] = form_field
+           if (precondition.current.value) {
+                   form_field = encodeURIComponent(precondition.current.value)
+           } else {
+                  form_field = "undefined"
+           }
+           content["precondition"] = form_field
+           if (postcondition.current.value) {
+              form_field = encodeURIComponent(postcondition.current.value)
+           } else {
+              form_field = "undefined"
+           }
+           content["postcondition"] = form_field
+           if (invariant.current.value) {
+               form_field = encodeURIComponent(invariant.current.value)
+           } else {
+                form_field = "undefined"
+           }
+           content["invariant"] = form_field
+           form.content_input = JSON.stringify(content)
+           form.description_input = description.current.value
+           add_document(form)
         }
+      navigate("/");
    }
         
     return (<div>
@@ -66,10 +70,14 @@ function FeatureNew() {
             </Col>
             <Col>
               <Container>
-              <Form id="featurenew">
+              <Form onSubmit={perform_add} id="featurenew">
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                   <Form.Label>Feature Name</Form.Label>
-                  <Form.Control type="text" placeholder="name" ref={regex}/>
+                  <Form.Control type="text" placeholder="name" ref={name}/>
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control type="text" placeholder="description" ref={description}/>
                 </Form.Group>
                 <Row>
                     <Col>
@@ -100,8 +108,8 @@ function FeatureNew() {
                 </Form.Group>
                 <Row>
                   <Col>
-                    <Button variant="primary" onClick={() => perform_add()}>Submit</Button>
-                  </Col>
+                      <Button variant="primary" type="submit">Submit</Button>
+                  </Col>  
                 </Row>
                </Form>     
               </Container> 

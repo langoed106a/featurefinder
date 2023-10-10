@@ -14,6 +14,7 @@ const storeModel = createStore (
            wordlist: [],
            modellist: [],
            documentlist: [],
+           document: {},
            featuregrouplist: [],
            documentgrouplist: [],
            runlist: [],
@@ -104,9 +105,20 @@ const storeModel = createStore (
               console.log(error);
             }
            }),
+           get_document: thunk(async (actions,id) => {
+            try {
+              const res = await axios.get(service_url+'/getdocument?documentid='+id);
+              actions.set_document(res?.data);
+            } catch (error) {
+              console.log(error);
+            }
+           }),
            set_document_list: action((state, documentlist) => {
                state.documentlist = documentlist
             }),
+           set_document: action((state, document) => {
+              state.document = document
+           }),
            get_featuregroup_list: thunk(async (actions) => {
              try {
                const res = await axios.get(service_url+'/getdocuments?type=featuregroup');
@@ -135,9 +147,9 @@ const storeModel = createStore (
           addDocumentGroup: action((state, documentgroup) => {
             state.documentgrouplist.push(documentgroup)
           }),
-          addDocument: thunk(async (actions, form) => {
+          add_document: thunk(async (actions, form) => {
             try {
-              const res = await axios.get(service_url+'/adddocument?documentname='+form.name_input+'&documenttype='+form.type_input+'&documentcontents='+form.contents_input+'&documentdescription='+form.description_input);
+                const res = await axios.post(service_url+'/adddocument',{'name':form.name_input,'type':form.type_input,'contents':form.content_input,'description':form.description_input});
             } catch (error) {
              console.log(error);
            }
