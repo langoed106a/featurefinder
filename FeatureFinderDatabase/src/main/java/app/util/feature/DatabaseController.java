@@ -42,10 +42,10 @@ public class DatabaseController {
 	  functionList = FeatureFunction.FUNCTION_FEATURES;
     }	
 
-	@RequestMapping(value = "/adddocument", method = RequestMethod.GET)
-	public String adddocument(@RequestParam String documentname, @RequestParam String documenttype, @RequestParam String documentcontents, @RequestParam String documentdescription) {
+	@RequestMapping(value = "/adddocument", method = RequestMethod.POST)
+	public String adddocument(@RequestBody FeatureDocument featureDocument) {
 		String response = "";
-		documentDatabase.addDocument(documentname, documenttype, documentcontents, documentdescription);
+		documentDatabase.addDocument(featureDocument.getName(), featureDocument.getType(), featureDocument.getContents(), featureDocument.getDescription());
 		return response;
 	}
 
