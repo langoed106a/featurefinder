@@ -3,7 +3,7 @@ package app.util.feature;
 import org.asynchttpclient.AsyncHttpClient;
 
 public class HTTPSender {
- AsyncHttpClient c = new AsyncHttpClient();
+    AsyncHttpClient c = new AsyncHttpClient();
     Future<Response> f = c.prepareGet(TARGET_URL).execute();
 
    public HTTPSender() {
