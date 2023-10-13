@@ -7,7 +7,7 @@ import app.util.feature.Section;
 
 public class TextDocument extends Document {
     private String language;
-	List<WordToken> wordTokenList;
+	List<WordToken> tokenList;
 	
     public TextDocument() {
 		super();
@@ -32,27 +32,12 @@ public class TextDocument extends Document {
     	return contents;
     }
     
-	public List<WordToken> getTokens() {
-		return wordTokenList;
-	}
-	
-	public String getType() {
-	       return type;
-	}
-	
-	public void setSection(Section section) {
-		this.section=section;
-	}
-	
-	public Section getSection() {
-		return section;
+	public List<WordToken> getTokenList() {
+		return tokenList;
 	}
 
-	public void setFeatureList(List<RegexFeature> featureList) {
-		this.featureList = featureList;
+	public void setTokenList(List<WordToken> tokenList) {
+		this.tokenList = tokenList;
 	}
 
-	public List<RegexFeature> getFeatureList() {
-		return this.featureList;
-	}
 }

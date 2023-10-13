@@ -3,7 +3,7 @@ package app.util.feature;
 import javax.json.JsonValue;
 import javax.json.JsonObject;
 
-public class RegexFeature extends Document {
+public class RegexDocument extends Document {
     private String granularity;
     private String group;
     private String regex;
@@ -72,8 +72,7 @@ public class RegexFeature extends Document {
 
     public void fromJson(JsonValue jsonValue) {
       JsonObject jsonObject = jsonValue.asJsonObject();
-      String id_str = jsonObject.getString("id");
-      this.id = Integer.valueOf(id_str);
+      this.id  = jsonObject.getString("id");
       this.name = jsonObject.getString("name");
       this.description = jsonObject.getString("description");
       this.granularity = jsonObject.getString("granularity");

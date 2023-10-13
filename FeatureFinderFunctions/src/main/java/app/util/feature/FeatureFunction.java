@@ -110,10 +110,6 @@ public class FeatureFunction {
 		featureFunctionList.setWordStorage(wordStorage);
 	}
 
-	public Feature getPredefinedFeature(String featureName) {
-		return featureFunctionList.getPredefinedFeature(featureName);
-	}
-
 	public Boolean doFunction(String part, String name, String value, WordToken wordToken, Section section) {
 		Boolean found = false;
 		Class<?> classObj = null;

@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import app.util.feature.Feature;
-
 import org.springframework.util.StreamUtils;
 
 public class FeatureDocument extends Document  {
@@ -15,7 +13,7 @@ public class FeatureDocument extends Document  {
 		super();
 	}
 
-	public FeatureDocument(Integer id, String name, String type, String contents, String description) {
+	public FeatureDocument(String id, String name, String type, String contents, String description) {
 		this.id=id;
 		this.name=name;
 		this.type=type;
@@ -23,7 +21,7 @@ public class FeatureDocument extends Document  {
 		this.description=description;
 	}
 	
-	public FeatureDocument(Integer id, String name, String type, InputStream contentsStream, String description) {
+	public FeatureDocument(String id, String name, String type, InputStream contentsStream, String description) {
 		this.id=id;
 		this.name=name;
 		this.type=type;

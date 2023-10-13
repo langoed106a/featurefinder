@@ -468,7 +468,6 @@ public class FeatureFunctionList {
 
 	public boolean existsafter(String part, WordToken wordToken, Section section, List<String> params) {
 		boolean found = false, finish = false, itemFound = false;
-		Feature feature;
 		Integer index = 0, wordIndex = 0, currentWordIndex = 0, currentSentenceIndex = 0;
 		String currentItem = "", item="", word="";
 		List<WordToken> currentSentence=null;
@@ -497,7 +496,6 @@ public class FeatureFunctionList {
 
 	public boolean existsbefore(String part, WordToken wordToken, Section section, List<String> params) {
 		boolean found = false, finish = false, itemFound = false;
-		Feature feature;
 		Integer index = 0, wordIndex = 0, currentWordIndex = 0, currentSentenceIndex=0;
 		String currentItem = "", item="", word="";
 		List<WordToken> currentSentence=null;
@@ -529,7 +527,6 @@ public class FeatureFunctionList {
 
 	public boolean notexistsafter(String part, WordToken wordToken, Section section, List<String> params) {
 		boolean found = false, finish = false, itemFound = false;
-		Feature feature;
 		Integer index = 0, wordIndex = 0, currentWordIndex = 0;
 		String currentItem = "", item="", word="";
 		List<WordToken> currentSentence=null;
@@ -1180,70 +1177,8 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public Boolean isDefined(String name) {
-		Feature feature=null;
-		Boolean definedName = false;
-		if ((name!=null) && (name.length()>0)) {
-			name = name.toLowerCase();
-			feature = featureStore.getFeatureByName(name);
-			if (feature != null) {
-				definedName = true;
-			}
-		}
-		 return definedName;
-	}
-	public Feature getPredefinedFeature(String featureName) {
-		Feature feature=null;
-		Boolean exists= false;
-		if (featureName!=null) {
-			feature = featureStore.getFeatureByName(featureName);
-			if (feature==null) {
-				exists = wordStorage.listExists(featureName);
-				if (exists) {
-					feature = new ListFeature(featureName);
-				}
-			}
-		}
-		        return feature;
-	}
 
-	    public Boolean checkPreDefinedList(String part, WordToken wordToken, Section section, String value) {
-		          boolean found = false;
-			      Feature feature = null;
-			      Integer index = 0, sentenceIndex = 0;
-			      List<WordToken> sentence = null;
-			      String[] wordList = null;
-			      String wordToCheck = "", word = "", contents = "";
-			       if ((value!=null) && (value.startsWith("$")) && (value.length()>1)) {
-				        sentenceIndex = wordToken.getSentence();
-					    sentence = section.getSentenceAtIndex(sentenceIndex);
-					    value = value.substring(1,value.length());
-					    feature = featureStore.getFeatureByName(value);
-						if ((feature != null) && (feature.getType().equalsIgnoreCase("list"))) {
-								wordToCheck = this.getCheckValue(part, wordToken);
-						       if (feature.getType().equalsIgnoreCase("list")) {
-									    contents = feature.getContents();
-										contents = contents.replace("[","");
-										contents = contents.replace("]","");
-										wordList = contents.split(",");
-										wordToCheck = wordToCheck.trim();
-										while ((!found) && (index<wordList.length)) {
-												word = wordList[index];
-												word = word.trim();
-												found = General.theSame(part, wordToken, sentence, word);
-												index = index + 1;
-										}
-								}
-						} else {
-									         if (wordStorage.wordExists(value, wordToken.getToken())) {
-											   found = true;
-											      }
-										  }
-							         }
-			           return found;
-				         }
-
-
+	    
 	    private Integer countOccurrencesOf(String content, String part) {
 		    Integer index, occurrences=0, partlength = part.length();
 		    Boolean finish = false;
