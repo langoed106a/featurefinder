@@ -9,19 +9,10 @@ import app.util.feature.Feature;
 
 import org.springframework.util.StreamUtils;
 
-public class FeatureDocument implements Feature {
-	private Integer id;
-	private String contents;
-	private String description;
-	private String type;
-	private String name;
+public class FeatureDocument extends Document  {
 	
     public FeatureDocument() {
-		this.id=-1;
-		this.name="";
-		this.type="";
-		this.contents="";
-		this.description="";
+		super();
 	}
 
 	public FeatureDocument(Integer id, String name, String type, String contents, String description) {
@@ -45,46 +36,6 @@ public class FeatureDocument implements Feature {
 		} catch (IOException ioException) {
 			ioException.printStackTrace();
 		}
-	}
-
-	public void setId(Integer id) {
-		this.id=id;
-	}
-	
-	public Integer getId() {
-		return this.id;
-	}
-	
-	public void setDescription(String description) {
-		this.description=description;
-	}
-	
-	public String getDescription() {
-		return this.description;
-	}
-	
-	public void setName(String name) {
-		this.name=name;
-	}
-	
-	public String getName() {
-		return this.name;
-	}
-	
-	public void setType(String type) {
-		this.type=type;
-	}
-	
-	public String getType() {
-		return this.type;
-	}
-	
-	public void setContents(String contents) {
-		this.contents=contents;
-	}
-	
-	public String getContents() {
-		return this.contents;
 	}
 	
 	public String toString() {

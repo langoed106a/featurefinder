@@ -3,29 +3,23 @@ package app.util.feature;
 import javax.json.JsonValue;
 import javax.json.JsonObject;
 
-public class RegexFeature implements Feature {
-    private Integer id;
-    private String name;
-    private String description;
+public class RegexFeature extends Document {
     private String granularity;
     private String group;
-    private String contents;
+    private String regex;
     private String precondition;
     private String postcondition;
-    private String type;
     
-    public RegexFeature() {
-       this.name = "";
-       this.contents = "";
-       this.description = "";
+    public RegexDocument() {
+       super();
        this.granularity = "";
        this.group = "";
+       this.regex = "";
        this.precondition = "";
        this.postcondition = "";
-       this.type = "";
     }
 
-    public RegexFeature(String name, String group, String description, String contents, String granularity, String precondition, String postcondition) {
+    public RegexDocument(String name, String group, String description, String contents, String granularity, String precondition, String postcondition) {
        this.name = name;
        this.contents = contents;
        this.description = description;
@@ -34,29 +28,6 @@ public class RegexFeature implements Feature {
        this.precondition = precondition;
        this.postcondition = postcondition;
        this.type = "regex";
-    }
-
-    public void setId(Integer id) {
-       this.id =id;
-    }
-    
-    public Integer getId() {
-       return id;
-    }
-    
-    public void setDescription(String description) {
-       this.description=description;
-    }
-    public String getDescription() {
-       return description;
-    }
-
-    public void setName(String name) {
-       this.name = name;
-    }
-
-    public String getName() {
-       return name;
     }
 
     public void setGranularity(String granularity) {
@@ -91,21 +62,13 @@ public class RegexFeature implements Feature {
       return precondition;
    }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+   public void setRegex(String regex) {
+      this.regex = regex;
+   }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setContents(String contents) {
-        this.contents = contents;
-    }
-
-    public String getContents() {
-        return contents;
-    }
+   public String getRegex() {
+      return regex;
+   }
 
     public void fromJson(JsonValue jsonValue) {
       JsonObject jsonObject = jsonValue.asJsonObject();
@@ -116,6 +79,7 @@ public class RegexFeature implements Feature {
       this.granularity = jsonObject.getString("granularity");
       this.contents = jsonObject.getString("contents");
       this.group = jsonObject.getString("group");
+      this.regex = jsonObject.getString("regex");
       this.postcondition = jsonObject.getString("postcondition");
       this.precondition = jsonObject.getString("precondition");
       this.type = jsonObject.getString("type");

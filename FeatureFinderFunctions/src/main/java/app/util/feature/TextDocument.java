@@ -5,15 +5,14 @@ import java.util.List;
 import app.util.feature.WordToken;
 import app.util.feature.Section;
 
-public class TextDocument {
-    private String type;
+public class TextDocument extends Document {
     private String language;
-    private String name;
-    private String contents;
 	List<WordToken> wordTokenList;
-	List<RegexFeature> featureList;
-    Section section;
 	
+    public TextDocument() {
+		super();
+	}
+
     public TextDocument(String name, String type, String language, String contents) {
     	this.name = name;
     	this.type = type;
