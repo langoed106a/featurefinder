@@ -78,7 +78,7 @@ public class FeatureFunction {
 											   "verb:identifies whether a word is a verb:function:none:function",
 											   "wordslice:removes a portion of a word and check whether the remaining is aknown token,postag or lemma:function:none:function"};
 	private WordStorage wordStorage;
-	private FeatureStore featureStore;
+	private DocumentStore documentStore;
 	private List<String> definedRegexList;
 	private FeatureFunctionList featureFunctionList;
 
@@ -90,8 +90,8 @@ public class FeatureFunction {
 		 featureFunctionList.initialise();
 	}
 
-	public void setFeatureStore(FeatureStore featureStore) {
-		featureFunctionList.setFeatureStore(featureStore);
+	public void setFeatureStore(DocumentStore documentStore) {
+		featureFunctionList.setFeatureStore(documentStore);
 	}
 
 	public List<String> getDefinedRegexList() {

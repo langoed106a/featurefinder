@@ -3,14 +3,14 @@ package app.util.feature;
 import org.asynchttpclient.AsyncCompletionHandler;
 import org.asynchttpclient.Response;
 
-public class ResponseHandler<String> extends AsyncCompletionHandler<T> {
+public class ResponseHandler extends AsyncCompletionHandler<String> {
 
     public ResponseHandler() {
 
     }
 
     @Override
-    public Object onCompleted(Response response) throws Exception {
+    public String onCompleted(Response response) throws Exception {
         return response;
     }
 }

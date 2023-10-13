@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class FeatureFunctionList {
 	private WordStorage wordStorage;
-	private FeatureStore featureStore;
+	private DocumentStore documentStore;
 	private List<String> definedRegexList;
 
 	public FeatureFunctionList() {
@@ -37,8 +37,8 @@ public class FeatureFunctionList {
 		definedRegexList=new ArrayList<>();
 	}
 
-	public void setFeatureStore(FeatureStore featureStore) {
-		this.featureStore = featureStore;
+	public void setDocumentStore(DocumentStore documentStore) {
+		this.documentStore = documentStore;
 	}
 	public List<String> getDefinedRegexList() {
 		return definedRegexList;
@@ -600,7 +600,6 @@ public class FeatureFunctionList {
 
 	public boolean notin(String part, WordToken wordToken, Section section, List<String> params) {
 		boolean found = true, finish = false, itemFound = false;
-		Feature feature;
 		Integer index = 0, sentenceIndex=0;
 		String currentItem = "", item="";
 		if ((wordToken!=null) && (params.size()>0)) {
@@ -1217,6 +1216,11 @@ public class FeatureFunctionList {
 			}
 			   return wordToken; 
 		}
+
+	public Boolean checkPreDefinedList(String part, WordToken wordToken, Section section, String str) {
+		return true;
+
+	}
 
 }
 
