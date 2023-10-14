@@ -91,7 +91,7 @@ public class FeatureFunction {
 	}
 
 	public void setFeatureStore(DocumentStore documentStore) {
-		featureFunctionList.setFeatureStore(documentStore);
+		featureFunctionList.setDocumentStore(documentStore);
 	}
 
 	public List<String> getDefinedRegexList() {

@@ -11,6 +11,6 @@ public class ResponseHandler extends AsyncCompletionHandler<String> {
 
     @Override
     public String onCompleted(Response response) throws Exception {
-        return response;
+        return "200";
     }
 }

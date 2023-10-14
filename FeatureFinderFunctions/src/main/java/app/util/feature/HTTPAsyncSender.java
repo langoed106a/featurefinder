@@ -6,21 +6,29 @@ import org.asynchttpclient.BoundRequestBuilder;
 
 import java.util.concurrent.Future;
 
-public class HTTPSender {
+public class HTTPAsyncSender {
     AsyncHttpClient httpClient;
     ResponseHandler responseHandler;
 
-    public HTTPSender() {
+    public HTTPAsyncSender() {
        httpClient = new DefaultAsyncHttpClient();
     }
 
     public String send(String destination, String content) {
         BoundRequestBuilder builder=null;
+        Future<String> reply=null;
+        String message="";
         builder =  httpClient.preparePost(destination);
         builder.addHeader("Content-type", "application/json;charset=utf-8");
         builder.addHeader("Accept", "application/json");
         builder.setBody(content);
-         Future<String> reply = builder.execute(new ResponseHandler());
+        try {
+             reply = builder.execute(new ResponseHandler());
+             message = reply.get();
+        } catch (Exception exception) {
+            message = "500";
+        }
+        return message;
     }
 
 }
