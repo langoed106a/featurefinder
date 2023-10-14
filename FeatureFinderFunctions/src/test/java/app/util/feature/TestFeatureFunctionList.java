@@ -181,7 +181,7 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word3);
          wordList.add(word4);
          section.addSentence(wordList);
-         expect(featureStoreMock.getFeatureByName("dummycommonword")).andReturn(null);
+         expect(featureStoreMock.getDocumentByName("dummycommonword")).andReturn(null);
          expect(wordStorageMock.wordExists("dummycommonword",word1.getToken())).andReturn(true);
          PowerMock.replay(wordStorageMock);
          PowerMock.replay(featureStoreMock);
