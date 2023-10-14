@@ -4,41 +4,30 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Sentence {
-    public List<String> sentenceList;
-    private Integer sentenceLength;
-    private String endOfSentence;
+    public List<WordToken> tokenList;
 
     public Sentence() {
-        sentenceList = new ArrayList<>();
-        sentenceLength = 0;
-    }
-
-    public void addPart(String part) {
-        sentenceList.add(part);
+        tokenList = new ArrayList<>();
     }
 
     public Integer getSentenceLength() {
-        return sentenceList.size();
+        return tokenList.size();
     }
 
-    public void setSentenceLength(Integer sentenceLength) {
-        this.sentenceLength = sentenceLength;
+    public List<WordToken> getSentenceList() {
+        return tokenList;
     }
 
-    public List<String> getSentenceList() {
-        return sentenceList;
-    }
-
-    public String getEndOfSentence() {
-        return endOfSentence;
-    }
-
-    public void setEndOfSentence(String endOfSentence) {
-        this.endOfSentence=endOfSentence;
+    public void setSentenceList(List<WordToken> line) {
+        tokenList = line;
     }
 
     public String toString() {
-        return String.join(" ", sentenceList);
+        String line="";
+        for (WordToken wordToken:tokenList) {
+            line.join(" ", wordToken.getToken());
+        }
+        return line;
     }
 
 }

@@ -7,7 +7,7 @@ import app.util.feature.Section;
 
 public class TextDocument extends Document {
     private String language;
-	List<WordToken> tokenList;
+	List<Sentence> sentenceList;
 	
     public TextDocument() {
 		super();
@@ -32,12 +32,20 @@ public class TextDocument extends Document {
     	return contents;
     }
     
-	public List<WordToken> getTokenList() {
-		return tokenList;
+	public List<WordToken> getSentence(Integer index) {
+		List<WordToken> line=null;
+		Sentence sentence=null;
+		if ((index>0) && (index<sentenceList.size())) {
+			sentence = sentenceList.get(index);
+			line = sentence.getSentenceList();
+		}
+		return line;
 	}
 
-	public void setTokenList(List<WordToken> tokenList) {
-		this.tokenList = tokenList;
+	public void addSentence(List<WordToken> line) {
+		Sentence tokenList = new Sentence();
+		tokenList.setSentenceList(line);
+		this.sentenceList.add(tokenList);
 	}
 
 }
