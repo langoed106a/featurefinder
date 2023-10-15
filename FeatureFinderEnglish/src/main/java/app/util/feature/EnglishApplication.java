@@ -21,6 +21,16 @@ public class EnglishApplication implements CommandLineRunner {
     public static void main(String[] args) {
         SpringApplication.run(EnglishApplication.class, args);
     }
+
+	@Bean
+    public RestTemplate restTemplate() {
+        int connectionTimeout = 240000;
+	    int socketTimeout = 240000;
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(connectionTimeout);
+        factory.setReadTimeout(socketTimeout);
+        return new RestTemplate(factory);
+    }
     
     @Override
 	public void run(String... args) throws Exception {
