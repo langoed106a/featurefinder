@@ -1,0 +1,51 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.2.2.RELEASE)
+
+2023-10-15 09:56:53.244  INFO 9091 --- [           main] app.util.feature.EnglishApplication      : Starting EnglishApplication v1.0 on localhost.localdomain with PID 9091 (/home/vboxuser/featurefinder/FeatureFinderEnglish/bin/FeatureFinderEnglish-1.0.jar started by vboxuser in /home/vboxuser/featurefinder/FeatureFinderEnglish/bin)
+2023-10-15 09:56:53.247  INFO 9091 --- [           main] app.util.feature.EnglishApplication      : No active profile set, falling back to default profiles: default
+2023-10-15 09:56:56.464  INFO 9091 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8050 (http)
+2023-10-15 09:56:56.488  INFO 9091 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-10-15 09:56:56.488  INFO 9091 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.29]
+2023-10-15 09:56:56.709  INFO 9091 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-10-15 09:56:56.711  INFO 9091 --- [           main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 3320 ms
+2023-10-15 09:56:58.088  INFO 9091 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator tokenize
+2023-10-15 09:56:58.192  INFO 9091 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator ssplit
+2023-10-15 09:56:58.214  INFO 9091 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator pos
+2023-10-15 09:56:59.180  INFO 9091 --- [           main] e.s.nlp.tagger.maxent.MaxentTagger       : Loading POS tagger from edu/stanford/nlp/models/pos-tagger/english-left3words-distsim.tagger ... done [0.9 sec].
+2023-10-15 09:56:59.188  INFO 9091 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator lemma
+2023-10-15 09:56:59.190  INFO 9091 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator parse
+2023-10-15 09:57:00.140  INFO 9091 --- [           main] e.s.nlp.parser.common.ParserGrammar      : Loading parser from serialized file edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz ... done [0.9 sec].
+2023-10-15 09:57:00.232  INFO 9091 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator tokenize
+2023-10-15 09:57:00.232  INFO 9091 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator ssplit
+2023-10-15 09:57:00.232  INFO 9091 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator pos
+2023-10-15 09:57:00.233  INFO 9091 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator lemma
+2023-10-15 09:57:00.233  INFO 9091 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator parse
+2023-10-15 09:57:00.236  WARN 9091 --- [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'englishController': Unsatisfied dependency expressed through field 'restTemplate'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.web.client.RestTemplate' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2023-10-15 09:57:00.238  INFO 9091 --- [           main] o.apache.catalina.core.StandardService   : Stopping service [Tomcat]
+2023-10-15 09:57:00.257  INFO 9091 --- [           main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2023-10-15 09:57:00.338 ERROR 9091 --- [           main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field restTemplate in app.util.feature.EnglishController required a bean of type 'org.springframework.web.client.RestTemplate' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'org.springframework.web.client.RestTemplate' in your configuration.
+
