@@ -3,7 +3,13 @@ package app.util.feature;
 import javax.annotation.PostConstruct;
 
 import app.util.database.DocumentDatabase;
-import app.util.database.FeatureDocument;
+
+
+import app.util.feature.Sentence;
+import app.util.feature.FeatureDocument;
+import app.util.feature.TextDocument;
+
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,26 +33,32 @@ import io.swagger.annotations.ApiOperation;
 public class EnglishController { 
    private static final Logger logger=LoggerFactory.getLogger(EnglishController.class);
    private FeatureFunction featureFunction;
+   private HTTPSyncSender syncSender;
+   private HTTPAsyncSender asyncSender;
    private WordStorage wordStorage;
 
 	@Autowired
 	private EnglishParser englishParser;
 	@Autowired
 	private DocumentDatabase documentDatabase;
+	@Autowired
+	private RestTemplate restTemplate;
     @Autowired
 	private WebApplicationContext applicationContext;
 	
    @PostConstruct
    public void initialise() {
         featureFunction = new FeatureFunction();
+		asyncSender = new HTTPAsyncSender();
+		syncSender = new HTTPSyncSender(restTemplate);
         wordStorage = new WordStorage(applicationContext);
    }
 
 		
 	@RequestMapping(value = "/postagtext", method = RequestMethod.GET)
     public String postagtext(@RequestParam String text ) { 
-	  Section section = englishParser.parseTextToText(text);
-	  List<WordToken> wordTokenList = section.getSentenceAtIndex(0);
+	  TextDocument textDocument = englishParser.parseText(text);
+	  List<WordToken> wordTokenList = textDocument.getSentence(0);
 	  String reply = "[";
 	  for (WordToken wordToken:wordTokenList) {
 		  reply = reply + "{";
@@ -65,10 +77,16 @@ public class EnglishController {
       return reply;
     }
 		
-	@RequestMapping(value = "/parsetext", method = RequestMethod.POST)
-    public String parsetext(@RequestBody String text ) { 
-	    Section section = englishParser.parseTextToText(text);
-      return section.toJson();
+	@RequestMapping(value = "/syncparsetext", method = RequestMethod.POST)
+    public String syncParseText(@RequestBody String text ) { 
+	    TextDocument textDocument = englishParser.parseText(text);
+      return textDocument.toString();
+    }
+
+	@RequestMapping(value = "/asyncparsetext", method = RequestMethod.POST)
+    public String asyncParseText(@RequestBody String text ) { 
+	    TextDocument textDocument = englishParser.parseText(text);
+      return textDocument.toString();
     }
     
     @RequestMapping(value = "/wordexists", method = RequestMethod.GET)
