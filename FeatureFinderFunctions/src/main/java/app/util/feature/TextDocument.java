@@ -51,9 +51,10 @@ public class TextDocument extends Document {
 	}
 
 	public String toJson() {
-      String jsonString="[", jsonLine="";
+      String jsonString="[", jsonLine="", strType="";
       Integer count=0;
       List<WordToken> line=null;
+      strType = this.getType();
       for (Sentence sentence:sentenceList) {
 		   line = sentence.getSentenceList();
            jsonLine="{\"linenumber\":\"" + String.valueOf(count) + "\",";
@@ -74,6 +75,10 @@ public class TextDocument extends Document {
          jsonString = jsonString.substring(0, jsonString.length()-1);  
       }
       jsonString = jsonString + "]";
+      if ((strType!=null) && (strType.length()>0)) {
+         jsonString = "\"type:\"+\""+strType+"\"" +jsonString;
+      }
+      jsonString = "{" + jsonString + "}";
       return jsonString;
     }
 
