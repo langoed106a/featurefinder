@@ -1,5 +1,6 @@
 package app.util.feature;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import app.util.feature.WordToken;
@@ -11,6 +12,7 @@ public class TextDocument extends Document {
 	
     public TextDocument() {
 		super();
+		sentenceList = new ArrayList<>();
 	}
 
     public TextDocument(String name, String type, String language, String contents) {
