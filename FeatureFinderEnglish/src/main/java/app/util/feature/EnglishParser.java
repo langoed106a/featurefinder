@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import app.util.feature.Section;
 import app.util.feature.Sentence;
+import app.util.feature.TextDocument;
 import app.util.feature.WordToken;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
@@ -74,14 +75,15 @@ public class EnglishParser {
         }
     }    
 
-    public Section parseTextToText(String text) {
+    public TextDocument parseText(String text) {
         Annotation document=null;
         Integer wordIndex=0;
         Integer sentenceIndex=0;
         List<CoreLabel> coreLabelList=null;
-        Section section = new Section();
+        Sentence sentence = null;
         String[] wordParts = null, objectParts = null;
         String lemma="", tag="", token="", dependency="", endofline="", graphOfText="", storedWord="", subject="", object="", action="";
+        TextDocument textDocument = new TextDocument();
         List<WordToken> wordTokenList = null;
         List<WordToken> tokenList = null;
         List<String> wordList=null;
@@ -105,11 +107,12 @@ public class EnglishParser {
                   wordIndex++;
                   wordTokenList.add(wordToken);
              }
-             section.addSentence(wordTokenList);
+             sentence = new Sentence();
+             textDocument.addSentence(wordTokenList);
              sentenceIndex++;
              wordIndex=0;
        }
-     return section;
+     return textDocument;
      }
 
    //  public List<String> getSentences(String text) {
