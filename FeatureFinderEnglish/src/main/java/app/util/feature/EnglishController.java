@@ -8,6 +8,7 @@ import app.util.database.DocumentDatabase;
 import app.util.feature.Sentence;
 import app.util.feature.ServiceLocator;
 import app.util.feature.FeatureDocument;
+import app.util.feature.HTTPAsyncSender;
 import app.util.feature.TextDocument;
 
 import org.springframework.web.client.RestTemplate;
@@ -53,9 +54,9 @@ public class EnglishController {
    public void initialise() {
 	    String properties_location = System.getProperty(PROPERTIES_NAME);
         featureFunction = new FeatureFunction();
-		asyncSender = new HTTPAsyncSender();
 		syncSender = new HTTPSyncSender(restTemplate);
         serviceLocator = new ServiceLocator(properties_location);
+		asyncSender = new HTTPAsyncSender(serviceLocator);
 		wordStorage = new WordStorage(applicationContext);
    }
 
@@ -91,7 +92,8 @@ public class EnglishController {
 	@RequestMapping(value = "/asyncparsetext", method = RequestMethod.POST)
     public String asyncParseText(@RequestBody String text ) { 
 	    TextDocument textDocument = englishParser.parseText(text);
-      return textDocument.toString();
+		textDocument.setType("parsedtext");
+      return textDocument.toJson();
     }
     
     @RequestMapping(value = "/wordexists", method = RequestMethod.GET)
