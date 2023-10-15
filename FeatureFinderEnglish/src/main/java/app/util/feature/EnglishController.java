@@ -6,6 +6,7 @@ import app.util.database.DocumentDatabase;
 
 
 import app.util.feature.Sentence;
+import app.util.feature.ServiceLocator;
 import app.util.feature.FeatureDocument;
 import app.util.feature.TextDocument;
 
@@ -32,9 +33,11 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 public class EnglishController { 
    private static final Logger logger=LoggerFactory.getLogger(EnglishController.class);
+   private static String PROPERTIES_NAME="server.properties";
    private FeatureFunction featureFunction;
    private HTTPSyncSender syncSender;
    private HTTPAsyncSender asyncSender;
+   private ServiceLocator serviceLocator;
    private WordStorage wordStorage;
 
 	@Autowired
@@ -48,10 +51,12 @@ public class EnglishController {
 	
    @PostConstruct
    public void initialise() {
+	    String properties_location = System.getProperty(PROPERTIES_NAME);
         featureFunction = new FeatureFunction();
 		asyncSender = new HTTPAsyncSender();
 		syncSender = new HTTPSyncSender(restTemplate);
-        wordStorage = new WordStorage(applicationContext);
+        serviceLocator = new ServiceLocator(properties_location);
+		wordStorage = new WordStorage(applicationContext);
    }
 
 		
@@ -80,7 +85,7 @@ public class EnglishController {
 	@RequestMapping(value = "/syncparsetext", method = RequestMethod.POST)
     public String syncParseText(@RequestBody String text ) { 
 	    TextDocument textDocument = englishParser.parseText(text);
-      return textDocument.toString();
+      return textDocument.toJson();
     }
 
 	@RequestMapping(value = "/asyncparsetext", method = RequestMethod.POST)
