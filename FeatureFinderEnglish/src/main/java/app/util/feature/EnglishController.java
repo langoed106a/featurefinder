@@ -91,9 +91,11 @@ public class EnglishController {
 
 	@RequestMapping(value = "/asyncparsetext", method = RequestMethod.POST)
     public String asyncParseText(@RequestBody String text ) { 
-	    TextDocument textDocument = englishParser.parseText(text);
-		textDocument.setType("parsedtext");
-      return textDocument.toJson();
+	    String jsonText="", response="";
+		TextDocument textDocument = englishParser.parseText(text);
+        jsonText = textDocument.toJson();
+		response = asyncSender.send("parsedtext", jsonText);
+	    return response;
     }
     
     @RequestMapping(value = "/wordexists", method = RequestMethod.GET)
