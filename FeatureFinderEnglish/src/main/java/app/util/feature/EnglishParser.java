@@ -17,6 +17,7 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import app.util.feature.Section;
 import app.util.feature.Sentence;
@@ -45,10 +46,11 @@ public class EnglishParser {
     private StanfordCoreNLP stanfordParser;
     private Boolean termsLoaded;
     private SentenceSplitter sentenceSplitter;
+    private WebApplicationContext applicationContext;
    
-    public EnglishParser() {
+    public EnglishParser(WebApplicationContext applicationContext) {
         Properties props = new Properties();
-        sentenceSplitter = new SentenceSplitter();
+        sentenceSplitter = new SimpleSentenceSplitter(applicationContext);
         try {
                props.setProperty("annotators","tokenize,ssplit,pos,lemma,parse");
                props.setProperty("tokenize.options","ptb3Escaping=false");
@@ -115,11 +117,13 @@ public class EnglishParser {
      return textDocument;
      }
 
-   //  public List<String> getSentences(String text) {
-   //      return sentenceSplitter.getSentences(text);
-   //  }
+     public List<String> getSentences(String text) {
+        String[] lineArray = sentenceSplitter.split(text);
+        List<String> lines = Arrays.asList(lineArray);
+        return lines;
+     }
 
-     
+     /*
      public List<String> getSentences(String text) {
          List<String> sentences=new ArrayList<>();
          String[] delimiters={"。","?","？","!","！","！"};
@@ -154,7 +158,7 @@ public class EnglishParser {
        }
       return sentences;
     }
-
+    */
         
     private List<WordToken> getWordSpacing(List<WordToken> tokens, String text) {
         List<WordToken> lineTokenList=new ArrayList<>();

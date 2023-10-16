@@ -61,6 +61,11 @@
 			<artifactId>openregex</artifactId>
 			<version>1.1.1</version>
 		</dependency>
+        <dependency>
+           <groupId>com.github.haifengl</groupId>
+           <artifactId>smile-nlp</artifactId>
+           <version>3.0.2</version>
+        </dependency>
       <dependency>
          <groupId>app.util.feature</groupId>
          <artifactId>FeatureFinderFunctions</artifactId>
