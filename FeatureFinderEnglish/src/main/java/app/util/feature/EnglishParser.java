@@ -76,15 +76,9 @@ public class EnglishParser {
         List<WordToken> wordTokenList = null;
         List<WordToken> tokenList = null;
         List<String> wordList=null;
-        System.out.println("***********");
-        System.out.println(text);
-        System.out.println("************");
         List<String> sentences = this.getSentences(text);
         WordToken wordToken=null, itemToken=null;
         for (String line:sentences) {
-            System.out.println("**************");
-            System.out.println(line);
-            System.out.println("***************");
              document = new Annotation(line);
              stanfordParser.annotate(document);
              wordTokenList = new ArrayList<>();
@@ -109,43 +103,6 @@ public class EnglishParser {
         List<String> lines = Arrays.asList(lineArray);
         return lines;
      }
-
-     /*
-     public List<String> getSentences(String text) {
-         List<String> sentences=new ArrayList<>();
-         String[] delimiters={"。","?","？","!","！","！"};
-         String line=text, lineend="", partline="";
-         Boolean finish=false, punctuation=false;
-         Integer position=text.length(),index=0,delimitersize=0;
-         while (!finish) {
-            punctuation=false;
-            index=0;
-            for (int i=0;i<delimiters.length;i++) {
-                lineend=delimiters[i];
-                delimitersize=lineend.length(); 
-                index = line.indexOf(lineend);
-                if (index>0) {
-                    if (index<position) {
-                        position=index;
-                        punctuation=true;
-                     }
-                }
-            }
-            if (punctuation) {
-                  partline=line.substring(0,position+delimitersize);
-                  line=line.substring(position+delimitersize, line.length());
-                  sentences.add(partline);
-                  position=line.length();
-            } else {
-                 finish=true;
-            }
-       }
-       if (line.length()>0) {
-           sentences.add(line);
-       }
-      return sentences;
-    }
-    */
         
     private List<WordToken> getWordSpacing(List<WordToken> tokens, String text) {
         List<WordToken> lineTokenList=new ArrayList<>();

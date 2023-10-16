@@ -59,29 +59,6 @@ public class EnglishController {
 		wordStorage = new WordStorage(applicationContext);
 		englishParser = new EnglishParser(applicationContext, wordStorage);
    }
-
-		
-	@RequestMapping(value = "/postagtext", method = RequestMethod.GET)
-    public String postagtext(@RequestParam String text ) { 
-	  TextDocument textDocument = englishParser.parseText(text);
-	  List<WordToken> wordTokenList = textDocument.getSentence(0);
-	  String reply = "[";
-	  for (WordToken wordToken:wordTokenList) {
-		  reply = reply + "{";
-		  reply = reply + "\"token\":";
-		  reply = reply + "\""+wordToken.getToken()+"\",";
-		  reply = reply + "\"lemma\":";
-		  reply = reply + "\""+wordToken.getLemma()+"\",";
-		  reply = reply + "\"postag\":";
-		  reply = reply + "\""+wordToken.getPostag()+"\",";
-		  reply = reply + "\"dependency\":";
-		  reply = reply + "\""+wordToken.getDependency()+"\"";
-		  reply = reply + "},";
-	  }
-	  reply = reply.substring(0,reply.length()-1);
-	  reply = reply + "]";
-      return reply;
-    }
 		
 	@RequestMapping(value = "/syncparsetext", method = RequestMethod.POST)
     public String syncParseText(@RequestBody String text ) { 
