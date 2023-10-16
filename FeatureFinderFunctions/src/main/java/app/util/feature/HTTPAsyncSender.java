@@ -14,33 +14,37 @@ import java.util.concurrent.Future;
 public class HTTPAsyncSender {
     AsyncHttpClient httpClient;
     ResponseHandler responseHandler;
+    ServiceLocator serviceLocator;
 
-    public HTTPAsyncSender() {
+    public HTTPAsyncSender(ServiceLocator serviceLocator) {
        httpClient = new DefaultAsyncHttpClient();
+       this.serviceLocator = serviceLocator;
     }
 
-    public String send(String destination, String content) {
+    public String send(String documentType, String content) {
         BoundRequestBuilder builder=null;
         Future<String> reply=null;
-        String message="";
-        destination = destination.toLowerCase();
-        if (destination.startsWith("http")) {
-            builder =  httpClient.preparePost(destination);
-            builder.addHeader("Content-type", "application/json;charset=utf-8");
-            builder.addHeader("Accept", "application/json");
-            builder.setBody(content);
-            try {
-                 reply = builder.execute(new ResponseHandler());
-                 message = reply.get();
-            } catch (Exception exception) {
-                message = "500";
-            }
-        } else if (destination.startsWith("file")) {
-            destination = destination.substring(0,7);
-            try {
-                 message = writeToFile(destination, content);
-            } catch (Exception exception) {
-                message="500";
+        String message="500", destination="";
+        destination = serviceLocator.getService(documentType);
+        if (destination !=null) {
+            if (destination.startsWith("http")) {
+                builder =  httpClient.preparePost(destination);
+                builder.addHeader("Content-type", "application/json;charset=utf-8");
+                builder.addHeader("Accept", "application/json");
+                builder.setBody(content);
+                try {
+                     reply = builder.execute(new ResponseHandler());
+                     message = reply.get();
+                } catch (Exception exception) {
+                    message = "500";
+                }
+            } else if (destination.startsWith("file")) {
+                destination = destination.substring(0,7);
+                try {
+                     message = writeToFile(destination, content);
+                } catch (Exception exception) {
+                    message="500";
+                }
             }
         }
         return message;
