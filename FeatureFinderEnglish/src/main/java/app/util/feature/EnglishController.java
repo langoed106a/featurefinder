@@ -35,14 +35,13 @@ import io.swagger.annotations.ApiOperation;
 public class EnglishController { 
    private static final Logger logger=LoggerFactory.getLogger(EnglishController.class);
    private static String PROPERTIES_NAME="server.properties";
+   private EnglishParser englishParser;
    private FeatureFunction featureFunction;
    private HTTPSyncSender syncSender;
    private HTTPAsyncSender asyncSender;
    private ServiceLocator serviceLocator;
    private WordStorage wordStorage;
 
-	@Autowired
-	private EnglishParser englishParser;
 	@Autowired
 	private DocumentDatabase documentDatabase;
 	@Autowired
@@ -58,6 +57,7 @@ public class EnglishController {
         serviceLocator = new ServiceLocator(properties_location);
 		asyncSender = new HTTPAsyncSender(serviceLocator);
 		wordStorage = new WordStorage(applicationContext);
+		englishParser = new EnglishParser(applicationContext, wordStorage);
    }
 
 		

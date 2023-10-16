@@ -41,16 +41,18 @@ import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
 import edu.stanford.nlp.ie.util.RelationTriple;
 
-@Component
 public class EnglishParser {
     private StanfordCoreNLP stanfordParser;
     private Boolean termsLoaded;
-    private SentenceSplitter sentenceSplitter;
+    private SimpleSentenceSplitter sentenceSplitter;
     private WebApplicationContext applicationContext;
+    private WordStorage wordStorage;
    
-    public EnglishParser(WebApplicationContext applicationContext) {
+    public EnglishParser(WebApplicationContext applicationContext, WordStorage wordStorage) {
         Properties props = new Properties();
-        sentenceSplitter = new SimpleSentenceSplitter(applicationContext);
+        this.applicationContext = applicationContext;
+        this.wordStorage = wordStorage;
+        sentenceSplitter = new SimpleSentenceSplitter(applicationContext, wordStorage);
         try {
                props.setProperty("annotators","tokenize,ssplit,pos,lemma,parse");
                props.setProperty("tokenize.options","ptb3Escaping=false");
@@ -61,21 +63,6 @@ public class EnglishParser {
             exception.printStackTrace();
         }  
     }
-
-    @PostConstruct
-    private void init() {
-        Properties props = new Properties();
-        sentenceSplitter = new SentenceSplitter();
-        try {
-               props.setProperty("annotators","tokenize,ssplit,pos,lemma,parse");
-               props.setProperty("tokenize.options","ptb3Escaping=false");
-               props.setProperty("parse.maxlen","10000");
-               props.setProperty("coref.algorithm","neural");
-               stanfordParser = new StanfordCoreNLP(props);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-    }    
 
     public TextDocument parseText(String text) {
         Annotation document=null;

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import smile.nlp.dictionary.EnglishDictionary;
-
 import org.springframework.web.context.WebApplicationContext;
  
 
@@ -40,7 +38,7 @@ import org.springframework.web.context.WebApplicationContext;
  * 
  * @author Haifeng Li
  */
-public class SimpleSentenceSplitter implements SentenceSplitter {
+public class SimpleSentenceSplitter {
 
     /**
      * Regular expression to remove carriage returns.
@@ -65,14 +63,15 @@ public class SimpleSentenceSplitter implements SentenceSplitter {
     
     private EnglishAbbreviations englishAbbreviations;
 
+    private WordStorage wordStorage;
     /**
      * Constructor.
      */
-    private SimpleSentenceSplitter(WebApplicationContext applicationContext) {
-        englishAbbreviations = new EnglishAbbreviations(applicationContext);
+    public SimpleSentenceSplitter(WebApplicationContext applicationContext, WordStorage wordStorage) {
+        this.englishAbbreviations = new EnglishAbbreviations(applicationContext);
+        this.wordStorage = wordStorage;
     }
 
-    @Override
     public String[] split(String text) {
         ArrayList<String> sentences = new ArrayList<>();
 
@@ -158,7 +157,7 @@ public class SimpleSentenceSplitter implements SentenceSplitter {
                     // sentence. Therefore we assume that the abbreviation is not at the end of
                     // a sentence if the next word is a common word and the abbreviation occurs
                     // less than 5 words from the start of the sentence.
-                    if (EnglishDictionary.CONCISE.contains(nextWord) && len > 6) {
+                    if ((wordStorage.wordExists("commonword", nextWord)) && (len > 6)) {
                         // a sentence break
                         currentSentence.append(sentence);
                         currentSentence.append(punctuation);
