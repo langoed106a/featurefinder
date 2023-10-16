@@ -39,10 +39,14 @@ public class HTTPAsyncSender {
                     message = "500";
                 }
             } else if (destination.startsWith("file")) {
-                destination = destination.substring(0,7);
-                try {
-                     message = writeToFile(destination, content);
-                } catch (Exception exception) {
+                destination = destination.substring(7, destination.length());
+                if ((destination!=null) && (destination.length()>0)) {
+                    try {
+                         message = writeToFile(destination, content);
+                    } catch (Exception exception) {
+                        message="500";
+                    }
+                } else {
                     message="500";
                 }
             }
