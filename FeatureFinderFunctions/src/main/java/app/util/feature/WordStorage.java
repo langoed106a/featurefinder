@@ -41,7 +41,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
-import app.util.feature.Section;
+import app.util.feature.TextDocument;
 import app.util.feature.WordToken;
 import app.util.feature.ServiceLocator;
 

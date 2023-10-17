@@ -1,6 +1,6 @@
 package app.util.feature;
   
-import app.util.feature.Section;
+import app.util.feature.TextDocument;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -14,12 +14,12 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
    @RunWith(EasyMockRunner.class)
-   public class TestSection {
-       Section section;
+   public class TestTextDocument {
+       TextDocument TextDocument;
 
        @Before
        public void setUp() throws Exception {
-          section = new Section();
+          TextDocument = new TextDocument();
         }
 
         @Test
@@ -32,8 +32,8 @@ import static org.junit.Assert.assertEquals;
            wordList.add(word1);
            wordList.add(word2);
            wordList.add(word3);
-           section.addSentence(wordList);
-           String jsonStr = section.toJson();
+           TextDocument.addSentence(wordList);
+           String jsonStr = TextDocument.toJson();
            assertEquals(jsonStr,outputStr);
         }
 
@@ -41,8 +41,8 @@ import static org.junit.Assert.assertEquals;
         public void toJsonEmptyTest() {
            List<WordToken> wordList = new ArrayList<>();
            String outputStr="[{\"linenumber\":\"0\",\"line\":[]}]";
-           section.addSentence(wordList);
-           String jsonStr = section.toJson();
+           TextDocument.addSentence(wordList);
+           String jsonStr = TextDocument.toJson();
            assertEquals(jsonStr,outputStr);
         }
 

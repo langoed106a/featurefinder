@@ -1,6 +1,6 @@
 package app.util.feature;
   
-import app.util.feature.Section;
+import app.util.feature.TextDocument;
 import app.util.feature.WordStorage;
 
 import java.util.List;

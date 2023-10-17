@@ -1,6 +1,6 @@
 package app.util.feature;
   
-import app.util.feature.Section;
+import app.util.feature.TextDocument;
 import app.util.feature.WordStorage;
 
 import java.util.List;
@@ -44,16 +44,16 @@ import org.powermock.api.easymock.PowerMock;
            String part="token";
            String param="un";
            paramList.add(param);
-           Section section = new Section();
+           TextDocument TextDocument = new TextDocument();
            WordToken word1 = new WordToken("unwent", "unwent", "MD", "unknown", 0, 0);
            wordList.add(word1);
-           section.addSentence(wordList);
+           TextDocument.addSentence(wordList);
            WordStorage wordStorageMock = mock(WordStorage.class);
            expect(wordStorageMock.wordExists("commonword", "went")).andReturn(true);
            expect(wordStorageMock.wordExists("commonword", "unwent")).andReturn(false);
            PowerMock.replay(wordStorageMock);
            featureFunctionList.setWordStorage(wordStorageMock);
-           found = featureFunctionList.validwithoutprefix(part, word1, section, paramList);
+           found = featureFunctionList.validwithoutprefix(part, word1, TextDocument, paramList);
            assertTrue(found);
         }
 
@@ -66,15 +66,15 @@ import org.powermock.api.easymock.PowerMock;
            String part="token";
            String param="pre";
            paramList.add(param);
-           Section section = new Section();
+           TextDocument TextDocument = new TextDocument();
            WordToken word1 = new WordToken("defined", "defined", "MD", "unknown", 0, 0);
            wordList.add(word1);
-           section.addSentence(wordList);
+           TextDocument.addSentence(wordList);
            WordStorage wordStorageMock = mock(WordStorage.class);
            expect(wordStorageMock.wordExists("commonword", "predefined")).andReturn(true);
            PowerMock.replay(wordStorageMock);
            featureFunctionList.setWordStorage(wordStorageMock);
-           found = featureFunctionList.validwithprefix(part, word1, section, paramList);
+           found = featureFunctionList.validwithprefix(part, word1, TextDocument, paramList);
            assertTrue(found);
         } 
 
@@ -87,15 +87,15 @@ import org.powermock.api.easymock.PowerMock;
            String part="token";
            String param="pre";
            paramList.add(param);
-           Section section = new Section();
+           TextDocument TextDocument = new TextDocument();
            WordToken word1 = new WordToken("went", "went", "MD", "unknown", 0, 0);
            wordList.add(word1);
-           section.addSentence(wordList);
+           TextDocument.addSentence(wordList);
            WordStorage wordStorageMock = mock(WordStorage.class);
            expect(wordStorageMock.wordExists("commonword", "prewent")).andReturn(false);
            PowerMock.replay(wordStorageMock);
            featureFunctionList.setWordStorage(wordStorageMock);
-           found = featureFunctionList.validwithprefix(part, word1, section, paramList);
+           found = featureFunctionList.validwithprefix(part, word1, TextDocument, paramList);
            assertFalse(found);
         }  
 
@@ -107,12 +107,12 @@ import org.powermock.api.easymock.PowerMock;
          String outputStr= "[{\"linenumber\":\"0\",\"line\":[{\"token\":\"try\",\"lemma\":\"try\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"0\",\"sentence\":\"0\"},{\"token\":\"this\",\"lemma\":\"this\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"1\",\"sentence\":\"0\"},{\"token\":\"out\",\"lemma\":\"out\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"2\",\"sentence\":\"0\"}]}]";
          String part="token";
          String param="5";
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordToken word1 = new WordToken("unwent", "unwent", "MD", "unknown", 0, 0);
          wordList.add(word1);
-         section.addSentence(wordList);
+         TextDocument.addSentence(wordList);
          paramList.add(param);
-         found = featureFunctionList.lengthmorethan(part, word1, section, paramList);
+         found = featureFunctionList.lengthmorethan(part, word1, TextDocument, paramList);
          assertTrue(found);
        }
 
@@ -124,12 +124,12 @@ import org.powermock.api.easymock.PowerMock;
          String outputStr= "[{\"linenumber\":\"0\",\"line\":[{\"token\":\"try\",\"lemma\":\"try\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"0\",\"sentence\":\"0\"},{\"token\":\"this\",\"lemma\":\"this\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"1\",\"sentence\":\"0\"},{\"token\":\"out\",\"lemma\":\"out\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"2\",\"sentence\":\"0\"}]}]";
          String part="token";
          String param="one";
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordToken word1 = new WordToken("unwent", "unwent", "MD", "unknown", 0, 0);
          wordList.add(word1);
-         section.addSentence(wordList);
+         TextDocument.addSentence(wordList);
          paramList.add(param);
-         found = featureFunctionList.lengthmorethan(part, word1, section, paramList);
+         found = featureFunctionList.lengthmorethan(part, word1, TextDocument, paramList);
          assertFalse(found);
        }
 	
@@ -141,7 +141,7 @@ import org.powermock.api.easymock.PowerMock;
          String outputStr= "[{\"linenumber\":\"0\",\"line\":[{\"token\":\"try\",\"lemma\":\"try\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"0\",\"sentence\":\"0\"},{\"token\":\"this\",\"lemma\":\"this\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"1\",\"sentence\":\"0\"},{\"token\":\"out\",\"lemma\":\"out\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"2\",\"sentence\":\"0\"}]}]";
          String part="token";
          String param="I";
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
          WordToken word2 = new WordToken("TRIED", "tried", "MD", "unknown", 1, 0);
          WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -150,9 +150,9 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word2);
          wordList.add(word3);
          wordList.add(word4);
-         section.addSentence(wordList);
+         TextDocument.addSentence(wordList);
          paramList.add(param);
-         found = featureFunctionList.lower("token", word3, section, paramList);
+         found = featureFunctionList.lower("token", word3, TextDocument, paramList);
          assertTrue(found);
        }
 
@@ -165,7 +165,7 @@ import org.powermock.api.easymock.PowerMock;
          String outputStr= "[{\"linenumber\":\"0\",\"line\":[{\"token\":\"try\",\"lemma\":\"try\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"0\",\"sentence\":\"0\"},{\"token\":\"this\",\"lemma\":\"this\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"1\",\"sentence\":\"0\"},{\"token\":\"out\",\"lemma\":\"out\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"2\",\"sentence\":\"0\"}]}]";
          String part="token";
          String param="$dummycommonword";
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordStorage wordStorageMock = mock(WordStorage.class);
          commonWordList.add("of course");
          commonWordList.add("why not");
@@ -180,13 +180,13 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word2);
          wordList.add(word3);
          wordList.add(word4);
-         section.addSentence(wordList);
+         TextDocument.addSentence(wordList);
          expect(featureStoreMock.getDocumentByName("dummycommonword")).andReturn(null);
          expect(wordStorageMock.wordExists("dummycommonword",word1.getToken())).andReturn(true);
          PowerMock.replay(wordStorageMock);
          PowerMock.replay(featureStoreMock);
          paramList.add(param);
-         found = featureFunctionList.lower("token", word1, section, paramList);
+         found = featureFunctionList.lower("token", word1, TextDocument, paramList);
          assertTrue(found);
        }
 
@@ -198,7 +198,7 @@ import org.powermock.api.easymock.PowerMock;
          String outputStr= "[{\"linenumber\":\"0\",\"line\":[{\"token\":\"try\",\"lemma\":\"try\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"0\",\"sentence\":\"0\"},{\"token\":\"this\",\"lemma\":\"this\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"1\",\"sentence\":\"0\"},{\"token\":\"out\",\"lemma\":\"out\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"2\",\"sentence\":\"0\"}]}]";
          String part="token";
          String param="I";
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
          WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
          WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -207,9 +207,9 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word2);
          wordList.add(word3);
          wordList.add(word4);
-         section.addSentence(wordList);
+         TextDocument.addSentence(wordList);
          paramList.add(param);
-         found = featureFunctionList.existsbefore("token", word3, section, paramList);
+         found = featureFunctionList.existsbefore("token", word3, TextDocument, paramList);
          assertTrue(found);
        }
 
@@ -222,7 +222,7 @@ import org.powermock.api.easymock.PowerMock;
          String outputStr= "[{\"linenumber\":\"0\",\"line\":[{\"token\":\"try\",\"lemma\":\"try\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"0\",\"sentence\":\"0\"},{\"token\":\"this\",\"lemma\":\"this\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"1\",\"sentence\":\"0\"},{\"token\":\"out\",\"lemma\":\"out\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"2\",\"sentence\":\"0\"}]}]";
          String part="token";
          String param="out";
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
          WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
          WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -231,10 +231,10 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word2);
          wordList.add(word3);
          wordList.add(word4);
-         section.addSentence(wordList);
+         TextDocument.addSentence(wordList);
          paramList.add(param);
          index=2;
-         found = featureFunctionList.existsbefore("token", word2, section, paramList);
+         found = featureFunctionList.existsbefore("token", word2, TextDocument, paramList);
          assertFalse(found);
        }
 
@@ -246,7 +246,7 @@ import org.powermock.api.easymock.PowerMock;
          String outputStr= "[{\"linenumber\":\"0\",\"line\":[{\"token\":\"try\",\"lemma\":\"try\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"0\",\"sentence\":\"0\"},{\"token\":\"this\",\"lemma\":\"this\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"1\",\"sentence\":\"0\"},{\"token\":\"out\",\"lemma\":\"out\",\"postag\":\"MD\",\"dependency\":\"unknown\",\"index\":\"2\",\"sentence\":\"0\"}]}]";
          String part="token";
          String param="out";
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
          WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
          WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -255,9 +255,9 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word2);
          wordList.add(word3);
          wordList.add(word4);
-         section.addSentence(wordList);
+         TextDocument.addSentence(wordList);
          paramList.add(param);
-         found = featureFunctionList.existsafter("token", word2, section, paramList);
+         found = featureFunctionList.existsafter("token", word2, TextDocument, paramList);
          assertTrue(found);
        }
 
@@ -268,7 +268,7 @@ import org.powermock.api.easymock.PowerMock;
         String part="token";
         List<String> paramList = new ArrayList<>();
         List<WordToken> wordList = new ArrayList<>();
-        Section section = new Section();
+        TextDocument TextDocument = new TextDocument();
         WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
         WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
         WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -277,10 +277,10 @@ import org.powermock.api.easymock.PowerMock;
         wordList.add(word2);
         wordList.add(word3);
         wordList.add(word4);
-        section.addSentence(wordList);
+        TextDocument.addSentence(wordList);
         paramList.add(param1);
         paramList.add(param2);
-        Boolean found = featureFunctionList.positionbefore(part, word1, section, paramList);
+        Boolean found = featureFunctionList.positionbefore(part, word1, TextDocument, paramList);
         assertTrue(found);
      }
 
@@ -291,7 +291,7 @@ import org.powermock.api.easymock.PowerMock;
         String part="token";
         List<String> paramList = new ArrayList<>();
         List<WordToken> wordList = new ArrayList<>();
-        Section section = new Section();
+        TextDocument TextDocument = new TextDocument();
         WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
         WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
         WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -300,10 +300,10 @@ import org.powermock.api.easymock.PowerMock;
         wordList.add(word2);
         wordList.add(word3);
         wordList.add(word4);
-        section.addSentence(wordList);
+        TextDocument.addSentence(wordList);
         paramList.add(param1);
         paramList.add(param2);
-        Boolean found = featureFunctionList.positionbefore(part, word1, section, paramList);
+        Boolean found = featureFunctionList.positionbefore(part, word1, TextDocument, paramList);
         assertTrue(found);
      }
 
@@ -314,7 +314,7 @@ import org.powermock.api.easymock.PowerMock;
         String part="token";
         List<String> paramList = new ArrayList<>();
         List<WordToken> wordList = new ArrayList<>();
-        Section section = new Section();
+        TextDocument TextDocument = new TextDocument();
         WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
         WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
         WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -323,10 +323,10 @@ import org.powermock.api.easymock.PowerMock;
         wordList.add(word2);
         wordList.add(word3);
         wordList.add(word4);
-        section.addSentence(wordList);
+        TextDocument.addSentence(wordList);
         paramList.add(param1);
         paramList.add(param2);
-        Boolean found = featureFunctionList.positionbefore(part, word1, section, paramList);
+        Boolean found = featureFunctionList.positionbefore(part, word1, TextDocument, paramList);
         assertFalse(found);
      }
 
@@ -337,7 +337,7 @@ import org.powermock.api.easymock.PowerMock;
         String part="token";
         List<String> paramList = new ArrayList<>();
         List<WordToken> wordList = new ArrayList<>();
-        Section section = new Section();
+        TextDocument TextDocument = new TextDocument();
         WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
         WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
         WordToken word3 = new WordToken("!", "this", "MD", "unknown", 2, 0);
@@ -348,8 +348,8 @@ import org.powermock.api.easymock.PowerMock;
         wordList.add(word2);
         wordList.add(word3);
         wordList.add(word4);
-        section.addSentence(wordList);
-        Boolean found = featureFunctionList.punctuation(part, word3, section, paramList);
+        TextDocument.addSentence(wordList);
+        Boolean found = featureFunctionList.punctuation(part, word3, TextDocument, paramList);
         assertTrue(found);
      }
 
@@ -360,7 +360,7 @@ import org.powermock.api.easymock.PowerMock;
         String part="token";
         List<String> paramList = new ArrayList<>();
         List<WordToken> wordList = new ArrayList<>();
-        Section section = new Section();
+        TextDocument TextDocument = new TextDocument();
         WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
         WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
         WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -369,8 +369,8 @@ import org.powermock.api.easymock.PowerMock;
         wordList.add(word2);
         wordList.add(word3);
         wordList.add(word4);
-        section.addSentence(wordList);
-        Boolean found = featureFunctionList.punctuation(part, word1, section, paramList);
+        TextDocument.addSentence(wordList);
+        Boolean found = featureFunctionList.punctuation(part, word1, TextDocument, paramList);
         assertFalse(found);
      }
  
@@ -381,7 +381,7 @@ import org.powermock.api.easymock.PowerMock;
          String part="token";
          List<String> paramList = new ArrayList<>();
          List<WordToken> wordList = new ArrayList<>();
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
          WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
          WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -392,8 +392,8 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word4);
          paramList.add(param1);
          paramList.add(param2);
-         section.addSentence(wordList);
-         Boolean found = featureFunctionList.notmorethan(part, word1, section, paramList);
+         TextDocument.addSentence(wordList);
+         Boolean found = featureFunctionList.notmorethan(part, word1, TextDocument, paramList);
          assertTrue(found);
       }
 
@@ -403,7 +403,7 @@ import org.powermock.api.easymock.PowerMock;
          String part="token";
          List<String> paramList = new ArrayList<>();
          List<WordToken> wordList = new ArrayList<>();
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
          WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
          WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -414,8 +414,8 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word3);
          wordList.add(word4);
          paramList.add(param1);
-         section.addSentence(wordList);
-         Boolean found = featureFunctionList.spacingleft(part, word1, section, paramList);
+         TextDocument.addSentence(wordList);
+         Boolean found = featureFunctionList.spacingleft(part, word1, TextDocument, paramList);
          assertTrue(found);
       }
 
@@ -427,7 +427,7 @@ import org.powermock.api.easymock.PowerMock;
             String part="token";
             List<String> paramList = new ArrayList<>();
             List<WordToken> wordList = new ArrayList<>();
-            Section section = new Section();
+            TextDocument TextDocument = new TextDocument();
             WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
             WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
             WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -439,8 +439,8 @@ import org.powermock.api.easymock.PowerMock;
             paramList.add(param1);
             paramList.add(param2);
             paramList.add(param3);
-            section.addSentence(wordList);
-            Boolean found = featureFunctionList.contains(part, word1, section, paramList);
+            TextDocument.addSentence(wordList);
+            Boolean found = featureFunctionList.contains(part, word1, TextDocument, paramList);
             assertTrue(found);
       }
 
@@ -450,7 +450,7 @@ import org.powermock.api.easymock.PowerMock;
             String part="token";
             List<String> paramList = new ArrayList<>();
             List<WordToken> wordList = new ArrayList<>();
-            Section section = new Section();
+            TextDocument TextDocument = new TextDocument();
             WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
             WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
             WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -460,8 +460,8 @@ import org.powermock.api.easymock.PowerMock;
             wordList.add(word3);
             wordList.add(word4);
             paramList.add(param1);
-            section.addSentence(wordList);
-            Boolean found = featureFunctionList.contains(part, word1, section, paramList);
+            TextDocument.addSentence(wordList);
+            Boolean found = featureFunctionList.contains(part, word1, TextDocument, paramList);
             assertFalse(found);
       }
 
@@ -471,7 +471,7 @@ import org.powermock.api.easymock.PowerMock;
          String part="token";
          List<String> paramList = new ArrayList<>();
          List<WordToken> wordList = new ArrayList<>();
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
          WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
          WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -482,8 +482,8 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word3);
          wordList.add(word4);
          paramList.add(param1);
-         section.addSentence(wordList);
-         Boolean found = featureFunctionList.spacingleft(part, word1, section, paramList);
+         TextDocument.addSentence(wordList);
+         Boolean found = featureFunctionList.spacingleft(part, word1, TextDocument, paramList);
          assertFalse(found);
       }
 
@@ -494,7 +494,7 @@ import org.powermock.api.easymock.PowerMock;
          String part="token";
          List<String> paramList = new ArrayList<>();
          List<WordToken> wordList = new ArrayList<>();
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
          WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
          WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -505,8 +505,8 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word4);
          paramList.add(param1);
          paramList.add(param2);
-         section.addSentence(wordList);
-         Boolean found = featureFunctionList.notmorethan(part, word1, section, paramList);
+         TextDocument.addSentence(wordList);
+         Boolean found = featureFunctionList.notmorethan(part, word1, TextDocument, paramList);
          assertFalse(found);
       }
 
@@ -517,7 +517,7 @@ import org.powermock.api.easymock.PowerMock;
          String part="token";
          List<String> paramList = new ArrayList<>();
          List<WordToken> wordList = new ArrayList<>();
-         Section section = new Section();
+         TextDocument TextDocument = new TextDocument();
          WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
          WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
          WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -528,8 +528,8 @@ import org.powermock.api.easymock.PowerMock;
          wordList.add(word4);
          paramList.add(param1);
          paramList.add(param2);
-         section.addSentence(wordList);
-         Boolean found = featureFunctionList.notmorethan(part, word1, section, paramList);
+         TextDocument.addSentence(wordList);
+         Boolean found = featureFunctionList.notmorethan(part, word1, TextDocument, paramList);
          assertTrue(found);
       }
  
@@ -540,7 +540,7 @@ import org.powermock.api.easymock.PowerMock;
         String part="token";
         List<String> paramList = new ArrayList<>();
         List<WordToken> wordList = new ArrayList<>();
-        Section section = new Section();
+        TextDocument TextDocument = new TextDocument();
         WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
         WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
         WordToken word3 = new WordToken("\"", "this", "MD", "unknown", 2, 0);
@@ -550,8 +550,8 @@ import org.powermock.api.easymock.PowerMock;
         wordList.add(word3);
         wordList.add(word4);
         paramList.add(param1);
-        section.addSentence(wordList);
-        Boolean found = featureFunctionList.symbol(part, word3, section, paramList);
+        TextDocument.addSentence(wordList);
+        Boolean found = featureFunctionList.symbol(part, word3, TextDocument, paramList);
         assertTrue(found);
      }
      @Test
@@ -560,7 +560,7 @@ import org.powermock.api.easymock.PowerMock;
         String part="token";
         List<String> paramList = new ArrayList<>();
         List<WordToken> wordList = new ArrayList<>();
-        Section section = new Section();
+        TextDocument TextDocument = new TextDocument();
         WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
         WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
         WordToken word3 = new WordToken("this", "this", "MD", "unknown", 2, 0);
@@ -570,8 +570,8 @@ import org.powermock.api.easymock.PowerMock;
         wordList.add(word3);
         wordList.add(word4);
         paramList.add(param1);
-        section.addSentence(wordList);
-        Boolean found = featureFunctionList.symbol(part, word3, section, paramList);
+        TextDocument.addSentence(wordList);
+        Boolean found = featureFunctionList.symbol(part, word3, TextDocument, paramList);
         assertFalse(found);
      }
 
@@ -581,7 +581,7 @@ import org.powermock.api.easymock.PowerMock;
         String part="token";
         List<String> paramList = new ArrayList<>();
         List<WordToken> wordList = new ArrayList<>();
-        Section section = new Section();
+        TextDocument TextDocument = new TextDocument();
         WordToken word1 = new WordToken("I", "I", "MD", "unknown", 0, 0);
         WordToken word2 = new WordToken("tried", "tried", "MD", "unknown", 1, 0);
         WordToken word3 = new WordToken("sence", "this", "MD", "unknown", 2, 0);
@@ -591,7 +591,7 @@ import org.powermock.api.easymock.PowerMock;
         wordList.add(word3);
         wordList.add(word4);
         paramList.add(param1);
-        section.addSentence(wordList);
+        TextDocument.addSentence(wordList);
         expect(wordStorageMock.wordExists("commonword","sance")).andReturn(false);
         expect(wordStorageMock.wordExists("commonword","sence")).andReturn(false);
         expect(wordStorageMock.wordExists("commonword","sonce")).andReturn(false);
@@ -600,7 +600,7 @@ import org.powermock.api.easymock.PowerMock;
         expect(wordStorageMock.wordExists("commonword", word3.getToken())).andReturn(false);
         replay(wordStorageMock);
         featureFunctionList.setWordStorage(wordStorageMock);
-        Boolean found = featureFunctionList.misspeltdoublevowel(part, word3, section, paramList);
+        Boolean found = featureFunctionList.misspeltdoublevowel(part, word3, TextDocument, paramList);
         assertFalse(found);
      }
 } 

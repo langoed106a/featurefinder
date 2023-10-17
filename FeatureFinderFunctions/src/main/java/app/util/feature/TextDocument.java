@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.util.feature.WordToken;
-import app.util.feature.Section;
+import app.util.feature.TextDocument;
 
 public class TextDocument extends Document {
     private String language;

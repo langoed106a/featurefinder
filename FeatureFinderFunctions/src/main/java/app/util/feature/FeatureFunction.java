@@ -102,15 +102,15 @@ public class FeatureFunction {
 		featureFunctionList.setDefinedRegexList(definedRegexList);
 	}
 
-	public Boolean checkPreDefinedList(String part, WordToken wordToken, Section section, String value) {
-	       return featureFunctionList.checkPreDefinedList(part, wordToken, section, value);
+	public Boolean checkPreDefinedList(String part, WordToken wordToken, TextDocument textDocument, String value) {
+	       return featureFunctionList.checkPreDefinedList(part, wordToken, textDocument, value);
 	}
 
 	public void setWordStorage(WordStorage wordStorage) {
 		featureFunctionList.setWordStorage(wordStorage);
 	}
 
-	public Boolean doFunction(String part, String name, String value, WordToken wordToken, Section section) {
+	public Boolean doFunction(String part, String name, String value, WordToken wordToken, TextDocument textDocument) {
 		Boolean found = false;
 		Class<?> classObj = null;
 		String content = "", description="";
@@ -127,14 +127,14 @@ public class FeatureFunction {
 		if (functionExists(name)) {
 			classObj = this.getClass();
 			try {
-			     functionMethod = FeatureFunctionList.class.getMethod(name, String.class, WordToken.class, Section.class, List.class);
-				 found = (Boolean)functionMethod.invoke(featureFunctionList, part, wordToken, section, parameters); 
+			     functionMethod = FeatureFunctionList.class.getMethod(name, String.class, WordToken.class, TextDocument.class, List.class);
+				 found = (Boolean)functionMethod.invoke(featureFunctionList, part, wordToken, textDocument, parameters); 
 			}
 			catch (Exception exception) {
 				logger.error("Unable to call function:"+name);
 			}
 		} else {
-			found = featureFunctionList.checkExists(part, name, wordToken, section, parameters);
+			found = featureFunctionList.checkExists(part, name, wordToken, textDocument, parameters);
 		}
 	   return found;
 	}

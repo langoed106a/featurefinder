@@ -1,6 +1,6 @@
 package app.util.feature;
   
-import app.util.feature.Section;
+import app.util.feature.TextDocument;
 
 import java.util.List;
 import java.util.ArrayList;

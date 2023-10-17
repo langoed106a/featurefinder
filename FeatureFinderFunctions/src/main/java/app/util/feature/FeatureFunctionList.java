@@ -51,7 +51,7 @@ public class FeatureFunctionList {
 		this.wordStorage = wordStorage;
 	}
 
-    public Boolean checkExists(String name, String part, WordToken wordToken, Section section, List<String> parameters)  {
+    public Boolean checkExists(String name, String part, WordToken wordToken, TextDocument textDocument, List<String> parameters)  {
 		Boolean found = false;
 		Integer sentence = null;
 		String description="";
@@ -65,7 +65,7 @@ public class FeatureFunctionList {
 	  return found;
     }
 	
-	public boolean actionverb(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean actionverb(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		Boolean found = false;
 		String dependency="";
 		dependency = wordToken.getDependency();
@@ -74,12 +74,12 @@ public class FeatureFunctionList {
 		}
 		      return found; 
 	}
-	public boolean adjective(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean adjective(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		Boolean found = false;
 		String content = General.getValue(part, wordToken);
 		return found; 
 	}
-	public boolean anycase(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean anycase(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		Boolean found = false;
 		Integer index = 0;
 		String currentWord = "", param="";
@@ -96,12 +96,12 @@ public class FeatureFunctionList {
 		      return found; 
 	}
 
-	public boolean anything(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean anything(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		Boolean found = true;
 		return found; 
 	}
 
-	public boolean emoji(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean emoji(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
         boolean found = false;
 		String word = wordToken.getToken();
 		int length = word.length(), type=0;
@@ -115,7 +115,7 @@ public class FeatureFunctionList {
       return found;
      }
 
-	public boolean contains(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean contains(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false, match = false, dependency=false;
 		String previousItem = "", param = "", token = "";
 		Integer sentenceIndex=0,wordIndex = wordToken.getIndex(), paramIndex=0, matchCount=0;
@@ -124,7 +124,7 @@ public class FeatureFunctionList {
 		WordToken nextToken = null;
 		if ((params.size() > 0) && (wordIndex==0)) {
 			sentenceIndex = wordToken.getSentence();
-			sentence = section.getSentenceAtIndex(sentenceIndex);
+			sentence = textDocument.getSentenceAtIndex(sentenceIndex);
 			while ((paramIndex<params.size()) && (!found)) {
 				param = params.get(paramIndex);
 				if ((param.equalsIgnoreCase("$subject")) || (param.equalsIgnoreCase("$object")) || (param.equalsIgnoreCase("$actionverb"))) {
@@ -155,19 +155,19 @@ public class FeatureFunctionList {
 		}
 		return found;
 	}
-	public boolean verb(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean verb(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		String content = General.getValue(part, wordToken);
 		Boolean found = false;
 		return found; 
 	}
-	public boolean doublevowel(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean doublevowel(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		Boolean found=false;
 		Integer count=0, times=0, letterIndex=0, paraIndex=0, index=0;
 		List<String> tempList=null;
 		String content = General.getValue(part, wordToken), vowelStr="", letter="", newWord="", tempStr="", partWord1="", partWord2="";
 		WordToken token = null;
 		if ((parameters.size()>0) && (part.equalsIgnoreCase("token"))) {
-			if (!(this.checkPreDefinedList(part, wordToken, section, "commonword"))) {
+			if (!(this.checkPreDefinedList(part, wordToken, textDocument, "commonword"))) {
 				count = 0;
 				times = 0;
 
@@ -184,7 +184,7 @@ public class FeatureFunctionList {
 									if ((!letter.equalsIgnoreCase(vowelStr)) && (!tempStr.equalsIgnoreCase("ei")) && (!tempStr.equalsIgnoreCase("ei")))  {
 										newWord = partWord1 + letter + partWord2;
 										token = new WordToken(newWord, "", "", "", 0, 0);
-										if (this.checkPreDefinedList(part, wordToken, section, "commonword")) {
+										if (this.checkPreDefinedList(part, wordToken, textDocument, "commonword")) {
 											found = true;
 									    }
 									}
@@ -203,7 +203,7 @@ public class FeatureFunctionList {
 											if ((!letter.equalsIgnoreCase(vowelStr)) && (!tempStr.equalsIgnoreCase("ei")) && (!tempStr.equalsIgnoreCase("ei")))  {
 												newWord = partWord1 + letter + partWord2;
 												token = new WordToken(newWord, "", "", "", 0, 0);
-												if (this.checkPreDefinedList(part, wordToken, section, "commonword")) {
+												if (this.checkPreDefinedList(part, wordToken, textDocument, "commonword")) {
 													found = true;
 												}
 											}
@@ -219,7 +219,7 @@ public class FeatureFunctionList {
 		return found; 
 	 }
 	 
-	public Boolean distinctword(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public Boolean distinctword(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		Boolean found = false, finish = false;
 		Integer sentenceNumber=0, wordIndex=0, index=0;
 		List<WordToken> sentence;
@@ -229,7 +229,7 @@ public class FeatureFunctionList {
 			contents = General.getValue(part, wordToken);
 			wordIndex = wordToken.getIndex();
 			sentenceNumber = wordToken.getSentence();
-			sentence = section.getSentenceAtIndex(sentenceNumber);
+			sentence = textDocument.getSentenceAtIndex(sentenceNumber);
 			while ((!finish) && (index<sentence.size())) {
 				wordItem = sentence.get(index);
 				if (wordItem.getIndex()!=wordIndex) {
@@ -245,7 +245,7 @@ public class FeatureFunctionList {
 		    return found; 
 	}
 
-	public boolean lengthmorethan(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean lengthmorethan(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		String content = "", param="";
 		Integer wordIndex = wordToken.getIndex(), length=0;
 		Boolean found = false;
@@ -264,7 +264,7 @@ public class FeatureFunctionList {
 	  return found; 
 	}
 
-	public boolean startswith(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean startswith(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
 		String content = "";
 		content = General.getValue(part, wordToken);
@@ -280,7 +280,7 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean misspeltdoublevowel(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean misspeltdoublevowel(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false, finished = false, check = false;
 		Integer vowelCount=0, vowelIndex=0, firstIndex=0, lastIndex=0, index=0, sentenceIndex;
 		String[] vowels= {"a","e","i","o","u"};
@@ -291,7 +291,7 @@ public class FeatureFunctionList {
 		char ch;
 		if (part.equalsIgnoreCase("token")) {
 			sentenceIndex = wordToken.getSentence();
-			sentence = section.getSentenceAtIndex(sentenceIndex);
+			sentence = textDocument.getSentenceAtIndex(sentenceIndex);
 			if (!wordStorage.wordExists("commonword", wordToken.getToken())) {
 				content = wordToken.getToken();
 				if (params.size()==0) {
@@ -334,13 +334,13 @@ public class FeatureFunctionList {
 	 return found;
 	}
 
-    public boolean sentencecount(String part, WordToken wordToken, Section section, List<String> params) {
+    public boolean sentencecount(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
 		Integer position=0, wordIndex=0, sentenceCount=0, sentenceNumber=0;
 		if ((part.equalsIgnoreCase("token")) && (wordToken!=null)) {
 			wordIndex = wordToken.getIndex();
 			sentenceNumber = wordToken.getSentence();
-			sentenceCount = section.getSentenceCount();
+			sentenceCount = textDocument.getSentenceCount();
 			if ((sentenceNumber==1) && (wordIndex<=sentenceCount)) {
 				  found = true;
 			}
@@ -348,7 +348,7 @@ public class FeatureFunctionList {
 	  return found;
 	}
 
-	public boolean symbol(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean symbol(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false, finished = false;
 		Integer position=0, index=0;
 		String content = "", param="";
@@ -380,17 +380,17 @@ public class FeatureFunctionList {
 	  return found;
 	}
 
-	public boolean notsymbol(String part, WordToken wordToken, Section section,  List<String> params) {
+	public boolean notsymbol(String part, WordToken wordToken, TextDocument textDocument,  List<String> params) {
 		boolean found = false, asymbol = false;
 		String content = "";
 		if ((wordToken!=null) && (part.equalsIgnoreCase("token"))) {
-			asymbol = this.symbol(part,wordToken,section,params);
+			asymbol = this.symbol(part,wordToken,textDocument,params);
 			found = !asymbol;
 		} 
 		  return found;
 	}
 
-	public boolean lower(String part, WordToken wordToken, Section section,  List<String> params) {
+	public boolean lower(String part, WordToken wordToken, TextDocument textDocument,  List<String> params) {
 		boolean found = false, asymbol = false, finish = false, itemFound = false;
 		String content = "", temp="", currentItem = "", item = "";
 		Integer indicator = 0, index = 0, sentenceIndex = 0;
@@ -400,7 +400,7 @@ public class FeatureFunctionList {
 			while ((!finish) && (index<params.size())) {
 				item = params.get(index);
 				if (item.startsWith("$")) {
-					itemFound = this.checkPreDefinedList(part, wordToken, section, item);
+					itemFound = this.checkPreDefinedList(part, wordToken, textDocument, item);
 					if (itemFound) {
 						temp = currentItem.toLowerCase();
 						indicator = temp.compareTo(currentItem);
@@ -423,7 +423,7 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean upper(String part, WordToken wordToken, Section section,  List<String> params) {
+	public boolean upper(String part, WordToken wordToken, TextDocument textDocument,  List<String> params) {
 		boolean found = false, asymbol = false, finish = false, itemFound = false;
 		String content = "", temp="", currentItem = "", item = "";
 		Integer indicator = 0, index = 0, sentenceIndex = 0;
@@ -433,7 +433,7 @@ public class FeatureFunctionList {
 			while ((!finish) && (index<params.size())) {
 				item = params.get(index);
 				if (item.startsWith("$")) {
-					itemFound = this.checkPreDefinedList(part, wordToken, section, item);
+					itemFound = this.checkPreDefinedList(part, wordToken, textDocument, item);
 					if (itemFound) {
 						temp = currentItem.toUpperCase();
 						indicator = temp.compareTo(currentItem);
@@ -456,17 +456,17 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean notlower(String part, WordToken wordToken, Section section,  List<String> params) {
-		boolean found = this.lower(part, wordToken, section,  params);
+	public boolean notlower(String part, WordToken wordToken, TextDocument textDocument,  List<String> params) {
+		boolean found = this.lower(part, wordToken, TextDocument,  params);
 		return !found;
 	}
 
-	public boolean notupper(String part, WordToken wordToken, Section section,  List<String> params) {
-		boolean found = this.upper(part, wordToken, section,  params);
+	public boolean notupper(String part, WordToken wordToken, TextDocument textDocument,  List<String> params) {
+		boolean found = this.upper(part, wordToken, textDocument,  params);
 		return !found;
 	}
 
-	public boolean existsafter(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean existsafter(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false, finish = false, itemFound = false;
 		Integer index = 0, wordIndex = 0, currentWordIndex = 0, currentSentenceIndex = 0;
 		String currentItem = "", item="", word="";
@@ -476,7 +476,7 @@ public class FeatureFunctionList {
 			    currentItem = General.getValue(part, wordToken); 
 				currentWordIndex = wordToken.getIndex();
 				currentSentenceIndex = wordToken.getSentence();
-				currentSentence = section.getSentenceAtIndex(currentSentenceIndex);
+				currentSentence = textDocument.getSentenceAtIndex(currentSentenceIndex);
 				while ((!finish) && (index<params.size())) {
 						item = params.get(index);
 						wordIndex = currentWordIndex+1;
@@ -494,7 +494,7 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean existsbefore(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean existsbefore(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false, finish = false, itemFound = false;
 		Integer index = 0, wordIndex = 0, currentWordIndex = 0, currentSentenceIndex=0;
 		String currentItem = "", item="", word="";
@@ -504,7 +504,7 @@ public class FeatureFunctionList {
 			    currentItem = General.getValue(part, wordToken); 
 				currentWordIndex = wordToken.getIndex();
 				currentSentenceIndex = wordToken.getSentence();
-				currentSentence = section.getSentenceAtIndex(currentSentenceIndex);
+				currentSentence = textDocument.getSentenceAtIndex(currentSentenceIndex);
 				while ((!finish) && (index<params.size())) {
 						item = params.get(index);
 						wordIndex = currentWordIndex-1;
@@ -525,16 +525,17 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean notexistsafter(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean notexistsafter(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false, finish = false, itemFound = false;
-		Integer index = 0, wordIndex = 0, currentWordIndex = 0;
+		Integer index = 0, wordIndex = 0, currentWordIndex = 0, currentSentenceIndex=0;
 		String currentItem = "", item="", word="";
 		List<WordToken> currentSentence=null;
 		WordToken nextToken = null;
 		if ((wordToken!=null) && (params.size()>0)) {
 			             currentItem = General.getValue(part, wordToken); 
 				                  currentWordIndex = wordToken.getIndex();
-						               currentSentence = section.getCurrentSentence();
+								  currentSentenceIndex = wordToken.getSentenceIndex();
+						        currentSentence = textDocument.getSentenceAtIndex(currentSentenceIndex);
 							       while ((!finish) && (index<params.size())) {
 								       item = params.get(index);
 								       wordIndex = 0;
@@ -556,14 +557,14 @@ public class FeatureFunctionList {
 		}
 		return found;
 	}
-	public boolean notexistsbefore(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean notexistsbefore(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
-		found = this.existsbefore(part, wordToken, section, params);
+		found = this.existsbefore(part, wordToken, textDocument, params);
 		return !found;
 	}
 
 
-	public boolean notmorethan(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean notmorethan(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
         boolean found=false;
 		String key="",number="";
 		Integer amount=0, size=0, wordIndex=0, sentenceIndex=0;
@@ -581,13 +582,13 @@ public class FeatureFunctionList {
 			     }
 			     if (amount>0) {
 				     if (key.equalsIgnoreCase("$token")) {
-                            sentence = section.getSentenceAtIndex(sentenceIndex);
+                            sentence = textDocument.getSentenceAtIndex(sentenceIndex);
 							size = sentence.size();
 							if (size<=amount) {
 								found = true;
 							}
 				     } else if (key.equalsIgnoreCase("$sentence")) {
-						        size = section.getSentenceCount();
+						        size = textDocument.getSentenceCount();
 								if (size<=amount) {
 									found=true;
 								}
@@ -598,7 +599,7 @@ public class FeatureFunctionList {
 	  return found;
 	}
 
-	public boolean notin(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean notin(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = true, finish = false, itemFound = false;
 		Integer index = 0, sentenceIndex=0;
 		String currentItem = "", item="";
@@ -608,7 +609,7 @@ public class FeatureFunctionList {
 						  while ((!finish) && (index<params.size())) {
 							  item = params.get(index);
 							  if (item.startsWith("$")) {
-								  itemFound = this.checkPreDefinedList(part, wordToken, section, item);
+								  itemFound = this.checkPreDefinedList(part, wordToken, textDocument, item);
 								  if (itemFound) {
 									  finish = true;
 									  found = false;
@@ -623,7 +624,7 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean regex(String part, WordToken wordToken, Section section, List<String> param) {
+	public boolean regex(String part, WordToken wordToken, TextDocument textDocument, List<String> param) {
 		String contents="", expression="";
 		Boolean found = false, matchFound = false;
 		Pattern pattern = null;
@@ -651,7 +652,7 @@ public class FeatureFunctionList {
 		}
 		  return found; 
 	}
-	public boolean manyword(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean manyword(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		    String WILDCARD_REGEX="^(?:(?!(%1)).)";
 		        Integer index=0, sentenceIndex=0, wordIndex=wordToken.getIndex();
 			    List<WordToken> sentence;
@@ -671,7 +672,7 @@ public class FeatureFunctionList {
 								index=1;
 								wordIndex++;
 								sentenceIndex = wordToken.getSentence();
-								sentence = section.getSentenceAtIndex(sentenceIndex);
+								sentence = textDocument.getSentenceAtIndex(sentenceIndex);
 								nextToken = General.getWordToken(wordIndex, sentence);
 								while ((index<parts.length) && (nextToken!=null)) {
 									token = General.getValue(part, nextToken);
@@ -700,7 +701,7 @@ public class FeatureFunctionList {
 					}
 					return found;
 	}
-	public boolean nan(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean nan(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
 		String currentWord = "";
 		Long value=null;
@@ -716,7 +717,7 @@ public class FeatureFunctionList {
 		return !found;
 	}
 
-	public boolean punctuation(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean punctuation(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false, divider=false;
 		String currentWord = "";
 		Long value=null;
@@ -739,7 +740,7 @@ public class FeatureFunctionList {
 	   return found;
 	}
 
-	public boolean positionafter(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean positionafter(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false, validNumber=false, same=false;
 		String wordparam = "", numberparam="";
 		Integer wordIndex = wordToken.getIndex(),number=0;
@@ -752,7 +753,7 @@ public class FeatureFunctionList {
 			validNumber = General.isNumber(numberparam);
 			if (validNumber) {
 				number = Integer.valueOf(numberparam);
-			    sentence = section.getCurrentSentence();
+			    sentence = textDocument.getCurrentSentence();
 				wordparam = params.get(0);
 			    wordparam = General.removeQuotes(wordparam);
 			    tokenIndex = 0;
@@ -770,7 +771,7 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean positionbefore(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean positionbefore(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false, validNumber=false, same=false;
 		String wordparam = "", numberparam="";
 		Integer wordIndex = wordToken.getIndex(),number=0;
@@ -783,7 +784,7 @@ public class FeatureFunctionList {
 			validNumber = General.isNumber(numberparam);
 			if (validNumber) {
 				number = Integer.valueOf(numberparam);
-			    sentence = section.getCurrentSentence();
+			    sentence = textDocument.getCurrentSentence();
 				wordparam = params.get(0);
 			    wordparam = General.removeQuotes(wordparam);
 			    tokenIndex = 0;
@@ -801,15 +802,16 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean previous(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean previous(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
 		String previousItem = "", param = "";
 		Integer wordIndex = wordToken.getIndex();
-		Integer paramsIndex = 0;
+		Integer paramsIndex = 0, currentIndex=0;
 		List<WordToken> sentence = null;
 		WordToken previousToken = null;
 		if ((params.size() > 0) && (wordIndex > 0)) {
-			sentence = section.getCurrentSentence();
+			currentIndex = wordToken.getSentenceIndex();
+			sentence = textDocument.getSentenceAtIndex(currentIndex);
 			previousToken = sentence.get(wordIndex-1);
 			previousItem = General.getValue(part, previousToken);
 			previousItem = General.removeQuotes(previousItem);
@@ -825,11 +827,13 @@ public class FeatureFunctionList {
 		}
 		return found;
 	}
-	public boolean numbertokens(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean numbertokens(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		boolean found = false;
-		Integer position=0, number=0;
+		Integer position=0, number=0, currentIndex=0;
 		String expression="", numbStr;
-		List<WordToken> line=section.getCurrentSentence();
+		List<WordToken> line=null;
+		currentIndex = wordToken.getSentenceIndex();
+        line = textDocument.getSentenceAtIndex(currentIndex);
 		if (parameters.size()==1) {
 			expression = parameters.get(0);
 			if ((expression.startsWith("\"")) || (expression.startsWith("'"))) {
@@ -868,7 +872,7 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean endsWith(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean endsWith(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
 		String content = "";
 		if (part.equalsIgnoreCase("postag")) {
@@ -890,13 +894,13 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean notcontains(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean notcontains(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
-		found = this.contains(part, wordToken, section, params);
+		found = this.contains(part, wordToken, textDocument, params);
 		return !found;
 	}
 
-	public boolean spacingleft(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean spacingleft(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		Boolean found=false, quit=false;
 		Integer index = 0;
 		String param="";
@@ -920,16 +924,16 @@ public class FeatureFunctionList {
 	  return found; 
 	}
 
-	public boolean verblinked(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean verblinked(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		Boolean isLinked = false, isVerb = false, isNextVerb = false;
 		Integer wordIndex = 0;
 		String currentPostag = wordToken.getPostag(), nextPostag="", nextWord="";
 		WordToken nextToken=null;
 		wordIndex = wordToken.getIndex();
-		isVerb = this.verb("postag", wordToken, section, params);
-		if ((isVerb) && ((wordIndex+1)<section.getWordLimit())) {
-			  nextToken = section.getCurrentSentence().get(wordIndex +1);
-			    isNextVerb = this.verb("postag", nextToken, section, params);
+		isVerb = this.verb("postag", wordToken, textDocument, params);
+		if ((isVerb) && ((wordIndex+1)<textDocument.getWordLimit())) {
+			  nextToken = textDocument.getCurrentSentence().get(wordIndex +1);
+			    isNextVerb = this.verb("postag", nextToken, textDocument, params);
 			      nextWord = nextToken.getToken();
 			        if ((isNextVerb) && (nextWord.endsWith("ing"))) {
 					  isLinked = true;
@@ -939,7 +943,7 @@ public class FeatureFunctionList {
 	}
 	
 	
-	public boolean preposition(String part, WordToken wordToken, Section section, List<String >parameters) {
+	public boolean preposition(String part, WordToken wordToken, TextDocument textDocument, List<String >parameters) {
 		Boolean found = false, verb=false;
 		String[] preposition_words= {"through", "since","to", "of", "at", "by", "for", "from", "into", "in", "under", "on", "off", "out", "over", "down", "up", "with"};
 		String[] preposition_nouns = {"PRP", "NN", "NNS"};
@@ -949,25 +953,25 @@ public class FeatureFunctionList {
 		WordToken nextToken = null, previousToken = null;
 		String word = wordToken.getToken(), nextWord="", nextPostag="", lemmaBefore="";
 		word = word.toLowerCase();
-		if ((words.contains(word)) && ((wordIndex+1)<section.getWordLimit())) {
+		if ((words.contains(word)) && ((wordIndex+1)<textDocument.getWordLimit())) {
 			nextIndex = wordIndex+1;
-			   nextToken = this.getWordToken(section, nextIndex);
+			   nextToken = this.getWordToken(textDocument, nextIndex);
 			      nextPostag = nextToken.getPostag();
 			         if (nextToken!=null) {
 					    nextWord = nextToken.getToken();
 					       if (nextPostag.equalsIgnoreCase("DT")) {
-						           if ((nextIndex+1)<section.getWordLimit()) {
+						           if ((nextIndex+1)<textDocument.getWordLimit()) {
 								   nextIndex = nextIndex+1;
-								      nextToken = this.getWordToken(section, nextIndex);
+								      nextToken = this.getWordToken(TextDocument, nextIndex);
 								         if (nextToken!=null) {
 										    nextPostag = nextToken.getPostag();
 										       nextWord = nextToken.getToken();
 										          }
 									         }
 							      } else if (words.contains(nextWord)) {
-								          if ((nextIndex+1)<section.getWordLimit()) {
+								          if ((nextIndex+1)<textDocument.getWordLimit()) {
 										  nextIndex = nextIndex+1;
-										     nextToken = this.getWordToken(section, nextIndex);
+										     nextToken = this.getWordToken(textDocument, nextIndex);
 										        if (nextToken!=null) {
 												   nextPostag = nextToken.getPostag();
 												      nextWord = nextToken.getToken();
@@ -982,7 +986,7 @@ public class FeatureFunctionList {
 		  return found;
 	}
 
-	public boolean subject(String part, WordToken wordToken, Section section, List<String >parameters) {
+	public boolean subject(String part, WordToken wordToken, TextDocument textDocument, List<String >parameters) {
 		Boolean found = false;
 		String dependency="";
 		dependency = wordToken.getDependency();
@@ -992,7 +996,7 @@ public class FeatureFunctionList {
 		   return found;
 	}
 	
-	public boolean object(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean object(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		Boolean found = false;
 		String dependency="";
 		dependency = wordToken.getDependency();
@@ -1002,7 +1006,7 @@ public class FeatureFunctionList {
 		   return found;
 	}
 
-	public boolean validwithoutprefix(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean validwithoutprefix(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		Boolean found = false, exists = false, validWord=false;
 		Integer index =0, wordIndex = wordToken.getIndex();
 		Integer sentenceIndex = wordToken.getSentence();
@@ -1027,14 +1031,14 @@ public class FeatureFunctionList {
 		   }
 		}   
 		if (found) {
-			  if (section.getMatches()!=null) {
-				 section.getMatches().add(String.valueOf(sentenceIndex)+":"+String.valueOf(wordIndex)+":"+String.valueOf(wordIndex+1));
+			  if (textDocument.getMatches()!=null) {
+				 textDocument.getMatches().add(String.valueOf(sentenceIndex)+":"+String.valueOf(wordIndex)+":"+String.valueOf(wordIndex+1));
 			  }
 		}
 		return found;
 	}
 
-	public boolean validwithprefix(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean validwithprefix(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		Boolean found = false, exists = false, validWord=false;
 		Integer index =0, wordIndex = wordToken.getIndex();
 		Integer sentenceIndex = wordToken.getSentence();
@@ -1058,7 +1062,7 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean validafterreplace(String part, WordToken wordToken, Section section, List<String> parameters) {
+	public boolean validafterreplace(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
 		Boolean found = false, exists = false, validWord=false;
 		Integer index =0, wordIndex = wordToken.getIndex();
 		Integer sentenceIndex = wordToken.getSentence();
@@ -1095,15 +1099,15 @@ public class FeatureFunctionList {
 			    }
 			}			   
 		    if (found) {
-			    if (section.getMatches()!=null) {
-				      section.getMatches().add(String.valueOf(sentenceIndex)+":"+String.valueOf(wordIndex)+":"+String.valueOf(wordIndex+1));
+			    if (textDocument.getMatches()!=null) {
+				      textDocument.getMatches().add(String.valueOf(sentenceIndex)+":"+String.valueOf(wordIndex)+":"+String.valueOf(wordIndex+1));
 				}
 		    }
 		} 	
 	   return found;
 	}
 
-	public boolean anyword(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean anyword(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
 		String word="";
 		char ch;
@@ -1118,13 +1122,13 @@ public class FeatureFunctionList {
 		}
 		return found;
 	}
-	public boolean notprevious(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean notprevious(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
-		found = !(this.previous(part, wordToken, section, params));
+		found = !(this.previous(part, wordToken, textDocument, params));
 		return found;
 	}
 
-	public boolean next(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean next(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
 		String nextItem = "", param = "";
 		Integer wordIndex = wordToken.getIndex();
@@ -1132,7 +1136,7 @@ public class FeatureFunctionList {
 		Integer paramsIndex = 0;
 		List<WordToken> sentence = null;
 		WordToken nextToken = null;
-		sentence = section.getCurrentSentence();
+		sentence = textDocument.getCurrentSentence();
 		if ((params.size() > 0) && (wordIndex < sentence.size() - 1)) {
 			nextToken = sentence.get(wordIndex+1);
 			nextItem = General.getValue(part, nextToken);
@@ -1150,7 +1154,7 @@ public class FeatureFunctionList {
 		return found;
 	}
 
-	public boolean wordslice(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean wordslice(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
 		String itemToRemove = "", param = "", content = "";
 		Integer wordIndex = wordToken.getIndex();
@@ -1158,7 +1162,7 @@ public class FeatureFunctionList {
 		Integer paramsIndex = 0;
 		List<WordToken> sentence = null;
 		WordToken nextToken = null;
-		sentence = section.getCurrentSentence();
+		sentence = textDocument.getCurrentSentence();
 		if (params.size()==2) {
 			itemToRemove = params.get(1);
 			content = wordToken.getToken();
@@ -1170,9 +1174,9 @@ public class FeatureFunctionList {
 	}
 
 
-	public boolean notnext(String part, WordToken wordToken, Section section, List<String> params) {
+	public boolean notnext(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
-		found = !(this.next(part, wordToken, section, params));
+		found = !(this.next(part, wordToken, textDocument, params));
 		return found;
 	}
 
@@ -1209,15 +1213,15 @@ public class FeatureFunctionList {
 			 return value; 
 		}
 
-		private WordToken getWordToken(Section section, Integer index) {
+		private WordToken getWordToken(TextDocument textDocument, Integer index) {
 			WordToken wordToken=null;
-			if ((index>0) && (index<section.getWordLimit())) {
-				       wordToken = section.getCurrentSentence().get(index);
+			if ((index>0) && (index<textDocument.getWordLimit())) {
+				       wordToken = textDocument.getCurrentSentence().get(index);
 			}
 			   return wordToken; 
 		}
 
-	public Boolean checkPreDefinedList(String part, WordToken wordToken, Section section, String str) {
+	public Boolean checkPreDefinedList(String part, WordToken wordToken, TextDocument TextDocument, String str) {
 		return true;
 
 	}
