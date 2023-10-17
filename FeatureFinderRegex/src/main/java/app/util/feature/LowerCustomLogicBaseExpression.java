@@ -9,7 +9,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import app.util.feature.FeatureFunction;
-import app.util.feature.Section;
 import app.util.feature.General;
 import app.util.feature.WordToken;
 import edu.washington.cs.knowitall.logic.Expression.Arg;

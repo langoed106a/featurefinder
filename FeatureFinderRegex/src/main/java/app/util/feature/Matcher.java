@@ -26,11 +26,11 @@ public Matcher(RegexDocument regexDocument, FeatureFunction featureFunction, Wor
 }
 
 public Integer matchcount(TextDocument textDocument) throws ParseRegexException { 
-  Boolean preOkay=true, postOkay=true; 
+  Boolean preOkay=true, postOkay=true;
+  TextDocument sentenceSection = null; 
   Integer match = 0, sentenceCount = 0, index = 0, partMatch = 0; 
   Properties textProperties=null;
   List<WordToken> sentence = null; 
-  Section sentenceSection = null; 
   if (parseRegex) { 
       textProperties = new Properties();
       if (regexDocument.getGranularity().equalsIgnoreCase("sentence")) { 

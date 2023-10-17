@@ -3,7 +3,6 @@ package app.util.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.util.feature.Section;
 import app.util.feature.WordToken;
 import edu.washington.cs.knowitall.regex.Match;
 import edu.washington.cs.knowitall.regex.RegularExpression;
@@ -24,7 +23,7 @@ public class CustomRegularExpression  {
         return matches;
     }
 
-    public List<WordToken> match(List<WordToken> wordTokenList, Section section) {
+    public List<WordToken> match(List<WordToken> wordTokenList, TextDocument textDocument) {
         List<WordToken> wordList = new ArrayList<WordToken>();
         return wordList;
     }

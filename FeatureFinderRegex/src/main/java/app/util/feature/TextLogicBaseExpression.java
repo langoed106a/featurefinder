@@ -327,15 +327,16 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
       List<WordToken> currentWordList = null, wordTokenList = null;
       List<String> groupList = new ArrayList<>();
       WordToken wordItem = null;
-      Integer matchCount=0, index=0, wordIndex=0, position=0, start=0, end=0, finds=0;
+      Integer matchCount=0, index=0, wordIndex=0, position=0, start=0, end=0, finds=0, sentenceIndex=0;
       if ((wordToken != null) && (value.startsWith("$"))) {
           value = value.substring(1,value.length());
-          feature = featureFunction.getPredefinedFeature(value);
+          //feature = featureFunction.getPredefinedFeature(value);
           if ((feature!=null) && (feature.getType().equalsIgnoreCase("regex"))) {
               currentWordList = new ArrayList<>();
               textDocument = textBlock.getTextDocument();
               wordIndex = wordToken.getIndex();
-              wordTokenList = textDocument.getCurrentSentence();
+              sentenceIndex = wordToken.getSentence();
+              wordTokenList = textDocument.getSentenceAtIndex(sentenceIndex);
               if (wordIndex==0) {
                   while (index<wordTokenList.size()) {
                         wordItem = wordTokenList.get(index);

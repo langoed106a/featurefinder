@@ -1,7 +1,6 @@
 package app.util.feature;
 
 import app.util.feature.WordToken;
-import app.util.feature.Section;
 
 public class TextBlockExpression {
     private Integer locationIndex;
