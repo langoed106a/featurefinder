@@ -33,6 +33,10 @@ public class TextDocument extends Document {
     public String getContents() {
     	return contents;
     }
+
+    public void setSentenceList(List<Sentence> sentenceList) {
+        this.sentenceList = sentenceList;
+    }
     
 	public List<WordToken> getSentence(Integer index) {
 		List<WordToken> line=null;

@@ -457,7 +457,7 @@ public class FeatureFunctionList {
 	}
 
 	public boolean notlower(String part, WordToken wordToken, TextDocument textDocument,  List<String> params) {
-		boolean found = this.lower(part, wordToken, TextDocument,  params);
+		boolean found = this.lower(part, wordToken, textDocument,  params);
 		return !found;
 	}
 
@@ -534,7 +534,7 @@ public class FeatureFunctionList {
 		if ((wordToken!=null) && (params.size()>0)) {
 			             currentItem = General.getValue(part, wordToken); 
 				                  currentWordIndex = wordToken.getIndex();
-								  currentSentenceIndex = wordToken.getSentenceIndex();
+								  currentSentenceIndex = wordToken.getSentence();
 						        currentSentence = textDocument.getSentenceAtIndex(currentSentenceIndex);
 							       while ((!finish) && (index<params.size())) {
 								       item = params.get(index);
@@ -744,7 +744,7 @@ public class FeatureFunctionList {
 		boolean found = false, validNumber=false, same=false;
 		String wordparam = "", numberparam="";
 		Integer wordIndex = wordToken.getIndex(),number=0;
-		Integer paramsIndex = 0, tokenIndex = 0, tokenLimit = 0;
+		Integer paramsIndex = 0, tokenIndex = 0, tokenLimit = 0, sentenceIndex = 0;
 		List<WordToken> sentence = null;
 		WordToken someToken = null;
 		if ((params.size()==2) && (wordIndex==0)) {
@@ -753,7 +753,8 @@ public class FeatureFunctionList {
 			validNumber = General.isNumber(numberparam);
 			if (validNumber) {
 				number = Integer.valueOf(numberparam);
-			    sentence = textDocument.getCurrentSentence();
+				sentenceIndex = wordToken.getSentence();
+			    sentence = textDocument.getSentenceAtIndex(sentenceIndex);
 				wordparam = params.get(0);
 			    wordparam = General.removeQuotes(wordparam);
 			    tokenIndex = 0;
@@ -774,7 +775,7 @@ public class FeatureFunctionList {
 	public boolean positionbefore(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false, validNumber=false, same=false;
 		String wordparam = "", numberparam="";
-		Integer wordIndex = wordToken.getIndex(),number=0;
+		Integer wordIndex = wordToken.getIndex(),number=0, sentenceIndex=0;
 		Integer paramsIndex = 0, tokenIndex = 0, tokenLimit = 0;
 		List<WordToken> sentence = null;
 		WordToken someToken = null;
@@ -784,7 +785,8 @@ public class FeatureFunctionList {
 			validNumber = General.isNumber(numberparam);
 			if (validNumber) {
 				number = Integer.valueOf(numberparam);
-			    sentence = textDocument.getCurrentSentence();
+				sentenceIndex = wordToken.getSentence();
+			    sentence = textDocument.getSentenceAtIndex(sentenceIndex);
 				wordparam = params.get(0);
 			    wordparam = General.removeQuotes(wordparam);
 			    tokenIndex = 0;
@@ -810,7 +812,7 @@ public class FeatureFunctionList {
 		List<WordToken> sentence = null;
 		WordToken previousToken = null;
 		if ((params.size() > 0) && (wordIndex > 0)) {
-			currentIndex = wordToken.getSentenceIndex();
+			currentIndex = wordToken.getSentence();
 			sentence = textDocument.getSentenceAtIndex(currentIndex);
 			previousToken = sentence.get(wordIndex-1);
 			previousItem = General.getValue(part, previousToken);
@@ -832,7 +834,7 @@ public class FeatureFunctionList {
 		Integer position=0, number=0, currentIndex=0;
 		String expression="", numbStr;
 		List<WordToken> line=null;
-		currentIndex = wordToken.getSentenceIndex();
+		currentIndex = wordToken.getSentence();
         line = textDocument.getSentenceAtIndex(currentIndex);
 		if (parameters.size()==1) {
 			expression = parameters.get(0);
@@ -844,11 +846,11 @@ public class FeatureFunctionList {
 			}
 			position = expression.indexOf("=");
 			if (position>-1) {
-				    numbStr = expression.substring(position,expression.length());
-				        number = Integer.valueOf(numbStr);
-					    if (number==line.size()) {
-						        found = true;
-							    }
+				numbStr = expression.substring(position,expression.length());
+				number = Integer.valueOf(numbStr);
+				if (number==line.size()) {
+					found = true;
+				}
 			} else {
 				position = expression.indexOf("<");
 				if (position>-1) {
@@ -926,19 +928,20 @@ public class FeatureFunctionList {
 
 	public boolean verblinked(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		Boolean isLinked = false, isVerb = false, isNextVerb = false;
-		Integer wordIndex = 0;
+		Integer wordIndex = 0, sentenceIndex = 0;
 		String currentPostag = wordToken.getPostag(), nextPostag="", nextWord="";
 		WordToken nextToken=null;
 		wordIndex = wordToken.getIndex();
 		isVerb = this.verb("postag", wordToken, textDocument, params);
-		if ((isVerb) && ((wordIndex+1)<textDocument.getWordLimit())) {
-			  nextToken = textDocument.getCurrentSentence().get(wordIndex +1);
-			    isNextVerb = this.verb("postag", nextToken, textDocument, params);
-			      nextWord = nextToken.getToken();
-			        if ((isNextVerb) && (nextWord.endsWith("ing"))) {
-					  isLinked = true;
-					    }
-				  }
+		if (isVerb) {
+			sentenceIndex = wordToken.getSentence();
+			nextToken = textDocument.getSentenceAtIndex(sentenceIndex).get(wordIndex +1);
+			isNextVerb = this.verb("postag", nextToken, textDocument, params);
+			nextWord = nextToken.getToken();
+			if ((isNextVerb) && (nextWord.endsWith("ing"))) {
+				isLinked = true;
+			}
+		 }
 		 return isLinked; 
 	}
 	
@@ -953,32 +956,28 @@ public class FeatureFunctionList {
 		WordToken nextToken = null, previousToken = null;
 		String word = wordToken.getToken(), nextWord="", nextPostag="", lemmaBefore="";
 		word = word.toLowerCase();
-		if ((words.contains(word)) && ((wordIndex+1)<textDocument.getWordLimit())) {
+		if (words.contains(word)) {
 			nextIndex = wordIndex+1;
 			   nextToken = this.getWordToken(textDocument, nextIndex);
 			      nextPostag = nextToken.getPostag();
 			         if (nextToken!=null) {
 					    nextWord = nextToken.getToken();
 					       if (nextPostag.equalsIgnoreCase("DT")) {
-						           if ((nextIndex+1)<textDocument.getWordLimit()) {
-								   nextIndex = nextIndex+1;
-								      nextToken = this.getWordToken(TextDocument, nextIndex);
-								         if (nextToken!=null) {
-										    nextPostag = nextToken.getPostag();
-										       nextWord = nextToken.getToken();
-										          }
-									         }
-							      } else if (words.contains(nextWord)) {
-								          if ((nextIndex+1)<textDocument.getWordLimit()) {
-										  nextIndex = nextIndex+1;
-										     nextToken = this.getWordToken(textDocument, nextIndex);
-										        if (nextToken!=null) {
-												   nextPostag = nextToken.getPostag();
-												      nextWord = nextToken.getToken();
-												         }
-											        }
-									     } 
-					          if (nouns.contains(nextPostag)) {
+								nextIndex = nextIndex+1;
+								nextToken = this.getWordToken(textDocument, nextIndex);
+								if (nextToken!=null) {
+									nextPostag = nextToken.getPostag();
+									nextWord = nextToken.getToken();
+								}
+							} else if (words.contains(nextWord)) {
+										nextIndex = nextIndex+1;
+										nextToken = this.getWordToken(textDocument, nextIndex);
+										if (nextToken!=null) {
+											nextPostag = nextToken.getPostag();
+											nextWord = nextToken.getToken();
+										}
+							} 
+					        if (nouns.contains(nextPostag)) {
 							      found = true;
 							         }
 						     } 
@@ -1030,11 +1029,6 @@ public class FeatureFunctionList {
 			   index++;
 		   }
 		}   
-		if (found) {
-			  if (textDocument.getMatches()!=null) {
-				 textDocument.getMatches().add(String.valueOf(sentenceIndex)+":"+String.valueOf(wordIndex)+":"+String.valueOf(wordIndex+1));
-			  }
-		}
 		return found;
 	}
 
@@ -1098,11 +1092,6 @@ public class FeatureFunctionList {
 		           }
 			    }
 			}			   
-		    if (found) {
-			    if (textDocument.getMatches()!=null) {
-				      textDocument.getMatches().add(String.valueOf(sentenceIndex)+":"+String.valueOf(wordIndex)+":"+String.valueOf(wordIndex+1));
-				}
-		    }
 		} 	
 	   return found;
 	}
@@ -1136,7 +1125,7 @@ public class FeatureFunctionList {
 		Integer paramsIndex = 0;
 		List<WordToken> sentence = null;
 		WordToken nextToken = null;
-		sentence = textDocument.getCurrentSentence();
+		sentence = textDocument.getSentenceAtIndex(sentenceIndex);
 		if ((params.size() > 0) && (wordIndex < sentence.size() - 1)) {
 			nextToken = sentence.get(wordIndex+1);
 			nextItem = General.getValue(part, nextToken);
@@ -1162,7 +1151,7 @@ public class FeatureFunctionList {
 		Integer paramsIndex = 0;
 		List<WordToken> sentence = null;
 		WordToken nextToken = null;
-		sentence = textDocument.getCurrentSentence();
+		sentence = textDocument.getSentenceAtIndex(sentenceIndex);
 		if (params.size()==2) {
 			itemToRemove = params.get(1);
 			content = wordToken.getToken();
@@ -1214,11 +1203,14 @@ public class FeatureFunctionList {
 		}
 
 		private WordToken getWordToken(TextDocument textDocument, Integer index) {
+			Integer sentenceIndex=0;
 			WordToken wordToken=null;
-			if ((index>0) && (index<textDocument.getWordLimit())) {
-				       wordToken = textDocument.getCurrentSentence().get(index);
+
+			if (index>0) {
+				sentenceIndex = wordToken.getSentence();
+				wordToken = textDocument.getSentenceAtIndex(sentenceIndex).get(index);
 			}
-			   return wordToken; 
+			return wordToken; 
 		}
 
 	public Boolean checkPreDefinedList(String part, WordToken wordToken, TextDocument TextDocument, String str) {
