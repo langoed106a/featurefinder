@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Model Results</title>
+        <style>
+            .styled-table {
+                  border-collapse: collapse;
+                  margin: 25px 0;
+                  font-size: 1.2em;
+                  font-family: sans-serif;
+                  min-width: 400px;
+                  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            }
+            .styled-table thead tr {
+                  background-color: #007bff;
+                  color: #ffffff;
+                  text-align: left;
+            }
+            .styled-table tbody tr {
+                  border-bottom: 1px solid #dddddd;
+            }
+            .styled-table tbody tr:nth-of-type(even) {
+                  background-color: #f3f3f3;
+            }
+            .styled-table tbody tr:last-of-type {
+                  border-bottom: 2px solid #007bff;
+            }
+        </style>
+    </head>
+    <body>
+        <table id="tableresults" class="styled-table">
+            <tbody id="rawresults"></tbody>
+        </table>
+        <script>
+            var data=localStorage.getItem("ffresults");
+            var table = document.getElementById("tableresults");
+            var tbody = document.getElementById("rawresults");
+            var count=0;
+            var row;
+            var cell;
+            var celldata;
+            var rowdata;
+            var resultdata = data.split('\n');
+            var header = table.createTHead();
+            var headerdata = resultdata[0];
+
+            if (headerdata) {
+                row = header.insertRow(0);
+                celldata = headerdata.split(",");
+                for (var k=0;k<celldata.length;k++) {
+                    cell = row.insertCell(k);
+                    cell.innerHTML = celldata[k];
+                }
+            }
+            count=0;
+            for (var j=1;j<resultdata.length;j++) {
+                rowdata = resultdata[j];
+                if (rowdata) {
+                    row = String(rowdata);
+                    if (rowdata.length>0) {
+                        row = tbody.insertRow(count);
+                        celldata = rowdata.split(",");
+                        for (var p=0;p<celldata.length;p++) {
+                           cell = row.insertCell(p);
+                           cell.innerHTML = celldata[p];
+                        }
+                      count=count+1;
+                    }     
+                }
+            }
+            localStorage.removeItem("ffresults");
+        </script>
+    </body>
+</html>
