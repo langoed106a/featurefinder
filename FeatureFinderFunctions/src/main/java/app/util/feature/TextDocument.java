@@ -44,11 +44,40 @@ public class TextDocument extends Document {
 		return line;
 	}
 
+    public List<WordToken> getSentenceAtIndex(Integer index) {
+        List<WordToken> sentenceResult = new ArrayList<>();
+        Sentence sentenceAtIndex = null;
+        if ((index>0) && (index<sentenceList.size())) {
+            sentenceAtIndex = sentenceList.get(index);
+            sentenceResult = sentenceAtIndex.getSentenceList();
+        }
+        return sentenceResult;
+    }
+
+    public List<WordToken> getText() {
+        List<WordToken> text=new ArrayList<>();
+        List<WordToken> sentenceAtIndex=null;
+        Sentence sentence=null;
+        for (int i=0;i<sentenceList.size();i++) {
+            sentence = sentenceList.get(i);
+            sentenceAtIndex = sentence.getSentenceList();
+            for (WordToken wordToken:sentenceAtIndex) {
+               text.add(wordToken);
+            }   
+          }
+        return text;
+    }
+
 	public void addSentence(List<WordToken> line) {
 		Sentence tokenList = new Sentence();
 		tokenList.setSentenceList(line);
 		this.sentenceList.add(tokenList);
 	}
+
+    public Integer getSentenceCount() {
+        Integer count = sentenceList.size();
+        return count;
+    } 
 
 	public String toJson() {
       String jsonString="[", jsonLine="", strType="";
