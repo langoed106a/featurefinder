@@ -8,9 +8,9 @@ import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import app.util.feature.Feature;
+import app.util.feature.Document;
 import app.util.feature.FeatureFunction;
-import app.util.feature.Section;
+import app.util.feature.TextDocument;
 import app.util.feature.General;
 import app.util.feature.WordToken;
 import edu.washington.cs.knowitall.logic.Expression.Arg;
@@ -110,15 +110,6 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
             type = isFunction(value);
             if (type.length()==0) {
                 type = isList(value);
-                if (type.length()==0) {
-                    type = isDefined(value,"list");
-                    if (type.length()==0) {
-                        type = isDefined(value,"regex");  
-                        if (type.length()==0) {
-                            type = isName(value);
-                        }
-                    }    
-                }
             }
         }
     }
@@ -197,22 +188,6 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
     return type;
   }
  
-  private String isDefined(String value, String valueType) {
-     Feature feature = null;
-     String type="";
-     Boolean listCheck = false;
-     if ((value!=null) && (value.startsWith("$"))) {
-         value = value.substring(1,value.length());
-         feature = featureFunction.getPredefinedFeature(value);
-         if ((feature!=null) && (feature.getType().equalsIgnoreCase("list"))) {
-             type="predefinedlist";
-         } else if ((feature!=null) && (feature.getType().equalsIgnoreCase("regex"))) {
-             type="predefinedregex";
-         }
-      }
-    return type;
-  }
- 
   private String isName(String value) {
      String type="";
      Character lowercase[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
@@ -258,12 +233,12 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
      boolean found=false, finish=false;
      Integer index=0, wordIndex=0, wordTokenIndex=0, sentenceIndex=0;
      String content="", word="", wordPart="";
-     Section section = textBlock.getSection();
+     TextDocument textDocument = textBlock.getTextDocument();
      
      sentenceIndex = wordToken.getSentence();
      value = General.removeQuotes(value);
      sentenceIndex = wordToken.getSentence();
-     found = General.theSame(part, wordToken, section.getSentenceAtIndex(sentenceIndex), value);
+     found = General.theSame(part, wordToken, textDocument.getSentenceAtIndex(sentenceIndex), value);
      return found;
       }
      
@@ -272,7 +247,7 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
          Boolean firstPosition = false;
          WordToken firstWordToken = null;
          Integer sentenceNumber = wordToken.getSentence();
-         sentence = textBlock.getSection().getSentenceAtIndex(sentenceNumber);
+         sentence = textBlock.getTextDocument().getSentenceAtIndex(sentenceNumber);
          if ((sentence !=null) && (sentence.size()>0)) {
               firstWordToken = sentence.get(0);
               if (firstWordToken.getIndex()==wordToken.getIndex()) {
@@ -291,7 +266,7 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
           sentenceIndex = wordToken.getSentence();
           if ((wordIndex==1) && (sentenceIndex==1)) {
               textBlockExpression = textBlock.getTextBlockExpression();
-              found = textBlockExpression.apply(part,value,valueType,wordToken,textBlock.getSection());
+              found = textBlockExpression.apply(part,value,valueType,wordToken,textBlock.getTextDocument());
           }
          return found;
      }
@@ -299,15 +274,15 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
   private Boolean checkList(String part, String value, WordToken wordToken, TextBlock textBlock) {
       boolean found=false, finish=false;
       Integer index=0, wordIndex=0, wordTokenIndex=0, sentenceIndex=0;
-      Section section=null;
+      TextDocument textDocument=null;
       String param="", word="";
       String[] words = null;
       List<String> params=null;
       List<WordToken> sentence=null;
       sentenceIndex = wordToken.getSentence();
       params = General.getListParameters(value);
-      section = textBlock.getSection();
-      sentence = section.getSentenceAtIndex(sentenceIndex);
+      textDocument = textBlock.getTextDocument();
+      sentence = textDocument.getSentenceAtIndex(sentenceIndex);
       while ((!found) && (index<params.size())) {
           param = params.get(index);
           found = General.theSame(part, wordToken, sentence, param);
@@ -329,14 +304,14 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
      private Boolean checkFunction(String part, String valueType, String value, WordToken wordToken, TextBlock textBlock) {
          boolean found = false;
          String functionName = this.getName(value);
-         found = featureFunction.doFunction(part,functionName,value,wordToken,textBlock.getSection());
+         found = featureFunction.doFunction(part,functionName,value,wordToken,textBlock.getTextDocument());
          return found;
       }
      
       private Boolean checkPreDefinedList(String part, String valueType, String value, WordToken wordToken, TextBlock textBlock) {
           Boolean found=false;
           if (wordToken != null) {  
-              found = featureFunction.checkPreDefinedList(part, wordToken, textBlock.getSection(), value);
+              found = featureFunction.checkPreDefinedList(part, wordToken, textBlock.getTextDocument(), value);
           }    
         return found;
        }
@@ -345,8 +320,8 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
   private Boolean checkPreDefinedRegex(String part, String valueType, String value, WordToken wordToken, TextBlock textBlock) {
       Boolean found=false, finished=false;
       CustomRegularExpression logicExpression;
-      Feature feature = null;
-      Section section;
+      Document feature = null;
+      TextDocument textDocument;
       String functionType="", definedRegex="", contents="", word="", wordToCheck;
       String[] wordList, items;
       List<WordToken> currentWordList = null, wordTokenList = null;
@@ -358,9 +333,9 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
           feature = featureFunction.getPredefinedFeature(value);
           if ((feature!=null) && (feature.getType().equalsIgnoreCase("regex"))) {
               currentWordList = new ArrayList<>();
-              section = textBlock.getSection();
+              textDocument = textBlock.getTextDocument();
               wordIndex = wordToken.getIndex();
-              wordTokenList = section.getCurrentSentence();
+              wordTokenList = textDocument.getCurrentSentence();
               if (wordIndex==0) {
                   while (index<wordTokenList.size()) {
                         wordItem = wordTokenList.get(index);

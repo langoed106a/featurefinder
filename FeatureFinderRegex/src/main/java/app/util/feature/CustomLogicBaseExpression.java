@@ -8,7 +8,6 @@ import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import app.util.feature.Feature;
 import app.util.feature.FeatureFunction;
 import app.util.feature.Section;
 import app.util.feature.General;

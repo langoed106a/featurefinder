@@ -1,17 +1,17 @@
 package app.util.feature;
 
-import app.util.feature.Section;
+import app.util.feature.TextDocument;
 
 public class TextBlock {
-    private Section section;
+    private TextDocument textDocument;
     private TextBlockExpression textBlockExpression;
 
-    public Section getSection() {
-        return section;
+    public TextDocument getTextDocument() {
+        return textDocument;
     }
 
-    public void setSection(Section section) {
-        this.section = section;
+    public void setTextDocument(TextDocument textDocument) {
+        this.textDocument = textDocument;
     }
 
     public TextBlockExpression getTextBlockExpression() {

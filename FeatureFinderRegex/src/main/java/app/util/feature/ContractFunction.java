@@ -1,8 +1,8 @@
 package app.util.feature;
 
 import app.util.feature.FeatureFunction; 
-import app.util.feature.RegexFeature; 
-import app.util.feature.Section; 
+import app.util.feature.RegexDocument; 
+import app.util.feature.TextDocument; 
 import app.util.feature.WordStorage; 
 
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -68,11 +68,11 @@ public class ContractFunction {
               }
           };
 
-        public boolean preconditionExists(RegexFeature regexFeature) { 
+        public boolean preconditionExists(RegexDocument regexDocument) { 
                Boolean exists=false; 
                String pre=null; 
-               if (regexFeature!=null) { 
-                      pre = regexFeature.getPrecondition(); 
+               if (regexDocument!=null) { 
+                      pre = regexDocument.getPrecondition(); 
                       if ((pre!=null) && (pre.length()>0)) { 
                             pre = pre.trim();
                             if (pre.contains("=")) {
@@ -83,11 +83,11 @@ public class ContractFunction {
            return exists;             
         } 
 
-        public boolean postconditionExists(RegexFeature regexFeature) { 
+        public boolean postconditionExists(RegexDocument regexDocument) { 
                Boolean exists=false; 
                String post=null; 
-               if (regexFeature!=null) { 
-                      post = regexFeature.getPostcondition(); 
+               if (regexDocument!=null) { 
+                      post = regexDocument.getPostcondition(); 
                       if ((post!=null) && (post.length()>0)) { 
                             exists = true; 
                    } 
@@ -95,19 +95,19 @@ public class ContractFunction {
               return exists;             
         } 
 
-        public boolean doPrecondition(RegexFeature regexFeature, Section section) { 
+        public boolean doPrecondition(RegexDocument regexDocument, TextDocument textDocument) { 
                Boolean passed=false; 
                String precondition=null; 
                ContractFunction tempContractFunction=null; 
-               RegexFeature preFeature=null; 
+               RegexDocument preDocument=null; 
                Integer count=0; 
-               if (regexFeature!=null) { 
-                      precondition = regexFeature.getPrecondition(); 
-                      preFeature = new RegexFeature("test", "test", "test", precondition, "text", "", ""); 
+               if (regexDocument!=null) { 
+                      precondition = regexDocument.getPrecondition(); 
+                      preDocument = new RegexDocument("test", "test", "test", precondition, "text", "", ""); 
                       tempContractFunction = new ContractFunction(featureFunction, wordStorage); 
-                      Matcher matcher = new Matcher(preFeature, featureFunction, wordStorage, tempContractFunction); 
+                      Matcher matcher = new Matcher(preDocument, featureFunction, wordStorage, tempContractFunction); 
                        try { 
-                          count = matcher.matchcount(section); 
+                          count = matcher.matchcount(textDocument); 
                        } catch (ParseRegexException regexException) { 
                               regexException.printStackTrace();
                               count=0; 
@@ -119,15 +119,15 @@ public class ContractFunction {
         return passed;             
         } 
 
-        public boolean doPostcondition(RegexFeature regexFeature, Properties properties) { 
+        public boolean doPostcondition(RegexDocument regexDocument, Properties properties) { 
                Boolean passed=false; 
                Double result=0.0;
                Expression expression=null;
                String postcondition=null; 
                String value=""; 
                Integer amount=0; 
-               if (regexFeature!=null) { 
-                      postcondition = regexFeature.getPostcondition(); 
+               if (regexDocument!=null) { 
+                      postcondition = regexDocument.getPostcondition(); 
                       postcondition = populateProperties(postcondition, properties);
                       if ((postcondition!=null) && (postcondition.length()>0)) { 
                              try {

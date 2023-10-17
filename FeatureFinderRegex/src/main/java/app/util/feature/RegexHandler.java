@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.util.feature.FeatureFunction;
-import app.util.feature.Section;
+import app.util.feature.TextDocument;
 import app.util.feature.General;
 import app.util.feature.WordStorage;
 import app.util.feature.WordToken;
@@ -44,26 +44,26 @@ public class RegexHandler {
     return parsedOkay;
  }
  
- public Integer matchescount(Section section) {
+ public Integer matchescount(TextDocument textDocument) {
      Integer finds=0;
      List<Match<WordToken>> matches=null;
-     this.textBlock.setSection(section);
+     this.textBlock.setTextDocument(textDocument);
      this.textBlock.setTextBlockExpression(new TextBlockExpression());
      if (!regexError) {
-          matches = regularExpression.findAll(section.getText());
+          matches = regularExpression.findAll(textDocument.getText());
           finds = matches.size();
      }      
    return finds;
  }
  
- public List<String> matchestext(Section section) {
+ public List<String> matchestext(TextDocument textDocument) {
  Integer finds=0;
  List<Match<WordToken>> matches=null;
  List<String> groupList = new ArrayList<>();
- this.textBlock.setSection(section);
+ this.textBlock.setTextDocument(textDocument);
  this.textBlock.setTextBlockExpression(new TextBlockExpression());
  if (!regexError) {
-     matches = regularExpression.findAll(section.getText());
+     matches = regularExpression.findAll(textDocument.getText());
      for (Match<WordToken> match:matches) {
       groupList.add(match.startIndex()+":"+match.endIndex());
      }

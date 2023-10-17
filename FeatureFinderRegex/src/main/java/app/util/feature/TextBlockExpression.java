@@ -10,7 +10,7 @@ public class TextBlockExpression {
         this.locationIndex = 1;
     }
 
-    public boolean apply(String part,String value,String valueType,WordToken wordToken,Section section) {
+    public boolean apply(String part,String value,String valueType,WordToken wordToken,TextDocument textDocument) {
         boolean found=false;
         return found;
     }
