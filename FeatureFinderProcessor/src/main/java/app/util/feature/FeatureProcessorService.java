@@ -44,7 +44,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import app.util.database.DocumentDatabase;
 import app.util.feature.FeatureDocument;
  
 @CrossOrigin
@@ -54,7 +53,7 @@ public class FeatureProcessorService {
 	private static String DEFAULT_LANGUAGE="english";
 	private static String DEFAULT_GRANULARITY="text";
 	private static String PROPERTIES_NAME="server.properties";
-	private static final Logger logger=LoggerFactory.getLogger(RegexService.class);
+	private static final Logger logger=LoggerFactory.getLogger(FeatureProcessorService.class);
 	private ContractFunction contractFunction;
 	private FeatureFunction featureFunction;
 	private ServiceLocator serviceLocator;
@@ -65,12 +64,6 @@ public class FeatureProcessorService {
 	@Autowired
 	private RestTemplate restSimpleTemplate;
 	@Autowired
-	private RemoteBatch remoteBatch;
-	@Autowired
-	private RemoteDatabase remoteDatabase;
-	@Autowired
-	DocumentDatabase documentDatabase;
-	@Autowired
 	private WebApplicationContext applicationContext;
 	
 	@PostConstruct
@@ -79,14 +72,7 @@ public class FeatureProcessorService {
 		String properties_location = System.getProperty(PROPERTIES_NAME);
 		serviceLocator = new ServiceLocator(properties_location);
 	
-		remoteParser.setRestTemplate(restSimpleTemplate);
-		remoteParser.setServiceLocator(serviceLocator);
-
-		remoteDatabase.setRestTemplate(restSimpleTemplate);
-		remoteDatabase.setServiceLocator(serviceLocator);
-
 		contractFunction = new ContractFunction(featureFunction, wordStorage);
-		documentDatabase.setRemoteDatabase(remoteDatabase);
 		objectMapper = new ObjectMapper();
 		textToProcess=null;
 	}
@@ -99,60 +85,81 @@ public class FeatureProcessorService {
 
 	@RequestMapping(value = "/processtext", method = RequestMethod.POST)
     public String processtext(@RequestBody String text) { 
-	   textToProcess = objectMapper.readValue(body, TextDocument.class);
+	   textToProcess = objectMapper.readValue(text, TextDocument.class);
 	   return "200";
     }
 
-	@RequestMapping(value = "/processfeature", method = RequestMethod.POST)
-    public String processfeature(@RequestBody String body) { 
+	@RequestMapping(value = "/syncprocessfeature", method = RequestMethod.POST)
+    public ResultDocument syncProcessfeature(@RequestBody String body) { 
 	  Boolean valid = false, showHighlight = false;
 	  RegexDocument regexDocument = null;
+	  ResultDocument resultDocument = null;
 	  String result="", matchesStr="", text="", tokensStr="", entry="", regex="", highlight="", language="", granularity="", precondition="", postcondition="", invariant="";
 	  String[] parts=null;	
 	  Integer matchcount = 0;
 	  List<WordToken> tokens=null;
+	  List<String> matches=null;
 	  Matcher matcher = null;
 	  Object object = null;
 	  featureFunction.initialise();
-	  featureFunction.setFeatureStore(documentDatabase);
+	  // featureFunction.setFeatureStore(documentDatabase);
 	  featureFunction.setWordStorage(wordStorage);
 	  try {
+		  resultDocument = new ResultDocument();
 		  regexDocument = objectMapper.readValue(body, RegexDocument.class);
 	      if (regexDocument != null) {
 			 if ((textToProcess!=null) && (regexDocument!=null)) {
 					matches = null;
 					matcher = new Matcher(regexDocument, featureFunction, wordStorage, contractFunction);
 					if (showHighlight) {
-					   matches = matcher.matchtext(textDocument);
+					   matches = matcher.matchtext(textToProcess);
 					} else {
-						 matchcount = matcher.matchcount(textDocument);
+						 matchcount = matcher.matchcount(textToProcess);
 					}
-	                section.toSingleSentence();
-                    tokens = section.getCurrentSentence();
-	                for (WordToken wordToken:tokens) {
-		               tokensStr = tokensStr + wordToken.toJson()+",";
-	                }
-			        if (tokensStr.endsWith(",")) {
-				       tokensStr = tokensStr.substring(0, tokensStr.length()-1);
-			        }		 
-                    tokensStr = "\"tokens\":"+"[" + tokensStr + "]";
-	                for (String match:matches) {
-                       parts = match.split(":");
-		               entry = "{\"start\":\""+parts[0]+"\",\"end\":\""+parts[1]+"\"},";
-		               matchesStr = matchesStr + entry;
-	                }
-	                if (matchesStr.length()>0) {
-	                   matchesStr = matchesStr.substring(0,matchesStr.length()-1);
-	                   matchesStr = "\"matches\":"+"[" + matchesStr + "]";
-	                } else {
-		               matchesStr = "\"matches\":"+"[" + "]";
-	                }	   
-	            result = "{"+tokensStr+","+matchesStr+"}";
-		        }
-			  }  
+					resultDocument.setSentenceList(textToProcess.getSentenceList());
+	                resultDocument.setMatches(matches);
+		        } 
 		    }
 		} catch (Exception regexException) {
-			result = "{\"error\":\""+regexException.getMessage()+"\"}";
+			regexException.printStackTrace();
+		}	
+      return resultDocument;
+    }
+
+	@RequestMapping(value = "/asyncprocessfeature", method = RequestMethod.POST)
+    public String asyncProcessfeature(@RequestBody String body) { 
+	  Boolean valid = false, showHighlight = false;
+	  RegexDocument regexDocument = null;
+	  ResultDocument resultDocument = null;
+	  String result="", matchesStr="", text="", tokensStr="", entry="", regex="", highlight="", language="", granularity="", precondition="", postcondition="", invariant="";
+	  String[] parts=null;	
+	  Integer matchcount = 0;
+	  List<WordToken> tokens=null;
+	  List<String> matches=null;
+	  Matcher matcher = null;
+	  Object object = null;
+	  featureFunction.initialise();
+	  // featureFunction.setFeatureStore(documentDatabase);
+	  featureFunction.setWordStorage(wordStorage);
+	  try {
+		  resultDocument = new ResultDocument();
+		  regexDocument = objectMapper.readValue(body, RegexDocument.class);
+	      if (regexDocument != null) {
+			 if ((textToProcess!=null) && (regexDocument!=null)) {
+					matches = null;
+					matcher = new Matcher(regexDocument, featureFunction, wordStorage, contractFunction);
+					if (showHighlight) {
+					   matches = matcher.matchtext(textToProcess);
+					} else {
+						 matchcount = matcher.matchcount(textToProcess);
+					}
+					resultDocument.setSentenceList(textToProcess.getSentenceList());
+	                resultDocument.setMatches(matches);
+		        } 
+		    }
+			result="200";
+		} catch (Exception regexException) {
+			result="500";
 		}	
       return result;
     }
