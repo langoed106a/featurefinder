@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
 
 	<groupId>app.util.feature</groupId>
-	<artifactId>FeatureFinderInterface</artifactId>
+	<artifactId>FeatureFinderProcessor</artifactId>
 	<version>1.1</version>
 	<packaging>jar</packaging>
 

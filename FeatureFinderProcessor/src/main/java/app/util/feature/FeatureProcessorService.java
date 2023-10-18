@@ -83,9 +83,25 @@ public class FeatureProcessorService {
 	   return "healthy";
     }
 
+	@RequestMapping(value = "/textdocument", method = RequestMethod.GET)
+    public TextDocument getTextDocumentTemplate() { 
+		TextDocument textDocument = new TextDocument();
+	    return textDocument;
+    }
+
+	@RequestMapping(value = "/regexdocument", method = RequestMethod.GET)
+    public RegexDocument getRegexDocumentTemplate() { 
+	    RegexDocument regexDocument = new RegexDocument();
+	    return regexDocument;
+    }
+
 	@RequestMapping(value = "/processtext", method = RequestMethod.POST)
     public String processtext(@RequestBody String text) { 
-	   textToProcess = objectMapper.readValue(text, TextDocument.class);
+	   try {
+	        textToProcess = objectMapper.readValue(text, TextDocument.class);
+	   } catch (Exception exception) {
+		    textToProcess = null;
+	   }
 	   return "200";
     }
 
