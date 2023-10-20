@@ -4,6 +4,7 @@ public class Document {
     String id;
     String description;
     String name;
+    String origin;
     String type;
     String contents;
 
@@ -11,6 +12,7 @@ public class Document {
        id="";
        description="";
        name="";
+       origin="";
        type="";
        contents="";
     }
@@ -37,6 +39,14 @@ public class Document {
 
     public String getName() {
         return type;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin=origin;
+    }
+
+    public String getOrigin() {
+        return origin;
     }
 
     public void setType(String type) {

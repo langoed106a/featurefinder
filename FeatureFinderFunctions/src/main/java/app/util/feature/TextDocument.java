@@ -15,8 +15,10 @@ public class TextDocument extends Document {
 		sentenceList = new ArrayList<>();
 	}
 
-    public TextDocument(String name, String type, String language, String contents) {
-    	this.name = name;
+    public TextDocument(String id, String name, String type, String language, String origin, String contents) {
+    	this.id = id;
+        this.name = name;
+        this.origin = origin;
     	this.type = type;
     	this.language = language;
     	this.contents = contents;
@@ -36,6 +38,10 @@ public class TextDocument extends Document {
 
     public void setSentenceList(List<Sentence> sentenceList) {
         this.sentenceList = sentenceList;
+    }
+
+    public List<Sentence> getSentenceList() {
+        return this.sentenceList = sentenceList;
     }
     
 	public List<WordToken> getSentence(Integer index) {

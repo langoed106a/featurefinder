@@ -3,13 +3,13 @@ package app.util.feature;
 import java.util.List;
 
 public class ResultDocument extends TextDocument {
-    List<WordToken> matches;
+    List<String> matches;
 
-    public List<WordToken> getMatches() {
+    public List<String> getMatches() {
         return this.matches;
     }
 
-    public void setMatches(List<WordToken> matches) {
+    public void setMatches(List<String> matches) {
         this.matches = matches;
     }
 }
