@@ -22,6 +22,8 @@ import java.util.Date;
 import java.net.URLEncoder;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.PostConstruct;
 
@@ -55,6 +57,7 @@ public class FeatureProcessorService {
 	private static String PROPERTIES_NAME="server.properties";
 	private static final Logger logger=LoggerFactory.getLogger(FeatureProcessorService.class);
 	private ContractFunction contractFunction;
+	private ConcurrentLinkedQueue<TextDocument> concurrentLinkedQueue;
 	private FeatureFunction featureFunction;
 	private ServiceLocator serviceLocator;
 	private WordStorage wordStorage;
@@ -65,15 +68,18 @@ public class FeatureProcessorService {
 	private RestTemplate restSimpleTemplate;
 	@Autowired
 	private WebApplicationContext applicationContext;
+	@Autowired
+    private RegexService regexService;
 	
 	@PostConstruct
 	public void initialise() {
 		featureFunction = new FeatureFunction();
 		String properties_location = System.getProperty(PROPERTIES_NAME);
 		serviceLocator = new ServiceLocator(properties_location);
-	
+	    concurrentLinkedQueue = new ConcurrentLinkedQueue();
 		contractFunction = new ContractFunction(featureFunction, wordStorage);
 		objectMapper = new ObjectMapper();
+		wordStorage = new WordStorage();
 		textToProcess=null;
 	}
 	
@@ -97,21 +103,26 @@ public class FeatureProcessorService {
 
 	@RequestMapping(value = "/processtext", method = RequestMethod.POST)
     public String processtext(@RequestBody String text) { 
+	   String status="200";
 	   try {
 	        textToProcess = objectMapper.readValue(text, TextDocument.class);
+			concurrentLinkedQueue.add(textToProcess);
 	   } catch (Exception exception) {
 		    textToProcess = null;
+			status = "500";
 	   }
-	   return "200";
+	   return status;
     }
 
 	@RequestMapping(value = "/syncprocessfeature", method = RequestMethod.POST)
     public ResultDocument syncProcessfeature(@RequestBody String body) { 
 	  Boolean valid = false, showHighlight = false;
+	  CompletableFuture<List<String>> futureMatch = null;
 	  RegexDocument regexDocument = null;
 	  ResultDocument resultDocument = null;
 	  String result="", matchesStr="", text="", tokensStr="", entry="", regex="", highlight="", language="", granularity="", precondition="", postcondition="", invariant="";
 	  String[] parts=null;	
+	  TextDocument textDocument=null;
 	  Integer matchcount = 0;
 	  List<WordToken> tokens=null;
 	  List<String> matches=null;
@@ -124,18 +135,13 @@ public class FeatureProcessorService {
 		  resultDocument = new ResultDocument();
 		  regexDocument = objectMapper.readValue(body, RegexDocument.class);
 	      if (regexDocument != null) {
-			 if ((textToProcess!=null) && (regexDocument!=null)) {
-					matches = null;
-					matcher = new Matcher(regexDocument, featureFunction, wordStorage, contractFunction);
-					if (showHighlight) {
-					   matches = matcher.matchtext(textToProcess);
-					} else {
-						 matchcount = matcher.matchcount(textToProcess);
-					}
+			textDocument = this.getTextDocument();
+			 if ((textDocument!=null) && (regexDocument!=null)) {
+                    futureMatch = regexService.doSyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
 					resultDocument.setSentenceList(textToProcess.getSentenceList());
 	                resultDocument.setMatches(matches);
-		        } 
 		    }
+		  }
 		} catch (Exception regexException) {
 			regexException.printStackTrace();
 		}	
@@ -145,8 +151,10 @@ public class FeatureProcessorService {
 	@RequestMapping(value = "/asyncprocessfeature", method = RequestMethod.POST)
     public String asyncProcessfeature(@RequestBody String body) { 
 	  Boolean valid = false, showHighlight = false;
+	  CompletableFuture<Integer> futureMatch = null;
 	  RegexDocument regexDocument = null;
 	  ResultDocument resultDocument = null;
+	  TextDocument textDocument = null;
 	  String result="", matchesStr="", text="", tokensStr="", entry="", regex="", highlight="", language="", granularity="", precondition="", postcondition="", invariant="";
 	  String[] parts=null;	
 	  Integer matchcount = 0;
@@ -161,23 +169,25 @@ public class FeatureProcessorService {
 		  resultDocument = new ResultDocument();
 		  regexDocument = objectMapper.readValue(body, RegexDocument.class);
 	      if (regexDocument != null) {
-			 if ((textToProcess!=null) && (regexDocument!=null)) {
+			 textDocument = this.getTextDocument();
+			 if ((textDocument!=null) && (regexDocument!=null)) {
 					matches = null;
-					matcher = new Matcher(regexDocument, featureFunction, wordStorage, contractFunction);
-					if (showHighlight) {
-					   matches = matcher.matchtext(textToProcess);
-					} else {
-						 matchcount = matcher.matchcount(textToProcess);
-					}
+					futureMatch = regexService.doAsyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
 					resultDocument.setSentenceList(textToProcess.getSentenceList());
 	                resultDocument.setMatches(matches);
-		        } 
 		    }
 			result="200";
+		  }
 		} catch (Exception regexException) {
 			result="500";
 		}	
       return result;
     }
+
+	private TextDocument getTextDocument() {
+		TextDocument textDocument = null;
+		textDocument = concurrentLinkedQueue.poll();
+		return textDocument;
+	}
 	
 }
