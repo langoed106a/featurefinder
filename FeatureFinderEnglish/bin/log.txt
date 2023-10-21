@@ -7,17 +7,17 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::        (v2.2.2.RELEASE)
 
-2023-10-21 11:31:21.694  INFO 6414 --- [           main] app.util.feature.EnglishApplication      : Starting EnglishApplication v1.0 on localhost.localdomain with PID 6414 (/home/vboxuser/featurefinder/FeatureFinderEnglish/bin/FeatureFinderEnglish-1.0.jar started by vboxuser in /home/vboxuser/featurefinder/FeatureFinderEnglish/bin)
-2023-10-21 11:31:21.696  INFO 6414 --- [           main] app.util.feature.EnglishApplication      : No active profile set, falling back to default profiles: default
-2023-10-21 11:31:23.525  INFO 6414 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8050 (http)
-2023-10-21 11:31:23.536  INFO 6414 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2023-10-21 11:31:23.536  INFO 6414 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.29]
-2023-10-21 11:31:23.630  INFO 6414 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2023-10-21 11:31:23.630  INFO 6414 --- [           main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1853 ms
-2023-10-21 11:31:24.500  INFO 6414 --- [           main] app.util.feature.WordStorage             : Reading word list:commonword
-java.io.FileNotFoundException: Could not open ServletContext resource [/abbreviations.txt]
-	at org.springframework.web.context.support.ServletContextResource.getInputStream(ServletContextResource.java:159)
-	at app.util.feature.EnglishAbbreviations.dictionary(EnglishAbbreviations.java:35)
+2023-10-21 11:38:04.400  INFO 8484 --- [           main] app.util.feature.EnglishApplication      : Starting EnglishApplication v1.0 on localhost.localdomain with PID 8484 (/home/vboxuser/featurefinder/FeatureFinderEnglish/bin/FeatureFinderEnglish-1.0.jar started by vboxuser in /home/vboxuser/featurefinder/FeatureFinderEnglish/bin)
+2023-10-21 11:38:04.403  INFO 8484 --- [           main] app.util.feature.EnglishApplication      : No active profile set, falling back to default profiles: default
+2023-10-21 11:38:07.426  INFO 8484 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8050 (http)
+2023-10-21 11:38:07.436  INFO 8484 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-10-21 11:38:07.437  INFO 8484 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.29]
+2023-10-21 11:38:07.546  INFO 8484 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-10-21 11:38:07.547  INFO 8484 --- [           main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 2978 ms
+2023-10-21 11:38:08.061  INFO 8484 --- [           main] app.util.feature.WordStorage             : Reading word list:commonword
+java.io.FileNotFoundException: class path resource [abbreviations.txt] cannot be opened because it does not exist
+	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:180)
+	at app.util.feature.EnglishAbbreviations.dictionary(EnglishAbbreviations.java:33)
 	at app.util.feature.EnglishAbbreviations.<init>(EnglishAbbreviations.java:29)
 	at app.util.feature.SimpleSentenceSplitter.<init>(SimpleSentenceSplitter.java:71)
 	at app.util.feature.EnglishParser.<init>(EnglishParser.java:54)
@@ -55,18 +55,18 @@ java.io.FileNotFoundException: Could not open ServletContext resource [/abbrevia
 	at org.springframework.boot.loader.Launcher.launch(Launcher.java:87)
 	at org.springframework.boot.loader.Launcher.launch(Launcher.java:51)
 	at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:52)
-2023-10-21 11:31:24.874  INFO 6414 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator tokenize
-2023-10-21 11:31:24.916  INFO 6414 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator ssplit
-2023-10-21 11:31:24.929  INFO 6414 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator pos
-2023-10-21 11:31:26.450  INFO 6414 --- [           main] e.s.nlp.tagger.maxent.MaxentTagger       : Loading POS tagger from edu/stanford/nlp/models/pos-tagger/english-left3words-distsim.tagger ... done [1.5 sec].
-2023-10-21 11:31:26.451  INFO 6414 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator lemma
-2023-10-21 11:31:26.457  INFO 6414 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator parse
-2023-10-21 11:31:28.011  INFO 6414 --- [           main] e.s.nlp.parser.common.ParserGrammar      : Loading parser from serialized file edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz ... done [1.4 sec].
-2023-10-21 11:31:28.212  INFO 6414 --- [           main] app.util.feature.WordStorage             : Reading word list:commonword
-2023-10-21 11:31:28.677  INFO 6414 --- [           main] pertySourcedRequestMappingHandlerMapping : Mapped URL path [/v2/api-docs] onto method [springfox.documentation.swagger2.web.Swagger2Controller#getDocumentation(String, HttpServletRequest)]
-2023-10-21 11:31:28.821  INFO 6414 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
-2023-10-21 11:31:29.017  INFO 6414 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
-2023-10-21 11:31:29.113  INFO 6414 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
-2023-10-21 11:31:29.224  INFO 6414 --- [           main] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
-2023-10-21 11:31:29.499  INFO 6414 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8050 (http) with context path ''
-2023-10-21 11:31:29.503  INFO 6414 --- [           main] app.util.feature.EnglishApplication      : Started EnglishApplication in 8.506 seconds (JVM running for 9.248)
+2023-10-21 11:38:08.179  INFO 8484 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator tokenize
+2023-10-21 11:38:08.251  INFO 8484 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator ssplit
+2023-10-21 11:38:08.270  INFO 8484 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator pos
+2023-10-21 11:38:09.052  INFO 8484 --- [           main] e.s.nlp.tagger.maxent.MaxentTagger       : Loading POS tagger from edu/stanford/nlp/models/pos-tagger/english-left3words-distsim.tagger ... done [0.7 sec].
+2023-10-21 11:38:09.054  INFO 8484 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator lemma
+2023-10-21 11:38:09.057  INFO 8484 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator parse
+2023-10-21 11:38:09.823  INFO 8484 --- [           main] e.s.nlp.parser.common.ParserGrammar      : Loading parser from serialized file edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz ... done [0.7 sec].
+2023-10-21 11:38:09.947  INFO 8484 --- [           main] app.util.feature.WordStorage             : Reading word list:commonword
+2023-10-21 11:38:10.401  INFO 8484 --- [           main] pertySourcedRequestMappingHandlerMapping : Mapped URL path [/v2/api-docs] onto method [springfox.documentation.swagger2.web.Swagger2Controller#getDocumentation(String, HttpServletRequest)]
+2023-10-21 11:38:10.530  INFO 8484 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2023-10-21 11:38:10.833  INFO 8484 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2023-10-21 11:38:10.945  INFO 8484 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2023-10-21 11:38:11.016  INFO 8484 --- [           main] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2023-10-21 11:38:11.254  INFO 8484 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8050 (http) with context path ''
+2023-10-21 11:38:11.257  INFO 8484 --- [           main] app.util.feature.EnglishApplication      : Started EnglishApplication in 8.131 seconds (JVM running for 8.967)

@@ -30,7 +30,7 @@ public class EnglishAbbreviations {
     }
 
     public Set<String> dictionary() {
-        try (BufferedReader input = new BufferedReader(new InputStreamReader(applicationContext.getResource("classpath:abbreviations.txt").getInputStream()))) {
+        try (BufferedReader input = new BufferedReader(new InputStreamReader(applicationContext.getResource("classpath:/wordlists/abbreviations.txt").getInputStream()))) {
             return input.lines().map(String::trim).filter(line -> !line.isEmpty()).collect(Collectors.toSet());
         } catch (IOException ex) {
             ex.printStackTrace();
