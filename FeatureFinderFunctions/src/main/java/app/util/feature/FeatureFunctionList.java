@@ -340,7 +340,7 @@ public class FeatureFunctionList {
 		if ((part.equalsIgnoreCase("token")) && (wordToken!=null)) {
 			wordIndex = wordToken.getIndex();
 			sentenceNumber = wordToken.getSentence();
-			sentenceCount = textDocument.getSentenceCount();
+			sentenceCount = textDocument.getSentenceList().size();
 			if ((sentenceNumber==1) && (wordIndex<=sentenceCount)) {
 				  found = true;
 			}
@@ -588,7 +588,7 @@ public class FeatureFunctionList {
 								found = true;
 							}
 				     } else if (key.equalsIgnoreCase("$sentence")) {
-						        size = textDocument.getSentenceCount();
+						        size = textDocument.getSentenceList().size();
 								if (size<=amount) {
 									found=true;
 								}

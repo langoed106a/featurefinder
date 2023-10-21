@@ -44,39 +44,13 @@ public class TextDocument extends Document {
     public List<Sentence> getSentenceList() {
         return this.sentencelist;
     }
-    
-	public List<WordToken> getSentence(Integer index) {
-		List<WordToken> line=null;
-		Sentence sentence=null;
-		if ((index>0) && (index<sentencelist.size())) {
-			sentence = sentencelist.get(index);
-			line = sentence.getSentenceList();
-		}
-		return line;
-	}
 
-    public List<WordToken> getSentenceAtIndex(Integer index) {
-        List<WordToken> sentenceResult = new ArrayList<>();
-        Sentence sentenceAtIndex = null;
-        if ((index>0) && (index<sentencelist.size())) {
-            sentenceAtIndex = sentencelist.get(index);
-            sentenceResult = sentenceAtIndex.getSentenceList();
+    public List<WordToken> getSentenceAtIndex(Integer sentenceIndex) {
+        List<WordToken> sentence = new ArrayList<>();
+        if ((sentenceIndex>0) && (sentenceIndex<sentencelist.size())) {
+            sentence = sentencelist.get(sentenceIndex).getSentenceList();
         }
-        return sentenceResult;
-    }
-
-    public List<WordToken> getText() {
-        List<WordToken> text=new ArrayList<>();
-        List<WordToken> sentenceAtIndex=null;
-        Sentence sentence=null;
-        for (int i=0;i<sentencelist.size();i++) {
-            sentence = sentencelist.get(i);
-            sentenceAtIndex = sentence.getSentenceList();
-            for (WordToken wordToken:sentenceAtIndex) {
-               text.add(wordToken);
-            }   
-          }
-        return text;
+        return sentence;
     }
 
 	public void addSentence(List<WordToken> line) {
@@ -85,9 +59,5 @@ public class TextDocument extends Document {
 		this.sentencelist.add(tokenList);
 	}
 
-    public Integer getSentenceCount() {
-        Integer count = sentencelist.size();
-        return count;
-    } 
 
 }

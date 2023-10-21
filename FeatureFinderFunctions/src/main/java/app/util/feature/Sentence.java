@@ -10,10 +10,6 @@ public class Sentence {
         tokenList = new ArrayList<>();
     }
 
-    public Integer getSentenceLength() {
-        return tokenList.size();
-    }
-
     public List<WordToken> getSentenceList() {
         return tokenList;
     }
