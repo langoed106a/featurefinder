@@ -101,6 +101,18 @@ public class FeatureProcessorService {
 	    return regexDocument;
     }
 
+	@RequestMapping(value = "/regexresults", method = RequestMethod.GET)
+    public RegexResult getRegexResultTemplate() { 
+	    RegexResult regexResult = new RegexResult();
+	    return regexResult;
+    }
+
+	@RequestMapping(value = "/featureresults", method = RequestMethod.GET)
+    public FeatureResult getFeatureResultTemplate() { 
+	    FeatureResult featureResult = new FeatureResult();
+	    return featureResult;
+    }
+
 	@RequestMapping(value = "/processtext", method = RequestMethod.POST)
     public String processtext(@RequestBody String text) { 
 	   String status="200";
@@ -115,73 +127,77 @@ public class FeatureProcessorService {
     }
 
 	@RequestMapping(value = "/syncprocessfeature", method = RequestMethod.POST)
-    public ResultDocument syncProcessfeature(@RequestBody String body) { 
+    public FeatureResult syncProcessfeature(@RequestBody String body) { 
 	  Boolean valid = false, showHighlight = false;
-	  CompletableFuture<List<String>> futureMatch = null;
+	  CompletableFuture<RegexResult> futureMatch = null;
+	  FeatureResult featureResult = null;
+	  RegexResult regexResult = null;
 	  RegexDocument regexDocument = null;
-	  ResultDocument resultDocument = null;
 	  String result="", matchesStr="", text="", tokensStr="", entry="", regex="", highlight="", language="", granularity="", precondition="", postcondition="", invariant="";
 	  String[] parts=null;	
 	  TextDocument textDocument=null;
 	  Integer matchcount = 0;
 	  List<WordToken> tokens=null;
 	  List<String> matches=null;
+	  List<RegexResult> regexResultList = new ArrayList<>();
 	  Matcher matcher = null;
 	  Object object = null;
 	  featureFunction.initialise();
 	  // featureFunction.setFeatureStore(documentDatabase);
 	  featureFunction.setWordStorage(wordStorage);
 	  try {
-		  resultDocument = new ResultDocument();
+		  featureResult = new FeatureResult();
 		  regexDocument = objectMapper.readValue(body, RegexDocument.class);
 	      if (regexDocument != null) {
 			textDocument = this.getTextDocument();
 			 if ((textDocument!=null) && (regexDocument!=null)) {
                     futureMatch = regexService.doSyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
-					resultDocument.setSentenceList(textToProcess.getSentenceList());
-	                resultDocument.setMatches(matches);
+					regexResult = futureMatch.get();
+					regexResultList.add(regexResult);
 		    }
 		  }
 		} catch (Exception regexException) {
 			regexException.printStackTrace();
 		}	
-      return resultDocument;
+      return featureResult;
     }
 
 	@RequestMapping(value = "/asyncprocessfeature", method = RequestMethod.POST)
-    public String asyncProcessfeature(@RequestBody String body) { 
+    public FeatureResult asyncProcessfeature(@RequestBody String body) { 
 	  Boolean valid = false, showHighlight = false;
-	  CompletableFuture<Integer> futureMatch = null;
+	  CompletableFuture<RegexResult> futureMatch = null;
+	  FeatureResult featureResult = new FeatureResult();
 	  RegexDocument regexDocument = null;
-	  ResultDocument resultDocument = null;
+	  RegexResult regexResult = null;
 	  TextDocument textDocument = null;
 	  String result="", matchesStr="", text="", tokensStr="", entry="", regex="", highlight="", language="", granularity="", precondition="", postcondition="", invariant="";
 	  String[] parts=null;	
 	  Integer matchcount = 0;
 	  List<WordToken> tokens=null;
 	  List<String> matches=null;
+	  List<RegexResult> regexResultList = new ArrayList<>();
 	  Matcher matcher = null;
 	  Object object = null;
 	  featureFunction.initialise();
 	  // featureFunction.setFeatureStore(documentDatabase);
 	  featureFunction.setWordStorage(wordStorage);
 	  try {
-		  resultDocument = new ResultDocument();
 		  regexDocument = objectMapper.readValue(body, RegexDocument.class);
 	      if (regexDocument != null) {
 			 textDocument = this.getTextDocument();
 			 if ((textDocument!=null) && (regexDocument!=null)) {
 					matches = null;
+					regexResult = new RegexResult();
 					futureMatch = regexService.doAsyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
-					resultDocument.setSentenceList(textToProcess.getSentenceList());
-	                resultDocument.setMatches(matches);
+					regexResult = futureMatch.get();
+					regexResultList.add(regexResult);
 		    }
 			result="200";
 		  }
 		} catch (Exception regexException) {
 			result="500";
 		}	
-      return result;
+      return featureResult;
     }
 
 	private TextDocument getTextDocument() {
