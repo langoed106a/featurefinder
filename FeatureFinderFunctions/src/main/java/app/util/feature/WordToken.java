@@ -103,22 +103,6 @@ public class WordToken {
         return ("token:"+token+" lemma:"+lemma+" postag:"+postag+" wordtype:"+wordtype+" dependency:"+dependency+" spacingleft:"+spacingleft+" index:"+index+" sentence:"+sentence);
     }
 
-    public String toJson() {
-        String jsonString="{";
-        String word = this.token;
-        String wordLemma = this.lemma;
-        if ((this.dependency==null) || (this.dependency.length()==0)) {
-            this.dependency="notknown";
-        }
-        if (word.equalsIgnoreCase("\"")) {
-            word = "\\" + "\"";
-            wordLemma = word;
-        }
-        jsonString = jsonString +"\"token\":\""+word+"\",\"lemma\":\""+wordLemma+"\",\"postag\":\""+this.postag+"\",\"wordtype\":\""+this.wordtype+"\",\"dependency\":\""+this.dependency+"\",\"spacingleft\":\""+this.spacingleft+"\",\"index\":\""+this.index+"\",\"sentence\":\""+this.sentence+"\"";
-        jsonString = jsonString + "}";
-        return jsonString;
-    }
-
     public void fromJson(JSONObject jsonObject) {
         String strIndex="", strSentence="";
         this.token = (String) jsonObject.get("token");

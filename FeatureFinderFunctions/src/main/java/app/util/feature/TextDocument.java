@@ -90,36 +90,4 @@ public class TextDocument extends Document {
         return count;
     } 
 
-	public String toJson() {
-      String jsonString="[", jsonLine="", strType="";
-      Integer count=0;
-      List<WordToken> line=null;
-      strType = this.getType();
-      for (Sentence sentence:sentencelist) {
-		   line = sentence.getSentenceList();
-           jsonLine="{\"linenumber\":\"" + String.valueOf(count) + "\",";
-           jsonLine=jsonLine + "\"line\":[";
-           for (WordToken wordToken:line) {
-               jsonLine = jsonLine + wordToken.toJson();
-               jsonLine = jsonLine + ",";
-           }
-           if (jsonLine.endsWith(",")) {
-               jsonLine = jsonLine.substring(0, jsonLine.length()-1);
-           }    
-           jsonLine = jsonLine + "]";
-           jsonLine = jsonLine + "},";
-           jsonString = jsonString + jsonLine;
-           count=count+1;
-      }
-      if (jsonString.length()>1) {
-         jsonString = jsonString.substring(0, jsonString.length()-1);  
-      }
-      jsonString = jsonString + "]";
-      if ((strType!=null) && (strType.length()>0)) {
-         jsonString = "\"type:\"+\""+strType+"\"" +jsonString;
-      }
-      jsonString = "{" + jsonString + "}";
-      return jsonString;
-    }
-
 }
