@@ -8,11 +8,12 @@ import app.util.feature.TextDocument;
 
 public class TextDocument extends Document {
     private String language;
-	List<Sentence> sentenceList;
+	List<Sentence> sentencelist;
 	
     public TextDocument() {
 		super();
-		sentenceList = new ArrayList<>();
+        language="";
+		sentencelist = new ArrayList<>();
 	}
 
     public TextDocument(String id, String name, String type, String language, String origin, String contents) {
@@ -37,18 +38,18 @@ public class TextDocument extends Document {
     }
 
     public void setSentenceList(List<Sentence> sentenceList) {
-        this.sentenceList = sentenceList;
+        this.sentencelist = sentenceList;
     }
 
     public List<Sentence> getSentenceList() {
-        return this.sentenceList = sentenceList;
+        return this.sentencelist;
     }
     
 	public List<WordToken> getSentence(Integer index) {
 		List<WordToken> line=null;
 		Sentence sentence=null;
-		if ((index>0) && (index<sentenceList.size())) {
-			sentence = sentenceList.get(index);
+		if ((index>0) && (index<sentencelist.size())) {
+			sentence = sentencelist.get(index);
 			line = sentence.getSentenceList();
 		}
 		return line;
@@ -57,8 +58,8 @@ public class TextDocument extends Document {
     public List<WordToken> getSentenceAtIndex(Integer index) {
         List<WordToken> sentenceResult = new ArrayList<>();
         Sentence sentenceAtIndex = null;
-        if ((index>0) && (index<sentenceList.size())) {
-            sentenceAtIndex = sentenceList.get(index);
+        if ((index>0) && (index<sentencelist.size())) {
+            sentenceAtIndex = sentencelist.get(index);
             sentenceResult = sentenceAtIndex.getSentenceList();
         }
         return sentenceResult;
@@ -68,8 +69,8 @@ public class TextDocument extends Document {
         List<WordToken> text=new ArrayList<>();
         List<WordToken> sentenceAtIndex=null;
         Sentence sentence=null;
-        for (int i=0;i<sentenceList.size();i++) {
-            sentence = sentenceList.get(i);
+        for (int i=0;i<sentencelist.size();i++) {
+            sentence = sentencelist.get(i);
             sentenceAtIndex = sentence.getSentenceList();
             for (WordToken wordToken:sentenceAtIndex) {
                text.add(wordToken);
@@ -81,11 +82,11 @@ public class TextDocument extends Document {
 	public void addSentence(List<WordToken> line) {
 		Sentence tokenList = new Sentence();
 		tokenList.setSentenceList(line);
-		this.sentenceList.add(tokenList);
+		this.sentencelist.add(tokenList);
 	}
 
     public Integer getSentenceCount() {
-        Integer count = sentenceList.size();
+        Integer count = sentencelist.size();
         return count;
     } 
 
@@ -94,7 +95,7 @@ public class TextDocument extends Document {
       Integer count=0;
       List<WordToken> line=null;
       strType = this.getType();
-      for (Sentence sentence:sentenceList) {
+      for (Sentence sentence:sentencelist) {
 		   line = sentence.getSentenceList();
            jsonLine="{\"linenumber\":\"" + String.valueOf(count) + "\",";
            jsonLine=jsonLine + "\"line\":[";
