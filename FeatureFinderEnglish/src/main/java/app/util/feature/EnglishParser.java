@@ -19,7 +19,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import app.util.feature.Section;
 import app.util.feature.Sentence;
 import app.util.feature.TextDocument;
 import app.util.feature.WordToken;
