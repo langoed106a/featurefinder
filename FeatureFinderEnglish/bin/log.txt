@@ -7,66 +7,29 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::        (v2.2.2.RELEASE)
 
-2023-10-21 11:38:04.400  INFO 8484 --- [           main] app.util.feature.EnglishApplication      : Starting EnglishApplication v1.0 on localhost.localdomain with PID 8484 (/home/vboxuser/featurefinder/FeatureFinderEnglish/bin/FeatureFinderEnglish-1.0.jar started by vboxuser in /home/vboxuser/featurefinder/FeatureFinderEnglish/bin)
-2023-10-21 11:38:04.403  INFO 8484 --- [           main] app.util.feature.EnglishApplication      : No active profile set, falling back to default profiles: default
-2023-10-21 11:38:07.426  INFO 8484 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8050 (http)
-2023-10-21 11:38:07.436  INFO 8484 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2023-10-21 11:38:07.437  INFO 8484 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.29]
-2023-10-21 11:38:07.546  INFO 8484 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2023-10-21 11:38:07.547  INFO 8484 --- [           main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 2978 ms
-2023-10-21 11:38:08.061  INFO 8484 --- [           main] app.util.feature.WordStorage             : Reading word list:commonword
-java.io.FileNotFoundException: class path resource [abbreviations.txt] cannot be opened because it does not exist
-	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:180)
-	at app.util.feature.EnglishAbbreviations.dictionary(EnglishAbbreviations.java:33)
-	at app.util.feature.EnglishAbbreviations.<init>(EnglishAbbreviations.java:29)
-	at app.util.feature.SimpleSentenceSplitter.<init>(SimpleSentenceSplitter.java:71)
-	at app.util.feature.EnglishParser.<init>(EnglishParser.java:54)
-	at app.util.feature.EnglishController.initialise(EnglishController.java:60)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389)
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:333)
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:157)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:416)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1788)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:595)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:323)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:321)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:879)
-	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:878)
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:550)
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
-	at app.util.feature.EnglishApplication.main(EnglishApplication.java:22)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
-	at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:48)
-	at org.springframework.boot.loader.Launcher.launch(Launcher.java:87)
-	at org.springframework.boot.loader.Launcher.launch(Launcher.java:51)
-	at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:52)
-2023-10-21 11:38:08.179  INFO 8484 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator tokenize
-2023-10-21 11:38:08.251  INFO 8484 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator ssplit
-2023-10-21 11:38:08.270  INFO 8484 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator pos
-2023-10-21 11:38:09.052  INFO 8484 --- [           main] e.s.nlp.tagger.maxent.MaxentTagger       : Loading POS tagger from edu/stanford/nlp/models/pos-tagger/english-left3words-distsim.tagger ... done [0.7 sec].
-2023-10-21 11:38:09.054  INFO 8484 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator lemma
-2023-10-21 11:38:09.057  INFO 8484 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator parse
-2023-10-21 11:38:09.823  INFO 8484 --- [           main] e.s.nlp.parser.common.ParserGrammar      : Loading parser from serialized file edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz ... done [0.7 sec].
-2023-10-21 11:38:09.947  INFO 8484 --- [           main] app.util.feature.WordStorage             : Reading word list:commonword
-2023-10-21 11:38:10.401  INFO 8484 --- [           main] pertySourcedRequestMappingHandlerMapping : Mapped URL path [/v2/api-docs] onto method [springfox.documentation.swagger2.web.Swagger2Controller#getDocumentation(String, HttpServletRequest)]
-2023-10-21 11:38:10.530  INFO 8484 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
-2023-10-21 11:38:10.833  INFO 8484 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
-2023-10-21 11:38:10.945  INFO 8484 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
-2023-10-21 11:38:11.016  INFO 8484 --- [           main] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
-2023-10-21 11:38:11.254  INFO 8484 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8050 (http) with context path ''
-2023-10-21 11:38:11.257  INFO 8484 --- [           main] app.util.feature.EnglishApplication      : Started EnglishApplication in 8.131 seconds (JVM running for 8.967)
+2023-10-21 11:42:03.466  INFO 8910 --- [           main] app.util.feature.EnglishApplication      : Starting EnglishApplication v1.0 on localhost.localdomain with PID 8910 (/home/vboxuser/featurefinder/FeatureFinderEnglish/bin/FeatureFinderEnglish-1.0.jar started by vboxuser in /home/vboxuser/featurefinder/FeatureFinderEnglish/bin)
+2023-10-21 11:42:03.469  INFO 8910 --- [           main] app.util.feature.EnglishApplication      : No active profile set, falling back to default profiles: default
+2023-10-21 11:42:05.269  INFO 8910 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8050 (http)
+2023-10-21 11:42:05.280  INFO 8910 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-10-21 11:42:05.280  INFO 8910 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.29]
+2023-10-21 11:42:05.369  INFO 8910 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-10-21 11:42:05.370  INFO 8910 --- [           main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1826 ms
+2023-10-21 11:42:05.892  INFO 8910 --- [           main] app.util.feature.WordStorage             : Reading word list:commonword
+2023-10-21 11:42:05.972  INFO 8910 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator tokenize
+2023-10-21 11:42:06.015  INFO 8910 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator ssplit
+2023-10-21 11:42:06.047  INFO 8910 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator pos
+2023-10-21 11:42:06.943  INFO 8910 --- [           main] e.s.nlp.tagger.maxent.MaxentTagger       : Loading POS tagger from edu/stanford/nlp/models/pos-tagger/english-left3words-distsim.tagger ... done [0.9 sec].
+2023-10-21 11:42:06.946  INFO 8910 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator lemma
+2023-10-21 11:42:06.951  INFO 8910 --- [           main] e.stanford.nlp.pipeline.StanfordCoreNLP  : Adding annotator parse
+2023-10-21 11:42:07.761  INFO 8910 --- [           main] e.s.nlp.parser.common.ParserGrammar      : Loading parser from serialized file edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz ... done [0.8 sec].
+2023-10-21 11:42:07.887  INFO 8910 --- [           main] app.util.feature.WordStorage             : Reading word list:commonword
+2023-10-21 11:42:08.310  INFO 8910 --- [           main] pertySourcedRequestMappingHandlerMapping : Mapped URL path [/v2/api-docs] onto method [springfox.documentation.swagger2.web.Swagger2Controller#getDocumentation(String, HttpServletRequest)]
+2023-10-21 11:42:08.453  INFO 8910 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2023-10-21 11:42:08.743  INFO 8910 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2023-10-21 11:42:08.811  INFO 8910 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2023-10-21 11:42:08.938  INFO 8910 --- [           main] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2023-10-21 11:42:09.230  INFO 8910 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8050 (http) with context path ''
+2023-10-21 11:42:09.233  INFO 8910 --- [           main] app.util.feature.EnglishApplication      : Started EnglishApplication in 6.56 seconds (JVM running for 7.303)
+2023-10-21 11:42:53.711  INFO 8910 --- [nio-8050-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2023-10-21 11:42:53.711  INFO 8910 --- [nio-8050-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2023-10-21 11:42:53.725  INFO 8910 --- [nio-8050-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 14 ms

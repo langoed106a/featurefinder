@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
  
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +41,7 @@ public class EnglishController {
    private FeatureFunction featureFunction;
    private HTTPSyncSender syncSender;
    private HTTPAsyncSender asyncSender;
+   private ObjectMapper objectMapper;
    private ServiceLocator serviceLocator;
    private WordStorage wordStorage;
 
@@ -58,19 +61,30 @@ public class EnglishController {
 		asyncSender = new HTTPAsyncSender(serviceLocator);
 		wordStorage = new WordStorage(applicationContext);
 		englishParser = new EnglishParser(applicationContext, wordStorage);
+		objectMapper = new ObjectMapper();
    }
 		
 	@RequestMapping(value = "/syncparsetext", method = RequestMethod.POST)
     public String syncParseText(@RequestBody String text ) { 
+		String jsonStr="";
 	    TextDocument textDocument = englishParser.parseText(text);
-      return textDocument.toJson();
+		try {
+		      jsonStr = objectMapper.writeValueAsString(textDocument);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+      return jsonStr;
     }
 
 	@RequestMapping(value = "/asyncparsetext", method = RequestMethod.POST)
     public String asyncParseText(@RequestBody String text ) { 
 	    String jsonText="", response="";
 		TextDocument textDocument = englishParser.parseText(text);
-        jsonText = textDocument.toJson();
+        try {
+		     jsonText = objectMapper.writeValueAsString(textDocument);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 		response = asyncSender.send("parsedtext", jsonText);
 	    return response;
     }
