@@ -6,9 +6,17 @@ import java.util.List;
 import app.util.feature.WordToken;
 import app.util.feature.TextDocument;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TextDocument extends Document {
     private String language;
-	List<Sentence> sentencelist;
+
+    @JsonProperty("sentencelist")
+    private List<Sentence> sentencelist;
 	
     public TextDocument() {
 		super();
@@ -23,10 +31,15 @@ public class TextDocument extends Document {
     	this.type = type;
     	this.language = language;
     	this.contents = contents;
+        this.sentencelist = new ArrayList<>();
     }
     
     public String getLanguage() {
     	return language;
+    }
+
+    public void setLanguage(String language) {
+    	this.language = language;
     }
     
     public String getName() {
@@ -41,23 +54,47 @@ public class TextDocument extends Document {
         this.sentencelist = sentenceList;
     }
 
+    @JsonIgnore
     public List<Sentence> getSentenceList() {
         return this.sentencelist;
     }
 
+    @JsonIgnore
     public List<WordToken> getSentenceAtIndex(Integer sentenceIndex) {
         List<WordToken> sentence = new ArrayList<>();
         if ((sentenceIndex>0) && (sentenceIndex<sentencelist.size())) {
-            sentence = sentencelist.get(sentenceIndex).getSentenceList();
+            sentence = sentencelist.get(sentenceIndex).getTokenList();
         }
         return sentence;
     }
 
-	public void addSentence(List<WordToken> line) {
-		Sentence tokenList = new Sentence();
-		tokenList.setSentenceList(line);
-		this.sentencelist.add(tokenList);
+	public void addSentence(Sentence line) {
+		this.sentencelist.add(line);
 	}
 
+    public void fromJson(String jsonStr) {
+         TextDocument textDocument = null;
+         try {
+              textDocument = new ObjectMapper().readValue(jsonStr, TextDocument.class);
+              this.setContents(textDocument.getContents());
+              this.setId(textDocument.getId());
+              this.setLanguage(textDocument.getLanguage());
+              this.setType(textDocument.getType());
+              this.setName(textDocument.getName());
+              this.setSentenceList(textDocument.getSentenceList());
+         } catch (Exception exception) {
+             exception.printStackTrace();
+         }
+    }
+
+    public String toJson() {
+        String jsonStr = "";
+        try {
+            jsonStr = new ObjectMapper().writeValueAsString(this);
+        } catch (Exception exception) {
+                exception.printStackTrace();
+        }
+        return jsonStr;
+    }
 
 }

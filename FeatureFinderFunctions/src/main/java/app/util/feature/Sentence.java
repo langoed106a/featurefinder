@@ -3,19 +3,25 @@ package app.util.feature;
 import java.util.List;
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Sentence {
+
+    @JsonProperty("sentence")
     public List<WordToken> tokenList;
 
     public Sentence() {
         tokenList = new ArrayList<>();
     }
 
-    public List<WordToken> getSentenceList() {
+    @JsonIgnore
+    public List<WordToken> getTokenList() {
         return tokenList;
     }
 
-    public void setSentenceList(List<WordToken> line) {
-        tokenList = line;
+    public void setTokenList(List<WordToken> line) {
+        tokenList=line;
     }
 
     public String toString() {
