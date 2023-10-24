@@ -90,7 +90,8 @@ public class EnglishParser {
                   wordTokenList.add(wordToken);
              }
              sentence = new Sentence();
-             textDocument.addSentence(wordTokenList);
+             sentence.setTokenList(wordTokenList);
+             textDocument.addSentence(sentence);
              sentenceIndex++;
              wordIndex=0;
        }

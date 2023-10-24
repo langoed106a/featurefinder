@@ -67,9 +67,10 @@ public class EnglishController {
 	@RequestMapping(value = "/syncparsetext", method = RequestMethod.POST)
     public String syncParseText(@RequestBody String text ) { 
 		String jsonStr="";
-	    TextDocument textDocument = englishParser.parseText(text);
+	    TextDocument textDocument = null; 
 		try {
-		      jsonStr = objectMapper.writeValueAsString(textDocument);
+			  textDocument = englishParser.parseText(text);
+		      jsonStr = textDocument.toJson();
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
@@ -78,14 +79,15 @@ public class EnglishController {
 
 	@RequestMapping(value = "/asyncparsetext", method = RequestMethod.POST)
     public String asyncParseText(@RequestBody String text ) { 
-	    String jsonText="", response="";
-		TextDocument textDocument = englishParser.parseText(text);
+	    String jsonStr="", response="";
+		TextDocument textDocument = null;
         try {
-		     jsonText = objectMapper.writeValueAsString(textDocument);
+		     textDocument = englishParser.parseText(text);
+		     jsonStr = textDocument.toJson();
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
-		response = asyncSender.send("parsedtext", jsonText);
+		response = asyncSender.send("parsedtext", jsonStr);
 	    return response;
     }
     
