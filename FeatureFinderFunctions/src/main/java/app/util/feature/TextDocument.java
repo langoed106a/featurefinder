@@ -68,6 +68,25 @@ public class TextDocument extends Document {
         return sentence;
     }
 
+    @JsonIgnore
+    public List<WordToken> getAsOneSentence() {
+        Integer index=0;
+        List<WordToken> line = null;
+        List<WordToken> allLines = new ArrayList<>();
+        WordToken tempToken=null;
+        for (Sentence sentence:sentencelist) {
+             line = sentence.getTokenList();
+             for (WordToken wordToken:line) {
+                tempToken = wordToken.clone();
+                tempToken.setSentence(1);
+                tempToken.setIndex(index);
+                allLines.add(tempToken);
+                index++;
+             }
+        }
+        return allLines;
+    }
+
 	public void addSentence(Sentence line) {
 		this.sentencelist.add(line);
 	}
