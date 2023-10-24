@@ -87,6 +87,12 @@ public class TextDocument extends Document {
         return allLines;
     }
 
+    @JsonIgnore
+    public Integer getSentenceCount() {
+        Integer count = this.sentencelist.size();
+        return count;
+    }
+
 	public void addSentence(Sentence line) {
 		this.sentencelist.add(line);
 	}
