@@ -63,7 +63,7 @@ public class TextDocument extends Document {
     public List<WordToken> getSentenceAtIndex(Integer sentenceIndex) {
         List<WordToken> sentence = new ArrayList<>();
         if ((sentenceIndex>0) && (sentenceIndex<sentencelist.size())) {
-            sentence = sentencelist.get(sentenceIndex).getTokenList();
+            sentence = sentencelist.get(sentenceIndex-1).getTokenList();
         }
         return sentence;
     }
