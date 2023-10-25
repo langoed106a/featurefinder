@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -12,49 +13,78 @@ import app.util.feature.Matcher;
 import app.util.feature.RegexDocument;
 import app.util.feature.RegexResult;
 import app.util.feature.FeatureFunction;
+import app.util.feature.HTTPAsyncSender;
+import app.util.feature.ServiceLocator;
 import app.util.feature.WordStorage;
 import app.util.feature.ContractFunction;
 
-@Service
 public class RegexService {
-
     Logger logger = LoggerFactory.getLogger(RegexService.class);
+    private HTTPAsyncSender asyncSender;
+
+    public RegexService(ServiceLocator serviceLocator) {
+        asyncSender = new HTTPAsyncSender(serviceLocator);
+    }
+
 
     @Async
-    public CompletableFuture<RegexResult> doAsyncRegex(TextDocument textDocument, RegexDocument regexDocument, FeatureFunction featureFunction, WordStorage wordStorage, ContractFunction contractFunction) throws InterruptedException {
+    public CompletableFuture<String> doAsyncRegex(TextDocument textDocument, RegexDocument regexDocument, FeatureFunction featureFunction, WordStorage wordStorage, ContractFunction contractFunction) throws InterruptedException {
         Matcher matcher = null;
         RegexResult regexResult = new RegexResult();
         Integer matchcount = 0;
-        logger.info("Starting: regex");
+        String jsonStr="", response="";
+        logger.info("Starting: regex-"+regexDocument.getRegex());
         matcher = new Matcher(regexDocument, featureFunction, wordStorage, contractFunction);
         try {
 		     matchcount = matcher.matchcount(textDocument);
+             System.out.println("********************************");
+			 System.out.println("************************Matches********"+matchcount);
              regexResult.setCount(matchcount);
              regexResult.setRegexName(regexDocument.getName());
              regexResult.setTextName(textDocument.getName());
+             jsonStr = regexResult.toJson();
+             response = asyncSender.send("regexresult", jsonStr);
         } catch(Exception exception) {
+            exception.printStackTrace();
             logger.error("Error: async regex error");
         }		
-        return CompletableFuture.completedFuture(regexResult);
+        return CompletableFuture.completedFuture(response);
     }
 
     @Async
-    public  CompletableFuture<RegexResult> doSyncRegex(TextDocument textDocument, RegexDocument regexDocument, FeatureFunction featureFunction, WordStorage wordStorage, ContractFunction contractFunction) throws InterruptedException {
+    public  CompletableFuture<FeatureResult> doSyncRegex(TextDocument textDocument, RegexDocument regexDocument, FeatureFunction featureFunction, WordStorage wordStorage, ContractFunction contractFunction) throws InterruptedException {
         List<String> matches=null;
+        Match match = null;
         Matcher matcher = null;
-        RegexResult regexResult = new RegexResult();
+        FeatureResult featureResult = new FeatureResult();
         Integer matchcount = 0;
-        logger.info("Starting: regex");
-        matches = null;
+        List<Match> matchList = null;
+        logger.info("Starting: regex-"+regexDocument.getRegex());
+        System.out.println("********************************");
+		System.out.println("************************TextDocument 1********"+textDocument.getSentenceList().size());
 		matcher = new Matcher(regexDocument, featureFunction, wordStorage, contractFunction);
 		try {
+             System.out.println("********************************");
+			 System.out.println("************************TextDocument 2********"+textDocument.getSentenceList().size());
              matches = matcher.matchtext(textDocument);
-             regexResult.setCount(matches.size());
-             regexResult.setRegexName(regexDocument.getName());
-             regexResult.setTextName(textDocument.getName());
-         } catch(Exception exception) {
+             if (matches!=null) {
+                matchList = new ArrayList<>();
+                for (String point:matches) {
+                    match = new Match();
+                    match.setMatch(point);
+                    matchList.add(match);
+                }
+                featureResult.setMatches(matchList);
+                featureResult.setSentenceList(textDocument.getSentenceList());
+             }
+             System.out.println("********************************");
+			 System.out.println("************************Matches********"+matches.size());
+             System.out.println("************************Matches********"+matches.size());
+			 System.out.println("********************************");
+        } catch(Exception exception) {
             logger.error("Error: async regex error");
+            exception.printStackTrace();
         }	
-        return CompletableFuture.completedFuture(regexResult);
+        return CompletableFuture.completedFuture(featureResult);
     }
 }
