@@ -3,6 +3,8 @@ package app.util.feature;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class RegexResult {
 	String textname;
 	String regexname;
@@ -43,5 +45,27 @@ public class RegexResult {
 	public void setCount(Integer count) {
 		this.count = count;
 	}
+
+	 public void fromJson(String jsonStr) {
+         RegexResult regexResult = null;
+         try {
+              regexResult = new ObjectMapper().readValue(jsonStr, RegexResult.class);
+              this.setCount(regexResult.getCount());
+              this.setRegexName(regexResult.getRegexName());
+              this.setTextName(regexResult.getTextName());
+         } catch (Exception exception) {
+             exception.printStackTrace();
+         }
+    }
+
+    public String toJson() {
+        String jsonStr = "";
+        try {
+            jsonStr = new ObjectMapper().writeValueAsString(this);
+        } catch (Exception exception) {
+                exception.printStackTrace();
+        }
+        return jsonStr;
+    }
 	
 }
