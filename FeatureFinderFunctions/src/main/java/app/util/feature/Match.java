@@ -1,8 +1,14 @@
 package app.util.feature;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Match {
-    String start;
-    String end;
+    
+    @JsonProperty("start")
+    private String start;
+    
+    @JsonProperty("end")
+    private String end;
 
     public Match() {
         start="";
@@ -14,8 +20,8 @@ public class Match {
         if ((point!=null) && (point.length()>0)) {
            position = point.indexOf(":");
            if (position>0) {
-              start = point.substring(0,position);
-              end = point.substring(position+1, point.length());
+              this.start = point.substring(0,position);
+              this.end = point.substring(position+1, point.length());
            }
         }
     }
