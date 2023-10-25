@@ -18,55 +18,62 @@ private WordStorage wordStorage;
 private Boolean parseRegex;
 
 public Matcher(RegexDocument regexDocument, FeatureFunction featureFunction, WordStorage wordStorage, ContractFunction contractFunction) {
+     System.out.println("********1********");
      this.regexHandler = new RegexHandler(featureFunction, wordStorage);
+     System.out.println("********2********");
      this.regexDocument = regexDocument;
      this.contractFunction = contractFunction;
      this.parseRegex = regexHandler.parseRegex(regexDocument.getRegex());
+     System.out.println("********3********");
      this.wordStorage = wordStorage;
+     System.out.println("********6********");
 }
 
 public Integer matchcount(TextDocument textDocument) throws ParseRegexException { 
   Boolean preOkay=true, postOkay=true;
-  TextDocument sentenceSection = null; 
   Integer match = 0, sentenceCount = 0, index = 0, partMatch = 0; 
   Properties textProperties=null;
-  List<WordToken> sentence = null; 
+  Sentence sentence=null;
+  TextDocument sentenceDocument=null;
+  List<WordToken> line = null; 
   if (parseRegex) { 
       textProperties = new Properties();
       if (regexDocument.getGranularity().equalsIgnoreCase("sentence")) { 
              sentenceCount = textDocument.getSentenceCount(); 
              textProperties.setProperty("$sentences",String.valueOf(sentenceCount));
              while (index<sentenceCount) { 
-                sentence = textDocument.getSentenceAtIndex(index); 
-                textProperties.setProperty("$words",String.valueOf(sentence.size())); 
-                sentenceSection = this.createSingleSentence(sentence);  
+                textProperties.setProperty("$words",String.valueOf(textDocument.getSentenceAtIndex(0).size()));  
                 if (contractFunction.preconditionExists(regexDocument)) { 
-                   preOkay = contractFunction.doPrecondition(regexDocument, sentenceSection); 
+                   preOkay = contractFunction.doPrecondition(regexDocument, textDocument); 
                    if (preOkay) { 
-                          partMatch = this.regexHandler.matchescount(sentenceSection); 
+                          partMatch = this.regexHandler.matchescount(textDocument); 
                    } else { 
                           partMatch = 0; 
                    } 
                    match = match + partMatch; 
                 } else { 
-                        partMatch = this.regexHandler.matchescount(sentenceSection); 
+                        partMatch = this.regexHandler.matchescount(textDocument); 
                          match = match + partMatch; 
                 }          
                 index++; 
              } 
       } else if (regexDocument.getGranularity().equalsIgnoreCase("text")) {
-          sentence = textDocument.getSentenceAtIndex(index); 
-          textProperties.setProperty("$words",String.valueOf(sentence.size()));       
-          textProperties.setProperty("$sentences",String.valueOf(textDocument.getSentenceCount()));
+          line = textDocument.getAsOneSentence();
+          sentence = new Sentence();
+          sentence.setTokenList(line); 
+          sentenceDocument = new TextDocument();
+          sentenceDocument.addSentence(sentence);
+          textProperties.setProperty("$words",String.valueOf(line.size()));       
+          textProperties.setProperty("$sentences",String.valueOf(sentenceDocument.getSentenceCount()));
           if (contractFunction.preconditionExists(regexDocument)) { 
-                   preOkay = contractFunction.doPrecondition(regexDocument, textDocument); 
+                   preOkay = contractFunction.doPrecondition(regexDocument, sentenceDocument); 
                    if (preOkay) { 
-                          match = this.regexHandler.matchescount(textDocument); 
+                          match = this.regexHandler.matchescount(sentenceDocument); 
                    } else { 
                           match=0; 
                    } 
           } else {         
-                    match = this.regexHandler.matchescount(textDocument);  
+                    match = this.regexHandler.matchescount(sentenceDocument);  
           }       
       } 
       if (contractFunction.postconditionExists(regexDocument)) { 
@@ -85,20 +92,20 @@ public Integer matchcount(TextDocument textDocument) throws ParseRegexException 
 }
 
 public List<String> matchtext(TextDocument textDocument) throws ParseRegexException {
-    Integer match = 0, sentenceCount = 0, index = 0, partMatch = 0, offset=0, start=0, end=0;
+    Integer match = 0, sentenceCount = 0, index = 1, partMatch = 0, offset=0, start=0, end=0;
     List<String> groups = null;
     List<String> totalGroups = new ArrayList<>();
-    List<WordToken> sentence=null;
-    TextDocument sentenceSection=null;
+    List<WordToken> tokenList=null;
+    Sentence sentence=null;
+    TextDocument sentenceDocument=null;
     String group="";
     String[] parts=null;
     if (parseRegex) {
         if (regexDocument.getGranularity().equalsIgnoreCase("sentence")) {
            sentenceCount = textDocument.getSentenceCount();
            while (index<sentenceCount) {
-               sentence = textDocument.getSentenceAtIndex(index);
-               sentenceSection = this.createSingleSentence(sentence);
-               groups = regexHandler.matchestext(sentenceSection);
+               groups = regexHandler.matchestext(sentenceDocument);
+               tokenList = textDocument.getSentenceAtIndex(index);
                for (String line:groups) {
                    parts = line.split(":");
                    start = Integer.valueOf(parts[0]);
@@ -108,11 +115,16 @@ public List<String> matchtext(TextDocument textDocument) throws ParseRegexExcept
                    group = String.valueOf(start)+":"+String.valueOf(end);
                    totalGroups.add(group);
                }
-              offset = offset + sentence.size();
+              offset = offset + tokenList.size();
               index++;
            }
         } else if (regexDocument.getGranularity().equalsIgnoreCase("text")) {
-                 totalGroups = regexHandler.matchestext(textDocument);
+                 tokenList = textDocument.getAsOneSentence();
+                 sentence = new Sentence();
+                 sentence.setTokenList(tokenList);
+                 sentenceDocument = new TextDocument();
+                 sentenceDocument.addSentence(sentence);
+                 totalGroups = regexHandler.matchestext(sentenceDocument);
         }
     } else {
             throw new ParseRegexException("Error in Regex");
@@ -120,15 +132,4 @@ public List<String> matchtext(TextDocument textDocument) throws ParseRegexExcept
   return totalGroups;
  }
 
- private TextDocument createSingleSentence(List<WordToken> sentence) {
-       List<WordToken> singleSentence = new ArrayList<>();
-       TextDocument textDocument = new TextDocument();
-       WordToken wordToken = null;
-       for (WordToken item:sentence) {
-            wordToken = new WordToken(item.getToken(), item.getLemma(), item.getPostag(), item.getDependency(), item.getIndex(), 0);
-            singleSentence.add(wordToken);
-       }
-       textDocument.addSentence(singleSentence);
-     return textDocument;
-  }
 }

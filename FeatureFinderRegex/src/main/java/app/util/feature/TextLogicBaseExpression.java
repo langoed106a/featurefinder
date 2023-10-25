@@ -233,12 +233,10 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
      boolean found=false, finish=false;
      Integer index=0, wordIndex=0, wordTokenIndex=0, sentenceIndex=0;
      String content="", word="", wordPart="";
-     TextDocument textDocument = textBlock.getTextDocument();
-     
      sentenceIndex = wordToken.getSentence();
      value = General.removeQuotes(value);
      sentenceIndex = wordToken.getSentence();
-     found = General.theSame(part, wordToken, textDocument.getSentenceAtIndex(sentenceIndex), value);
+     found = General.theSame(part, wordToken, textBlock.getTextDocument().getSentenceAtIndex(sentenceIndex), value);
      return found;
       }
      
@@ -247,7 +245,7 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
          Boolean firstPosition = false;
          WordToken firstWordToken = null;
          Integer sentenceNumber = wordToken.getSentence();
-         sentence = textBlock.getTextDocument().getSentenceAtIndex(sentenceNumber);
+         sentence = textBlock.getTextDocument().getSentenceAtIndex(wordToken.getIndex());
          if ((sentence !=null) && (sentence.size()>0)) {
               firstWordToken = sentence.get(0);
               if (firstWordToken.getIndex()==wordToken.getIndex()) {
@@ -274,15 +272,13 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
   private Boolean checkList(String part, String value, WordToken wordToken, TextBlock textBlock) {
       boolean found=false, finish=false;
       Integer index=0, wordIndex=0, wordTokenIndex=0, sentenceIndex=0;
-      TextDocument textDocument=null;
       String param="", word="";
       String[] words = null;
       List<String> params=null;
       List<WordToken> sentence=null;
       sentenceIndex = wordToken.getSentence();
       params = General.getListParameters(value);
-      textDocument = textBlock.getTextDocument();
-      sentence = textDocument.getSentenceAtIndex(sentenceIndex);
+      sentence = textBlock.getTextDocument().getSentenceAtIndex(sentenceIndex);
       while ((!found) && (index<params.size())) {
           param = params.get(index);
           found = General.theSame(part, wordToken, sentence, param);
@@ -321,7 +317,6 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
       Boolean found=false, finished=false;
       CustomRegularExpression logicExpression;
       Document feature = null;
-      TextDocument textDocument;
       String functionType="", definedRegex="", contents="", word="", wordToCheck;
       String[] wordList, items;
       List<WordToken> currentWordList = null, wordTokenList = null;
@@ -333,10 +328,9 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
           //feature = featureFunction.getPredefinedFeature(value);
           if ((feature!=null) && (feature.getType().equalsIgnoreCase("regex"))) {
               currentWordList = new ArrayList<>();
-              textDocument = textBlock.getTextDocument();
               wordIndex = wordToken.getIndex();
               sentenceIndex = wordToken.getSentence();
-              wordTokenList = textDocument.getSentenceAtIndex(sentenceIndex);
+              wordTokenList = textBlock.getTextDocument().getSentenceAtIndex(wordToken.getSentence());
               if (wordIndex==0) {
                   while (index<wordTokenList.size()) {
                         wordItem = wordTokenList.get(index);

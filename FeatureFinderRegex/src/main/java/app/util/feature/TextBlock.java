@@ -1,5 +1,7 @@
 package app.util.feature;
 
+import java.util.List;
+
 import app.util.feature.TextDocument;
 
 public class TextBlock {

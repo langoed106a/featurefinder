@@ -1,8 +1,9 @@
 package app.util.feature;
 
+import java.util.List;
+
 import app.util.feature.FeatureFunction; 
 import app.util.feature.RegexDocument; 
-import app.util.feature.TextDocument; 
 import app.util.feature.WordStorage; 
 
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -96,26 +97,27 @@ public class ContractFunction {
         } 
 
         public boolean doPrecondition(RegexDocument regexDocument, TextDocument textDocument) { 
-               Boolean passed=false; 
-               String precondition=null; 
-               ContractFunction tempContractFunction=null; 
-               RegexDocument preDocument=null; 
-               Integer count=0; 
-               if (regexDocument!=null) { 
-                      precondition = regexDocument.getPrecondition(); 
-                      preDocument = new RegexDocument("test", "test", "test", precondition, "text", "", ""); 
-                      tempContractFunction = new ContractFunction(featureFunction, wordStorage); 
-                      Matcher matcher = new Matcher(preDocument, featureFunction, wordStorage, tempContractFunction); 
-                       try { 
-                          count = matcher.matchcount(textDocument); 
-                       } catch (ParseRegexException regexException) { 
-                              regexException.printStackTrace();
-                              count=0; 
-                       } 
-                       if (count>0) { 
-                             passed=true; 
-                       } 
-               } 
+            Boolean passed=false; 
+            String precondition=null; 
+            ContractFunction tempContractFunction=null; 
+            RegexDocument preDocument=null; 
+            Sentence sentence = null;
+            Integer count=0; 
+            if (regexDocument!=null) { 
+                precondition = regexDocument.getPrecondition(); 
+                preDocument = new RegexDocument("test", "test", "test", precondition, "text", "", ""); 
+                tempContractFunction = new ContractFunction(featureFunction, wordStorage); 
+                Matcher matcher = new Matcher(preDocument, featureFunction, wordStorage, tempContractFunction); 
+                try { 
+                    count = matcher.matchcount(textDocument); 
+                } catch (ParseRegexException regexException) { 
+                        regexException.printStackTrace();
+                        count=0; 
+                } 
+                if (count>0) { 
+                    passed=true; 
+                } 
+            } 
         return passed;             
         } 
 

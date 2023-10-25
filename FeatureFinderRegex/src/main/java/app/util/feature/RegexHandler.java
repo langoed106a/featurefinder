@@ -26,8 +26,11 @@ public class RegexHandler {
  public RegexHandler(FeatureFunction featureFunction, WordStorage wordStorage) {
       regexError=false;
       this.featureFunction = featureFunction;
+      System.out.println("********4a********");
       this.textBlock = new TextBlock();
+      System.out.println("********4b********");
       textRegularExpressionParser = new TextRegularExpressionParser(featureFunction, textBlock);
+      System.out.println("********4c********");
  }
  
  public Boolean parseRegex(String regex) {
@@ -44,31 +47,31 @@ public class RegexHandler {
     return parsedOkay;
  }
  
- public Integer matchescount(TextDocument textDocument) {
+ public Integer matchescount(TextDocument document) {
      Integer finds=0;
      List<Match<WordToken>> matches=null;
-     this.textBlock.setTextDocument(textDocument);
+     this.textBlock.setTextDocument(document);
      this.textBlock.setTextBlockExpression(new TextBlockExpression());
      if (!regexError) {
-          matches = regularExpression.findAll(textDocument.getText());
+          matches = regularExpression.findAll(document.getSentenceAtIndex(0));
           finds = matches.size();
      }      
    return finds;
  }
  
- public List<String> matchestext(TextDocument textDocument) {
- Integer finds=0;
- List<Match<WordToken>> matches=null;
- List<String> groupList = new ArrayList<>();
- this.textBlock.setTextDocument(textDocument);
- this.textBlock.setTextBlockExpression(new TextBlockExpression());
- if (!regexError) {
-     matches = regularExpression.findAll(textDocument.getText());
-     for (Match<WordToken> match:matches) {
-      groupList.add(match.startIndex()+":"+match.endIndex());
-     }
- }    
-return groupList;
+ public List<String> matchestext(TextDocument document) {
+     Integer finds=0;
+     List<Match<WordToken>> matches=null;
+     List<String> groupList = new ArrayList<>();
+     this.textBlock.setTextDocument(document);
+     this.textBlock.setTextBlockExpression(new TextBlockExpression());
+     if (!regexError) {
+         matches = regularExpression.findAll(document.getSentenceAtIndex(0));
+         for (Match<WordToken> match:matches) {
+             groupList.add(match.startIndex()+":"+match.endIndex());
+         }
+     }    
+     return groupList;
  }  
  
  
