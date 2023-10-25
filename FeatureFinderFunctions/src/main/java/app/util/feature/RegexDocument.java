@@ -3,12 +3,15 @@ package app.util.feature;
 import javax.json.JsonValue;
 import javax.json.JsonObject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class RegexDocument extends Document {
     private String granularity;
     private String group;
     private String regex;
     private String precondition;
     private String postcondition;
+    private String invariant;
     
     public RegexDocument() {
        super();
@@ -17,9 +20,10 @@ public class RegexDocument extends Document {
        this.regex = "";
        this.precondition = "";
        this.postcondition = "";
+       this.invariant = "";
     }
 
-    public RegexDocument(String name, String group, String description, String contents, String granularity, String precondition, String postcondition) {
+    public RegexDocument(String name, String group, String description, String contents, String granularity, String precondition, String postcondition, String invariant) {
        this.name = name;
        this.contents = contents;
        this.description = description;
@@ -27,6 +31,7 @@ public class RegexDocument extends Document {
        this.group = group;
        this.precondition = precondition;
        this.postcondition = postcondition;
+       this.invariant = invariant;
        this.type = "regex";
     }
 
@@ -70,25 +75,40 @@ public class RegexDocument extends Document {
       return regex;
    }
 
-    public void fromJson(JsonValue jsonValue) {
-      JsonObject jsonObject = jsonValue.asJsonObject();
-      this.id  = jsonObject.getString("id");
-      this.name = jsonObject.getString("name");
-      this.description = jsonObject.getString("description");
-      this.granularity = jsonObject.getString("granularity");
-      this.contents = jsonObject.getString("contents");
-      this.group = jsonObject.getString("group");
-      this.regex = jsonObject.getString("regex");
-      this.postcondition = jsonObject.getString("postcondition");
-      this.precondition = jsonObject.getString("precondition");
-      this.type = jsonObject.getString("type");
+   public void setInvariant(String invariant) {
+      this.invariant = invariant;
+   }
+
+   public String getInvariant() {
+      return invariant;
+   }
+
+    public void fromJson(String jsonStr) {
+         RegexDocument regexDocument = null;
+         try {
+              regexDocument = new ObjectMapper().readValue(jsonStr, RegexDocument.class);
+              this.setType(regexDocument.getType());
+              this.setName(regexDocument.getName());
+              this.setDescription(regexDocument.getDescription());
+              this.setOrigin(regexDocument.getOrigin());
+              this.setRegex(regexDocument.getRegex());
+              this.setGranularity(regexDocument.getGranularity());
+              this.setPostcondition(regexDocument.getPostcondition());
+              this.setPrecondition(regexDocument.getPrecondition());
+              this.setInvariant(regexDocument.getInvariant());
+         } catch (Exception exception) {
+             exception.printStackTrace();
+         }
     }
 
-    public String toJson() {
-      String jsonString="{";
-      jsonString = jsonString +"\"id\":\""+id+"\",\"name\":\""+name+"\",\"description\":\""+description+"\",\"granularity\":\""+granularity+"\",\"contents\":\""+contents+"\",\"precondition\":\""+precondition+"\",\"postcondition\":\""+postcondition+"\",\"type\":\""+type+"\"";
-      jsonString = jsonString + "}";
-      return jsonString;
+   public String toJson() {
+        String jsonStr = "";
+        try {
+            jsonStr = new ObjectMapper().writeValueAsString(this);
+        } catch (Exception exception) {
+                exception.printStackTrace();
+        }
+        return jsonStr;
     }
     
  }
