@@ -3,19 +3,49 @@ package app.util.feature;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class FeatureResult {
-	private List<RegexResult> resultList;
+
+	@JsonProperty("sentencelist")
+    private List<Sentence> sentencelist;
+
+	@JsonProperty("matches")
+	private List<Match> matches;
 
 	public FeatureResult() {
-		resultList = new ArrayList<>();
+		matches = new ArrayList<>();
+		sentencelist = new ArrayList<>();
 	}
 
-	public List<RegexResult> getResultList() {
-		return resultList;
+    @JsonIgnore
+	public List<Match> getMatches() {
+		return matches;
 	}
 
-	public void setResultList(List<RegexResult> resultList) {
-		this.resultList = resultList;
+	public void setMatches(List<Match> matches) {
+		this.matches = matches;
 	}
+
+	@JsonIgnore
+	public List<Sentence> getSentenceList() {
+		return sentencelist;
+	}
+
+	public void setSentenceList(List<Sentence> sentencelist) {
+		this.sentencelist = sentencelist;
+	}
+
+    public String toJson() {
+        String jsonStr = "";
+        try {
+            jsonStr = new ObjectMapper().writeValueAsString(this);
+        } catch (Exception exception) {
+                exception.printStackTrace();
+        }
+        return jsonStr;
+    }
 	
 }
