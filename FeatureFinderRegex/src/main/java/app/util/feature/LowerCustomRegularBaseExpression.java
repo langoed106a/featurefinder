@@ -12,12 +12,6 @@ public class LowerCustomRegularBaseExpression extends BaseExpression<WordToken> 
   public LowerCustomRegularBaseExpression(String regex, FeatureFunction featureFunction, TextBlock textBlock) {
         super(regex);
         lowerCustomLogicExpressionParser = new LowerCustomLogicExpressionParser(featureFunction, textBlock);
-        if ((regex!=null) && regex.startsWith("<")) {
-            regex = regex.substring(1, regex.length());
-        }
-        if ((regex!=null) && regex.endsWith(">")) {
-            regex = regex.substring(0, regex.length()-1);
-        }
         logicExpression = lowerCustomLogicExpressionParser.parse(regex);
   }
  

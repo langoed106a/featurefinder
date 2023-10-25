@@ -35,78 +35,44 @@ public class RegexHandler {
  
  public Boolean parseRegex(String regex) {
       Boolean parsedOkay = true;
-      String refinedRegex = preProcess(regex);
       try {
-           regularExpression = textRegularExpressionParser.process(refinedRegex);
+           regularExpression = textRegularExpressionParser.process(regex);
+           System.out.println("******Parse:"+regex);
       } catch (Exception exception) {
             exception.printStackTrace();
             regexError = true;
             parsedOkay = false;
-            logger.error("Failed to parse regex:"+refinedRegex);
+            logger.error("Failed to parse regex:"+regex);
       }
     return parsedOkay;
  }
  
- public Integer matchescount(TextDocument document) {
+ public Integer matchescount(TextDocument document, Integer lineIndex) {
      Integer finds=0;
      List<Match<WordToken>> matches=null;
      this.textBlock.setTextDocument(document);
      this.textBlock.setTextBlockExpression(new TextBlockExpression());
      if (!regexError) {
-          matches = regularExpression.findAll(document.getSentenceAtIndex(0));
+          System.out.println("******"+document.getSentenceAtIndex(lineIndex).get(0).getToken());
+          matches = regularExpression.findAll(document.getSentenceAtIndex(lineIndex));
           finds = matches.size();
      }      
    return finds;
  }
  
- public List<String> matchestext(TextDocument document) {
+ public List<String> matchestext(TextDocument document, Integer lineIndex) {
      Integer finds=0;
      List<Match<WordToken>> matches=null;
      List<String> groupList = new ArrayList<>();
      this.textBlock.setTextDocument(document);
      this.textBlock.setTextBlockExpression(new TextBlockExpression());
      if (!regexError) {
-         matches = regularExpression.findAll(document.getSentenceAtIndex(0));
+         matches = regularExpression.findAll(document.getSentenceAtIndex(lineIndex));
          for (Match<WordToken> match:matches) {
              groupList.add(match.startIndex()+":"+match.endIndex());
          }
      }    
      return groupList;
  }  
- 
- 
- /* this regular expression engine is greedy */
- 
- private String preProcess(String regex) {
-       Integer position, startIndex=0, endIndex=0, index, wildcardLength = WILDCARD_SEARCH.length();
-       String refinedRegex = regex, wildCardRegex="", part="", subStr="", word="";
-       List<String> parameters=null;
-       Boolean finish = false;
-       if (regex.contains(WILDCARD_SEARCH)) {
-             position=regex.indexOf(WILDCARD_SEARCH);
-             if (position>-1) {
-                  startIndex = position;
-                  part=regex.substring(position+wildcardLength, regex.length());
-                  if (part.startsWith("(")) {
-                      position = part.indexOf(")>");
-                      if (position>-1) {
-                           endIndex=position+startIndex+wildcardLength+2;
-                           subStr = part.substring(1,position);
-                           parameters = General.getListParameters(subStr);
-                           if (parameters.size()==1) {
-                                word = parameters.get(0);
-                                wildCardRegex=WILDCARD_REGEX.replace("%1", word);
-                                if (endIndex<refinedRegex.length()) {
-                                    refinedRegex = refinedRegex.substring(0,startIndex)+wildCardRegex+refinedRegex.substring(endIndex,refinedRegex.length());
-                                } else {
-                                    refinedRegex = refinedRegex.substring(0,startIndex)+wildCardRegex;
-                                }
-                          }
-                  } 
-              }
-           }
-      }  
-    return refinedRegex;
- }
  
 }

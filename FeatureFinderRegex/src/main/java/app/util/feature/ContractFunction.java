@@ -105,7 +105,7 @@ public class ContractFunction {
             Integer count=0; 
             if (regexDocument!=null) { 
                 precondition = regexDocument.getPrecondition(); 
-                preDocument = new RegexDocument("test", "test", "test", precondition, "text", "", ""); 
+                preDocument = new RegexDocument("test", "test", "test", precondition, "text", "", "", ""); 
                 tempContractFunction = new ContractFunction(featureFunction, wordStorage); 
                 Matcher matcher = new Matcher(preDocument, featureFunction, wordStorage, tempContractFunction); 
                 try { 

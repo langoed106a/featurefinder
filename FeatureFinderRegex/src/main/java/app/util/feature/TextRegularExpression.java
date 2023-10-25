@@ -11,8 +11,8 @@ public class TextRegularExpression  {
         private RegularExpression<WordToken> logicExpression;
         private String regex;
     
-    public TextRegularExpression(String string) {
-        this.regex = string;
+    public TextRegularExpression(String str) {
+        this.regex = str;
     }
 
     public void setLogicExpression(RegularExpression logicExpression) {

@@ -21,9 +21,9 @@ public class TextRegularExpressionParser extends RegularExpressionParser<WordTok
         return new TextRegularBaseExpression(str, featureFunction, textBlock);
     }
 
-    public TextRegularExpression process(String string) {
-       TextRegularExpression customLogicExpression =  new TextRegularExpression(string);
-       customLogicExpression.setLogicExpression(this.apply(string));
+    public TextRegularExpression process(String str) {
+       TextRegularExpression customLogicExpression =  new TextRegularExpression(str);
+       customLogicExpression.setLogicExpression(this.apply(str));
        return customLogicExpression;
     }
 }

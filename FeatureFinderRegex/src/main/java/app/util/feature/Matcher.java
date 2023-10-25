@@ -42,18 +42,18 @@ public Integer matchcount(TextDocument textDocument) throws ParseRegexException 
              sentenceCount = textDocument.getSentenceCount(); 
              textProperties.setProperty("$sentences",String.valueOf(sentenceCount));
              while (index<sentenceCount) { 
-                textProperties.setProperty("$words",String.valueOf(textDocument.getSentenceAtIndex(0).size()));  
+                textProperties.setProperty("$words",String.valueOf(textDocument.getSentenceAtIndex(index+1).size()));  
                 if (contractFunction.preconditionExists(regexDocument)) { 
                    preOkay = contractFunction.doPrecondition(regexDocument, textDocument); 
                    if (preOkay) { 
-                          partMatch = this.regexHandler.matchescount(textDocument); 
+                          partMatch = this.regexHandler.matchescount(textDocument, index+1); 
                    } else { 
                           partMatch = 0; 
                    } 
                    match = match + partMatch; 
                 } else { 
-                        partMatch = this.regexHandler.matchescount(textDocument); 
-                         match = match + partMatch; 
+                        partMatch = this.regexHandler.matchescount(textDocument, index+1); 
+                        match = match + partMatch; 
                 }          
                 index++; 
              } 
@@ -68,12 +68,12 @@ public Integer matchcount(TextDocument textDocument) throws ParseRegexException 
           if (contractFunction.preconditionExists(regexDocument)) { 
                    preOkay = contractFunction.doPrecondition(regexDocument, sentenceDocument); 
                    if (preOkay) { 
-                          match = this.regexHandler.matchescount(sentenceDocument); 
+                          match = this.regexHandler.matchescount(sentenceDocument, 1); 
                    } else { 
                           match=0; 
                    } 
           } else {         
-                    match = this.regexHandler.matchescount(sentenceDocument);  
+                    match = this.regexHandler.matchescount(sentenceDocument, 1);  
           }       
       } 
       if (contractFunction.postconditionExists(regexDocument)) { 
@@ -92,7 +92,7 @@ public Integer matchcount(TextDocument textDocument) throws ParseRegexException 
 }
 
 public List<String> matchtext(TextDocument textDocument) throws ParseRegexException {
-    Integer match = 0, sentenceCount = 0, index = 1, partMatch = 0, offset=0, start=0, end=0;
+    Integer match = 0, sentenceCount = 0, index = 0, partMatch = 0, offset=0, start=0, end=0;
     List<String> groups = null;
     List<String> totalGroups = new ArrayList<>();
     List<WordToken> tokenList=null;
@@ -104,8 +104,8 @@ public List<String> matchtext(TextDocument textDocument) throws ParseRegexExcept
         if (regexDocument.getGranularity().equalsIgnoreCase("sentence")) {
            sentenceCount = textDocument.getSentenceCount();
            while (index<sentenceCount) {
-               groups = regexHandler.matchestext(sentenceDocument);
-               tokenList = textDocument.getSentenceAtIndex(index);
+               groups = regexHandler.matchestext(textDocument, index+1);
+               tokenList = textDocument.getSentenceAtIndex(index+1);
                for (String line:groups) {
                    parts = line.split(":");
                    start = Integer.valueOf(parts[0]);
@@ -124,7 +124,7 @@ public List<String> matchtext(TextDocument textDocument) throws ParseRegexExcept
                  sentence.setTokenList(tokenList);
                  sentenceDocument = new TextDocument();
                  sentenceDocument.addSentence(sentence);
-                 totalGroups = regexHandler.matchestext(sentenceDocument);
+                 totalGroups = regexHandler.matchestext(sentenceDocument, 1);
         }
     } else {
             throw new ParseRegexException("Error in Regex");

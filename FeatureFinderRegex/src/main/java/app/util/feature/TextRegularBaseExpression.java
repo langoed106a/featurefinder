@@ -12,12 +12,6 @@ public class TextRegularBaseExpression extends BaseExpression<WordToken> {
   public TextRegularBaseExpression(String regex, FeatureFunction featureFunction, TextBlock textBlock) {
         super(regex);
         customLogicExpressionParser = new TextLogicExpressionParser(featureFunction, textBlock);
-        if ((regex!=null) && regex.startsWith("<")) {
-            regex = regex.substring(1, regex.length());
-        }
-        if ((regex!=null) && regex.endsWith(">")) {
-            regex = regex.substring(0, regex.length()-1);
-        }
         logicExpression = customLogicExpressionParser.parse(regex);
   }
  
