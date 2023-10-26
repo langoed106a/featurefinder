@@ -198,7 +198,7 @@ public class FeatureProcessorService {
 		    }
 		  }
 		} catch (Exception regexException) {
-			response="{\"error\":\""+regexException.getMessage()+"\"status\":500}";
+			response="{\"error\":\""+regexException.getMessage()+",\"status\":500}";
 		}	
       return response;
     }
@@ -221,7 +221,7 @@ public class FeatureProcessorService {
 			position=label.indexOf("of");
 			if (position>0) {
 				start = label.substring(0,position);
-				end = label.substring(position+1, label.length());
+				end = label.substring(position+2, label.length());
 				first = Integer.valueOf(start);
 				last = Integer.valueOf(end);
 				if (first>lastStart) {
