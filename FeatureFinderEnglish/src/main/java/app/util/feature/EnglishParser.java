@@ -66,7 +66,7 @@ public class EnglishParser {
     public TextDocument parseText(String text) {
         Annotation document=null;
         Integer wordIndex=0;
-        Integer sentenceIndex=0;
+        Integer sentenceIndex=1;
         List<CoreLabel> coreLabelList=null;
         Sentence sentence = null;
         String[] wordParts = null, objectParts = null;

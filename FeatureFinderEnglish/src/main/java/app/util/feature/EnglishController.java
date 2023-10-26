@@ -87,6 +87,7 @@ public class EnglishController {
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
+		System.out.println("*****Sending:"+jsonStr);
 		response = asyncSender.send("parsedtext", jsonStr);
 	    return response;
     }
