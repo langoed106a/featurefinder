@@ -42,14 +42,6 @@ public class TextDocument extends Document {
     	this.language = language;
     }
     
-    public String getName() {
-       return name;
-    }  
-    
-    public String getContents() {
-    	return contents;
-    }
-
     public void setSentenceList(List<Sentence> sentenceList) {
         this.sentencelist = sentenceList;
     }
@@ -102,9 +94,12 @@ public class TextDocument extends Document {
          try {
               textDocument = new ObjectMapper().readValue(jsonStr, TextDocument.class);
               this.setContents(textDocument.getContents());
+              this.setDescription(textDocument.getDescription());
               this.setId(textDocument.getId());
               this.setLanguage(textDocument.getLanguage());
               this.setType(textDocument.getType());
+              this.setOrigin(textDocument.getOrigin());
+              this.setLabel(textDocument.getLabel());
               this.setName(textDocument.getName());
               this.setSentenceList(textDocument.getSentenceList());
          } catch (Exception exception) {

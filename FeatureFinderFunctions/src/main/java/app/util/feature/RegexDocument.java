@@ -87,8 +87,12 @@ public class RegexDocument extends Document {
          RegexDocument regexDocument = null;
          try {
               regexDocument = new ObjectMapper().readValue(jsonStr, RegexDocument.class);
+              this.setId(regexDocument.getId());
               this.setType(regexDocument.getType());
+              this.setLabel(regexDocument.getLabel());
+              this.setOrigin(regexDocument.getOrigin());
               this.setName(regexDocument.getName());
+              this.setContents(regexDocument.getContents());
               this.setDescription(regexDocument.getDescription());
               this.setOrigin(regexDocument.getOrigin());
               this.setRegex(regexDocument.getRegex());

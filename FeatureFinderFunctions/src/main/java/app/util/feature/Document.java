@@ -3,6 +3,7 @@ package app.util.feature;
 public class Document {
     String id;
     String description;
+    String label;
     String name;
     String origin;
     String type;
@@ -11,6 +12,7 @@ public class Document {
     public Document() {
        id="";
        description="";
+       label="";
        name="";
        origin="";
        type="";
@@ -33,12 +35,20 @@ public class Document {
         return description;
     }
 
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
     public String getName() {
-        return type;
+        return name;
     }
 
     public void setOrigin(String origin) {
