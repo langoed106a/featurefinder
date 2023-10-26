@@ -186,16 +186,13 @@ public class FeatureProcessorService {
 	  try {
 		  regexDocument.fromJson(feature);
 	      if (regexDocument != null) {
-			 keepDocument = true;
-			 while (keepDocument) {
-				 label = regexDocument.getLabel();
-				 keepDocument = this.checkLabel(label);
-			     textDocument = this.getTextDocument(keepDocument);
-			     if ((textDocument!=null) && (regexDocument!=null)) {
-				    futureStr = regexService.doAsyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
-				    response = futureStr.get();
-				 }
-		    }
+		      label = regexDocument.getLabel();
+			  keepDocument = this.checkLabel(label);
+			  textDocument = this.getTextDocument(keepDocument);
+			  if ((textDocument!=null) && (regexDocument!=null)) {
+				  futureStr = regexService.doAsyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
+				  response = futureStr.get();
+			  }
 		  }
 		} catch (Exception regexException) {
 			response="{\"error\":\""+regexException.getMessage()+",\"status\":500}";
@@ -224,7 +221,7 @@ public class FeatureProcessorService {
 				end = label.substring(position+2, label.length());
 				first = Integer.valueOf(start);
 				last = Integer.valueOf(end);
-				if (first>lastStart) {
+				if (first>this.lastStart) {
 					if (first==last) {
 						this.lastStart=0;
 					} else if (first<last) {
