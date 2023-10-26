@@ -26,7 +26,6 @@ public class RegexService {
         asyncSender = new HTTPAsyncSender(serviceLocator);
     }
 
-
     @Async
     public CompletableFuture<String> doAsyncRegex(TextDocument textDocument, RegexDocument regexDocument, FeatureFunction featureFunction, WordStorage wordStorage, ContractFunction contractFunction) throws InterruptedException {
         Matcher matcher = null;
@@ -37,8 +36,6 @@ public class RegexService {
         matcher = new Matcher(regexDocument, featureFunction, wordStorage, contractFunction);
         try {
 		     matchcount = matcher.matchcount(textDocument);
-             System.out.println("********************************");
-			 System.out.println("************************Matches********"+matchcount);
              regexResult.setCount(matchcount);
              regexResult.setRegexName(regexDocument.getName());
              regexResult.setTextName(textDocument.getName());
@@ -60,12 +57,8 @@ public class RegexService {
         Integer matchcount = 0;
         List<Match> matchList = null;
         logger.info("Starting: regex-"+regexDocument.getRegex());
-        System.out.println("********************************");
-		System.out.println("************************TextDocument 1********"+textDocument.getSentenceList().size());
 		matcher = new Matcher(regexDocument, featureFunction, wordStorage, contractFunction);
 		try {
-             System.out.println("********************************");
-			 System.out.println("************************TextDocument 2********"+textDocument.getSentenceList().size());
              matches = matcher.matchtext(textDocument);
              if (matches!=null) {
                 matchList = new ArrayList<>();
@@ -77,10 +70,6 @@ public class RegexService {
                 featureResult.setMatches(matchList);
                 featureResult.setSentenceList(textDocument.getSentenceList());
              }
-             System.out.println("********************************");
-			 System.out.println("************************Matches********"+matches.size());
-             System.out.println("************************Matches********"+matches.size());
-			 System.out.println("********************************");
         } catch(Exception exception) {
             logger.error("Error: async regex error");
             exception.printStackTrace();

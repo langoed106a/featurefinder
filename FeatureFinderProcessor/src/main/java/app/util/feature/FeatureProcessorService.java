@@ -64,6 +64,7 @@ public class FeatureProcessorService {
 	private WordStorage wordStorage;
 	private TextDocument textToProcess;
 	private ObjectMapper objectMapper;
+	private Integer lastStart;
 
 	@Autowired
 	private RestTemplate restSimpleTemplate;
@@ -81,6 +82,7 @@ public class FeatureProcessorService {
 		regexService = new RegexService(serviceLocator);
 		objectMapper = new ObjectMapper();
 		wordStorage = new WordStorage();
+		lastStart = 0;
 		textToProcess=null;
 	}
 	
@@ -120,22 +122,9 @@ public class FeatureProcessorService {
 	   TextDocument textDocument=null;
 	   TextDocument document=null;
 	   try {
-		    System.out.println("******TEXT**********");
-			System.out.println(text);
 			textDocument = new TextDocument();
 	        textDocument.fromJson(text);
-			List<WordToken> line = textDocument.getSentenceAtIndex(1);
-			System.out.println("***TEXT*****");
-			for (WordToken wordToken:line) {
-				System.out.println("***Word:"+wordToken.getToken());
-			}
 			concurrentLinkedQueue.add(textDocument);
-			System.out.println("****QUEUE*****");
-			document= concurrentLinkedQueue.peek();
-			List<WordToken> sentence = textDocument.getSentenceAtIndex(1);
-			for (WordToken wordToken:sentence) {
-				System.out.println("***Word:"+wordToken.getToken());
-			}
 	   } catch (Exception exception) {
 		    exception.printStackTrace();
 		    textToProcess = null;
@@ -161,7 +150,7 @@ public class FeatureProcessorService {
 	  try {
 		  regexDocument.fromJson(feature);
 	      if (regexDocument != null) {
-			textDocument = this.getTextDocument();
+			textDocument = this.getTextDocument(false);
 			 if ((textDocument!=null) && (regexDocument!=null)) {
                     futureMatch = regexService.doSyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
 					featureResult = futureMatch.get();
@@ -177,13 +166,13 @@ public class FeatureProcessorService {
 
 	@RequestMapping(value = "/asyncprocessfeature", method = RequestMethod.POST)
     public String asyncProcessfeature(@RequestBody String feature) { 
-	  Boolean valid = false, showHighlight = false;
+	  Boolean valid = false, keepDocument = true;
 	  CompletableFuture<String> futureStr = null;
 	  FeatureResult featureResult = new FeatureResult();
 	  RegexDocument regexDocument = new RegexDocument();
 	  RegexResult regexResult = null;
 	  TextDocument textDocument = null;
-	  String response="";
+	  String response="", label="";
 	  String[] parts=null;	
 	  Integer matchcount = 0;
 	  List<WordToken> tokens=null;
@@ -197,10 +186,15 @@ public class FeatureProcessorService {
 	  try {
 		  regexDocument.fromJson(feature);
 	      if (regexDocument != null) {
-			 textDocument = this.getTextDocument();
-			 if ((textDocument!=null) && (regexDocument!=null)) {
-				futureStr = regexService.doAsyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
-				response = futureStr.get();
+			 keepDocument = true;
+			 while (keepDocument) {
+				 label = regexDocument.getLabel();
+				 keepDocument = this.checkLabel(label);
+			     textDocument = this.getTextDocument(keepDocument);
+			     if ((textDocument!=null) && (regexDocument!=null)) {
+				    futureStr = regexService.doAsyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
+				    response = futureStr.get();
+				 }
 		    }
 		  }
 		} catch (Exception regexException) {
@@ -209,10 +203,38 @@ public class FeatureProcessorService {
       return response;
     }
 
-	private TextDocument getTextDocument() {
+	private TextDocument getTextDocument(Boolean keep) {
 		TextDocument textDocument = null;
-		textDocument = concurrentLinkedQueue.poll();
+		if (keep) {
+		    textDocument = concurrentLinkedQueue.peek();
+		} else {
+			textDocument = concurrentLinkedQueue.poll();
+		}
 		return textDocument;
+	}
+
+	private Boolean checkLabel(String label) {
+		Boolean keep = false;
+		Integer position=0, first=0, last=0;
+		String start="", end="";
+	    if ((label !=null) && (label.length()>0)) {
+			position=label.indexOf("of");
+			if (position>0) {
+				start = label.substring(0,position);
+				end = label.substring(position+1, label.length());
+				first = Integer.valueOf(start);
+				last = Integer.valueOf(end);
+				if (first>lastStart) {
+					if (first==last) {
+						this.lastStart=0;
+					} else if (first<last) {
+                        this.lastStart=first;
+						keep=true;
+					}
+				} 
+			}
+		}
+		return keep;
 	}
 	
 }
