@@ -18,15 +18,11 @@ private WordStorage wordStorage;
 private Boolean parseRegex;
 
 public Matcher(RegexDocument regexDocument, FeatureFunction featureFunction, WordStorage wordStorage, ContractFunction contractFunction) {
-     System.out.println("********1********");
      this.regexHandler = new RegexHandler(featureFunction, wordStorage);
-     System.out.println("********2********");
      this.regexDocument = regexDocument;
      this.contractFunction = contractFunction;
      this.parseRegex = regexHandler.parseRegex(regexDocument.getRegex());
-     System.out.println("********3********");
      this.wordStorage = wordStorage;
-     System.out.println("********6********");
 }
 
 public Integer matchcount(TextDocument textDocument) throws ParseRegexException { 

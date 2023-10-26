@@ -33,7 +33,6 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
     this.valueType=null;
     String tag="";
     customMatches = new ArrayList<>();
-    System.out.println("************Regex TextLogicBaseExpression:"+regex);
     if ((regex!=null) && (regex.startsWith("<")) && (regex.endsWith(">"))) {
         regex = regex.substring(1, regex.length());
         regex = regex.substring(0, regex.length()-1);  
@@ -44,14 +43,12 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
            this.value = regex.substring(part.length()+1,regex.length());
            this.valueType = this.getValueType(value);
     }
-    System.out.println("****Part:"+part+"   Value:"+value);
     customRegularExpressionParser = new CustomRegularExpressionParser(featureFunction, textBlock);
   }
  
   public boolean apply(WordToken wordToken) {
     Boolean found = false;
     Integer index = 0, position = 0;
-    System.out.println("************WordToken:"+wordToken);
     if ((valueType!=null) && (part!=null)) {
         if (part.equalsIgnoreCase("text")) {
              found = this.checkText(part, value, valueType, wordToken, textBlock);

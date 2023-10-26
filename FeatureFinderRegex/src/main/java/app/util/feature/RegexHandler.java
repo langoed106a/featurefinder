@@ -26,18 +26,14 @@ public class RegexHandler {
  public RegexHandler(FeatureFunction featureFunction, WordStorage wordStorage) {
       regexError=false;
       this.featureFunction = featureFunction;
-      System.out.println("********4a********");
       this.textBlock = new TextBlock();
-      System.out.println("********4b********");
       textRegularExpressionParser = new TextRegularExpressionParser(featureFunction, textBlock);
-      System.out.println("********4c********");
  }
  
  public Boolean parseRegex(String regex) {
       Boolean parsedOkay = true;
       try {
            regularExpression = textRegularExpressionParser.process(regex);
-           System.out.println("******Parse:"+regex);
       } catch (Exception exception) {
             exception.printStackTrace();
             regexError = true;
@@ -53,7 +49,6 @@ public class RegexHandler {
      this.textBlock.setTextDocument(document);
      this.textBlock.setTextBlockExpression(new TextBlockExpression());
      if (!regexError) {
-          System.out.println("******"+document.getSentenceAtIndex(lineIndex).get(0).getToken());
           matches = regularExpression.findAll(document.getSentenceAtIndex(lineIndex));
           finds = matches.size();
      }      
