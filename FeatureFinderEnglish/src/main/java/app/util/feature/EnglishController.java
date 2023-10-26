@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.simple.JSONArray;
 
@@ -79,16 +80,19 @@ public class EnglishController {
 
 	@RequestMapping(value = "/asyncparsetext", method = RequestMethod.POST)
     public String asyncParseText(@RequestBody String text ) { 
-	    String jsonStr="", response="";
+	    String jsonStr="", response="", uniqueId="", reply="";
 		TextDocument textDocument = null;
         try {
 		     textDocument = englishParser.parseText(text);
+			 uniqueId = UUID.randomUUID().toString();
+			 textDocument.setId(uniqueId);
 		     jsonStr = textDocument.toJson();
+			 reply = asyncSender.send("parsedtext", jsonStr);
+			 response = "{\"token\":\""+uniqueId+"\",\"status\":200}";
 		} catch (Exception exception) {
 			exception.printStackTrace();
+			response = "{\"error\":\""+exception.getMessage()+"\",\"status\":500}";
 		}
-		System.out.println("*****Sending:"+jsonStr);
-		response = asyncSender.send("parsedtext", jsonStr);
 	    return response;
     }
     
