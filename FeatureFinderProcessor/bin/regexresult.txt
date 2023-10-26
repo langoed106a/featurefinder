@@ -1,8 +1,0 @@
-{"count":2,"textName":"","regexName":"test2"}
-{"count":2,"textName":"","regexName":"test2"}
-{"count":2,"regexName":"test6","textName":""}
-{"count":2,"regexName":"test6","textName":""}
-{"count":2,"textName":"","regexName":"test6"}
-{"count":2,"textName":"","regexName":"test6"}
-{"count":2,"textName":"","regexName":"test10"}
-{"count":2,"textName":"","regexName":"test11"}

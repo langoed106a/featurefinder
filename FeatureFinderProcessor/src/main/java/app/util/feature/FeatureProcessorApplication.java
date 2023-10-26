@@ -23,7 +23,7 @@ public class FeatureProcessorApplication implements CommandLineRunner {
 	@Bean
     public RestTemplate restTemplate() {
         int connectionTimeout = 240000;
-	int socketTimeout = 240000;
+	    int socketTimeout = 240000;
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(connectionTimeout);
         factory.setReadTimeout(socketTimeout);

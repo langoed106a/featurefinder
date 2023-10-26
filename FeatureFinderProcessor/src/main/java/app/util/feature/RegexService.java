@@ -26,7 +26,7 @@ public class RegexService {
         asyncSender = new HTTPAsyncSender(serviceLocator);
     }
 
-    @Async
+    @Async("taskExecutor")
     public CompletableFuture<String> doAsyncRegex(TextDocument textDocument, RegexDocument regexDocument, FeatureFunction featureFunction, WordStorage wordStorage, ContractFunction contractFunction) throws InterruptedException {
         Matcher matcher = null;
         RegexResult regexResult = new RegexResult();

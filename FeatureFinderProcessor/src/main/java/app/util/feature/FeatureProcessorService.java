@@ -122,6 +122,7 @@ public class FeatureProcessorService {
 	   TextDocument textDocument=null;
 	   TextDocument document=null;
 	   try {
+		    logger.info("Received new text document");
 			textDocument = new TextDocument();
 	        textDocument.fromJson(text);
 			concurrentLinkedQueue.add(textDocument);
@@ -165,10 +166,11 @@ public class FeatureProcessorService {
     }
 
 	@RequestMapping(value = "/asyncprocessfeature", method = RequestMethod.POST)
-    public String asyncProcessfeature(@RequestBody String feature) { 
+    public String asyncProcessfeature(@RequestBody String featurelist) { 
 	  Boolean valid = false, keepDocument = true;
 	  CompletableFuture<String> futureStr = null;
 	  FeatureResult featureResult = new FeatureResult();
+	  RegexDocumentList regexDocumentList = new RegexDocumentList();
 	  RegexDocument regexDocument = new RegexDocument();
 	  RegexResult regexResult = null;
 	  TextDocument textDocument = null;
@@ -184,7 +186,7 @@ public class FeatureProcessorService {
 	  // featureFunction.setFeatureStore(documentDatabase);
 	  featureFunction.setWordStorage(wordStorage);
 	  try {
-		  regexDocument.fromJson(feature);
+		  regexDocumentList.fromJson(featurelist);
 	      if (regexDocument != null) {
 		      label = regexDocument.getLabel();
 			  keepDocument = this.checkLabel(label);
