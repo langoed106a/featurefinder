@@ -47,10 +47,10 @@ public Integer matchcount(TextDocument textDocument) throws ParseRegexException 
                           partMatch = 0; 
                    } 
                    match = match + partMatch; 
-                } else { 
+                } else {  
                         partMatch = this.regexHandler.matchescount(textDocument, index+1); 
                         match = match + partMatch; 
-                }          
+                }        
                 index++; 
              } 
       } else if (regexDocument.getGranularity().equalsIgnoreCase("text")) {
