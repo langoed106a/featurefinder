@@ -10,24 +10,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RegexDocumentList {
 
-    @JsonProperty("tokenid")
-    private String tokenid;
+    @JsonProperty("messagetype")
+    private String messagetype;
 
     @JsonProperty("regexdocumentlist")
     private List<RegexDocument> regexdocumentlist;
 
     public RegexDocumentList() {
-       tokenid = "";
+       messagetype = "";
        regexdocumentlist = new ArrayList<>();
     }
 
-    public void setTokenId(String tokenid) {
-        this.tokenid = tokenid;
+    public void setMessageType(String messagetype) {
+        this.messagetype = messagetype;
     }
 
     @JsonIgnore
-    public String getTokenId() {
-        return tokenid;
+    public String getMessageType() {
+        return messagetype;
     }
 
     public void setRegexDocumentList(List<RegexDocument> regexDocumentList) {
@@ -43,7 +43,7 @@ public class RegexDocumentList {
          RegexDocumentList regexDocumentList = null;
          try {
               regexDocumentList = new ObjectMapper().readValue(jsonStr, RegexDocumentList.class);
-              this.setTokenId(regexDocumentList.getTokenId());
+              this.setMessageType(regexDocumentList.getMessageType());
               this.setRegexDocumentList(regexDocumentList.getRegexDocumentList());
          } catch (Exception exception) {
              exception.printStackTrace();

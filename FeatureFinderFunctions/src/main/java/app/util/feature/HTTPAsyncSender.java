@@ -54,6 +54,44 @@ public class HTTPAsyncSender {
         return message;
     }
 
+    public String send(String documentType, String content, String name) {
+        BoundRequestBuilder builder=null;
+        Future<String> reply=null;
+        Integer position=0;
+        String message="500", destination="";
+        destination = serviceLocator.getService(documentType);
+        if (destination !=null) {
+            if (destination.startsWith("http")) {
+                builder =  httpClient.preparePost(destination);
+                builder.addHeader("Content-type", "application/json;charset=utf-8");
+                builder.addHeader("Accept", "application/json");
+                builder.setBody(content);
+                try {
+                     reply = builder.execute(new ResponseHandler());
+                     message = reply.get();
+                } catch (Exception exception) {
+                    message = "500";
+                }
+            } else if (destination.startsWith("file")) {
+                destination = destination.substring(7, destination.length());
+                if ((destination!=null) && (destination.length()>0)) {
+                    try {
+                         position = destination.indexOf('.');
+                         if ((position>0) && (name!=null) && (name.length()>0)) {
+                            destination=name+"."+destination.substring(position+1, destination.length());
+                         }
+                         message = writeToFile(destination, content);
+                    } catch (Exception exception) {
+                        message="500";
+                    }
+                } else {
+                    message="500";
+                }
+            }
+        }
+        return message;
+    }
+
     private String writeToFile(String destination, String text) throws Exception {
         File file = new File(destination);
         String message="200";
