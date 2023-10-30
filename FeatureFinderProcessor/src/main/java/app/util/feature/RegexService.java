@@ -40,7 +40,7 @@ public class RegexService {
              regexResult.setRegexName(regexDocument.getName());
              regexResult.setTextName(textDocument.getName());
              jsonStr = regexResult.toJson();
-             response = asyncSender.send("regexresult", jsonStr);
+             response = asyncSender.send("regexresult", jsonStr, regexDocument.getId());
         } catch(Exception exception) {
             exception.printStackTrace();
             logger.error("Error: async regex error");

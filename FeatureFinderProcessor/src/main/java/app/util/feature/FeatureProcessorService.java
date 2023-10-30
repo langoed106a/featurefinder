@@ -17,7 +17,9 @@ import org.json.simple.parser.JSONParser;
 
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;   
-import java.util.Date; 
+import java.util.Date;
+import java.util.HashMap; 
+import java.util.Map;
 
 import java.net.URLEncoder;
 
@@ -63,6 +65,7 @@ public class FeatureProcessorService {
 	private ServiceLocator serviceLocator;
 	private WordStorage wordStorage;
 	private TextDocument textToProcess;
+	private Map<String, RegexDocumentList> regexMapList;
 	private ObjectMapper objectMapper;
 	private Integer lastStart;
 
@@ -77,9 +80,9 @@ public class FeatureProcessorService {
 		featureFunction = new FeatureFunction();
 		String properties_location = System.getProperty(PROPERTIES_NAME);
 		serviceLocator = new ServiceLocator(properties_location);
-	    concurrentLinkedQueue = new ConcurrentLinkedQueue();
 		contractFunction = new ContractFunction(featureFunction, wordStorage);
 		regexService = new RegexService(serviceLocator);
+		regexMapList = new HashMap<>();
 		objectMapper = new ObjectMapper();
 		wordStorage = new WordStorage();
 		lastStart = 0;
@@ -116,57 +119,80 @@ public class FeatureProcessorService {
 	    return featureResult;
     }
 
-	@RequestMapping(value = "/processtext", method = RequestMethod.POST)
-    public String processtext(@RequestBody String text) { 
-	   String status="200";
+	@RequestMapping(value = "/regexdocumentlist", method = RequestMethod.GET)
+    public RegexDocumentList getRegexDocumentListTemplate() { 
+	    RegexDocumentList documentList = new RegexDocumentList();
+	    return documentList;
+    }
+
+	@RequestMapping(value = "/asyncprocesstext", method = RequestMethod.POST)
+    public String asyncprocesstext(@RequestBody String text, @RequestParam String tokenid) { 
+	   CompletableFuture<String> futureStr;
+	   String status="{\"message\":\"received text\",\"status\":200}", response="";
+	   RegexDocumentList regexDocumentList=null;
 	   TextDocument textDocument=null;
 	   TextDocument document=null;
 	   try {
 		    logger.info("Received new text document");
 			textDocument = new TextDocument();
 	        textDocument.fromJson(text);
-			concurrentLinkedQueue.add(textDocument);
+			if (regexMapList.containsKey(tokenid)) {
+			    regexDocumentList = regexMapList.get(tokenid);
+				for (RegexDocument regexDocument:regexDocumentList.getRegexDocumentList()) {
+				   regexDocument.setId(tokenid);
+				   System.out.println("*********************");
+				   List<WordToken> line = textDocument.getSentenceAtIndex(1);
+				   for (WordToken token:line) {
+					System.out.println(token.getToken());
+				   }
+				   futureStr = regexService.doAsyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
+				   response = futureStr.get();
+			    }
+			}
 	   } catch (Exception exception) {
 		    exception.printStackTrace();
-		    textToProcess = null;
-			status = "500";
+			status = "{\"error\":\""+exception.getMessage()+"\",\"status\":500}";
 	   }
 	   return status;
-    }
+    }	
 
-	@RequestMapping(value = "/syncprocessfeature", method = RequestMethod.POST)
-    public String syncProcessfeature(@RequestBody String feature) { 
-	  Boolean valid = false, showHighlight = false;
-	  CompletableFuture<FeatureResult> futureMatch = null;
-	  FeatureResult featureResult = null;
-	  RegexDocument regexDocument = new RegexDocument();
-	  String result="";
-	  TextDocument textDocument=null;
-	  List<String> matches=null;
-	  List<RegexResult> regexResultList = new ArrayList<>();
-	  Matcher matcher = null;
-	  featureFunction.initialise();
-	  // featureFunction.setFeatureStore(documentDatabase);
-	  featureFunction.setWordStorage(wordStorage);
-	  try {
-		  regexDocument.fromJson(feature);
-	      if (regexDocument != null) {
-			textDocument = this.getTextDocument(false);
-			 if ((textDocument!=null) && (regexDocument!=null)) {
-                    futureMatch = regexService.doSyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
-					featureResult = futureMatch.get();
-				    result = featureResult.toJson();
-		    }
-		  }
-		} catch (Exception regexException) {
-			regexException.printStackTrace();
-			result="{\"error\":\""+regexException.getMessage()+"\"}";
-		}	
-      return result;
-    }
+	@RequestMapping(value = "/syncprocesstext", method = RequestMethod.POST)
+    public String syncprocesstext(@RequestBody String text, @RequestParam String tokenid) { 
+	   CompletableFuture<FeatureResult> futureResult=null;
+	   FeatureResult featureResult = null;
+	   RegexDocumentList regexDocumentList=null;
+	   String response = "";
+	   TextDocument textDocument=null;
+	   TextDocument document=null;
+	   try {
+		    logger.info("Received new text document");
+			textDocument = new TextDocument();
+	        textDocument.fromJson(text);
+			if (regexMapList.containsKey(tokenid)) {
+			    regexDocumentList = regexMapList.get(tokenid);
+				for (RegexDocument regexDocument:regexDocumentList.getRegexDocumentList()) {
+				   regexDocument.setId(tokenid);
+				   System.out.println("*********************");
+				   List<WordToken> line = textDocument.getSentenceAtIndex(1);
+				   for (WordToken token:line) {
+					System.out.println(token.getToken());
+				   }
+				   futureResult= regexService.doSyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
+				   featureResult = futureResult.get();
+				   featureResult.setSentenceList(textDocument.getSentenceList());
+				   regexMapList.remove(tokenid);
+				   response = featureResult.toJson();
+			    }
+			}
+	   } catch (Exception exception) {
+		    exception.printStackTrace();
+			response = "{\"error\":\""+exception.getMessage()+"\",\"status\":500}";
+	   }
+	   return response;
+    }	
 
 	@RequestMapping(value = "/asyncprocessfeature", method = RequestMethod.POST)
-    public String asyncProcessfeature(@RequestBody String featurelist) { 
+    public String asyncProcessfeature(@RequestBody String featurelist, @RequestParam String tokenid) { 
 	  Boolean valid = false, keepDocument = true;
 	  CompletableFuture<String> futureStr = null;
 	  FeatureResult featureResult = new FeatureResult();
@@ -174,7 +200,7 @@ public class FeatureProcessorService {
 	  RegexDocument regexDocument = new RegexDocument();
 	  RegexResult regexResult = null;
 	  TextDocument textDocument = null;
-	  String response="", label="";
+	  String response="", label="", messageType="";
 	  String[] parts=null;	
 	  Integer matchcount = 0;
 	  List<WordToken> tokens=null;
@@ -186,54 +212,33 @@ public class FeatureProcessorService {
 	  // featureFunction.setFeatureStore(documentDatabase);
 	  featureFunction.setWordStorage(wordStorage);
 	  try {
+		  System.out.println("****MessageType:"+messageType);
 		  regexDocumentList.fromJson(featurelist);
-	      if (regexDocument != null) {
-		      label = regexDocument.getLabel();
-			  keepDocument = this.checkLabel(label);
-			  textDocument = this.getTextDocument(keepDocument);
-			  if ((textDocument!=null) && (regexDocument!=null)) {
-				  futureStr = regexService.doAsyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
-				  response = futureStr.get();
-			  }
+		  messageType = regexDocumentList.getMessageType();
+		  response="{\"message\":\"message type "+messageType+" has been applied\",\"status\":200}";
+		  if (messageType.equalsIgnoreCase("add")) {
+			  if (!regexMapList.containsKey(tokenid)) {
+				  regexMapList.put(tokenid, regexDocumentList);
+			  } else {
+				  response="{\"error\":\"regex feature list already present\",\"status\":500}";
+			  } 
+		  } else if (messageType.equalsIgnoreCase("remove")) {
+			  if (regexMapList.containsKey(tokenid)) {
+				  regexMapList.remove(tokenid);
+			  } else {
+				  response="{\"error\":\"regex feature list is not present\",\"status\":500}";
+			  } 
+		  } else if (messageType.equalsIgnoreCase("replace")) {
+			  if (regexMapList.containsKey(tokenid)) {
+				  regexMapList.replace(tokenid, regexDocumentList);
+			  } else {
+				  response="{\"error\":\"regex feature list is not present\",\"status\":500}";
+			  } 
 		  }
 		} catch (Exception regexException) {
 			response="{\"error\":\""+regexException.getMessage()+",\"status\":500}";
 		}	
       return response;
     }
-
-	private TextDocument getTextDocument(Boolean keep) {
-		TextDocument textDocument = null;
-		if (keep) {
-		    textDocument = concurrentLinkedQueue.peek();
-		} else {
-			textDocument = concurrentLinkedQueue.poll();
-		}
-		return textDocument;
-	}
-
-	private Boolean checkLabel(String label) {
-		Boolean keep = false;
-		Integer position=0, first=0, last=0;
-		String start="", end="";
-	    if ((label !=null) && (label.length()>0)) {
-			position=label.indexOf("of");
-			if (position>0) {
-				start = label.substring(0,position);
-				end = label.substring(position+2, label.length());
-				first = Integer.valueOf(start);
-				last = Integer.valueOf(end);
-				if (first>this.lastStart) {
-					if (first==last) {
-						this.lastStart=0;
-					} else if (first<last) {
-                        this.lastStart=first;
-						keep=true;
-					}
-				} 
-			}
-		}
-		return keep;
-	}
 	
 }
