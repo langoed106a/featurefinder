@@ -119,4 +119,20 @@ public class Document {
         }
         return jsonStr;
     }
+
+    public void fromJson(String jsonStr) {
+         Document document = null;
+         try {
+              document = new ObjectMapper().readValue(jsonStr, Document.class);
+              this.setId(document.getId());
+              this.setType(document.getType());
+              this.setLabel(document.getLabel());
+              this.setOrigin(document.getOrigin());
+              this.setName(document.getName());
+              this.setContents(document.getContents());
+              this.setDescription(document.getDescription());
+         } catch (Exception exception) {
+             exception.printStackTrace();
+         }
+    }
 }
