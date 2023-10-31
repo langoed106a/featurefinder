@@ -47,5 +47,16 @@ public class FeatureResult {
         }
         return jsonStr;
     }
+
+	public void fromJson(String jsonStr) {
+         FeatureResult featureResult = null;
+         try {
+              featureResult = new ObjectMapper().readValue(jsonStr, FeatureResult.class);
+              this.setMatches(featureResult.getMatches());
+              this.setSentenceList(featureResult.getSentenceList());
+         } catch (Exception exception) {
+             exception.printStackTrace();
+         }
+    }
 	
 }
