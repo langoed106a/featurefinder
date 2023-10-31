@@ -99,5 +99,12 @@ public class DatabaseController {
 		document = documentDatabase.getDocumentById(Integer.valueOf(documentid));
 		return document;
     }
+
+	@RequestMapping(value = "/getdocumentbyname", method = RequestMethod.GET)
+    public Document getDocumentByName(@RequestParam String name) {
+        Document document = null;
+		document = documentDatabase.getDocumentByName(name);
+		return document;
+    }
 	 
 }

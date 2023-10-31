@@ -37,6 +37,15 @@ public class DocumentDatabase {
         }
     }
 
+    public Document getDocumentByName(String name) {
+        List<Document> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE name=\""+name+"\"",(resultSet, rowNum)-> new Document(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getBinaryStream("contents"),resultSet.getString("description")));
+        if ((documents!=null) && (documents.size()>=0)) {
+            return documents.get(0);
+        } else {
+            return null;
+        }
+    }
+
     public String deleteDocument(Integer id) {
         Integer row = jdbcTemplate.update("DELETE FROM featuredocumentstore WHERE id="+id);
         String result = "Document has been deleted from row:"+row;
