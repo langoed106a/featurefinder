@@ -63,9 +63,9 @@ public class DocumentDatabase {
     public String addDocument(String name, String type, String contents, String description) {
         byte[] contentBlob;
         Document document = new Document(null, name, type, contents, description);
-        String query = "INSERT INTO featuredocumentstore (name, type, contents, description) VALUES (?,?,?,?)";
+        String query = "INSERT OR REPLACE INTO featuredocumentstore (name, type, contents, description) VALUES (?,?,?,?)";
         Boolean result = jdbcTemplate.execute(query, new FeatureDocumentPreparedStatement(document));
-        String reply = "Document has been stored";
+        String reply = "{\"message\":\"Document has been stored\"}";
         return reply;
     }
 

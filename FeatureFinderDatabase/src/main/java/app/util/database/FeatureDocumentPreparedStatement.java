@@ -17,12 +17,12 @@ public class FeatureDocumentPreparedStatement implements PreparedStatementCallba
 
     public Boolean doInPreparedStatement(PreparedStatement preparedStatement) throws SQLException, DataAccessException {
         Integer paramId = 1;
-        Integer id = Integer.valueOf(document.getId());
+        String idStr = document.getId();
         preparedStatement.setString(paramId,document.getName());
         preparedStatement.setString(paramId+1,document.getType());
         preparedStatement.setBytes(paramId+2,document.getContents().getBytes());
         preparedStatement.setString(paramId+3,document.getDescription());
-        if (id !=null ) {
+        if (idStr !=null ) {
             preparedStatement.setInt(paramId+4,Integer.valueOf(document.getId()));
         }
         return preparedStatement.execute();

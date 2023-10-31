@@ -45,7 +45,7 @@ public class DatabaseController {
 	@RequestMapping(value = "/adddocument", method = RequestMethod.POST)
 	public String adddocument(@RequestBody Document document) {
 		String response = "";
-		documentDatabase.addDocument(document.getName(), document.getType(), document.getContents(), document.getDescription());
+		response = documentDatabase.addDocument(document.getName(), document.getType(), document.getContents(), document.getDescription());
 		return response;
 	}
 

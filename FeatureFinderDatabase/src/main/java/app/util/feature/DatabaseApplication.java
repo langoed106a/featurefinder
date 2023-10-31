@@ -23,8 +23,8 @@ public class DatabaseApplication implements CommandLineRunner {
     @Override
 	public void run(String... args) throws Exception {
 		//Create the database table:
-		jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS featuredocumentstore(id INTEGER PRIMARY KEY,name TEXT,type TEXT,description TEXT,contents BLOB)");
-		
+		jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS featuredocumentstore(id INTEGER PRIMARY KEY autoincrement,name TEXT,type TEXT,description TEXT,contents BLOB)");
+		jdbcTemplate.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_documentstore_name ON featuredocumentstore (name)");
 		//Read records:
 		// List<FeatureDocument> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore",(resultSet, rowNum) -> new FeatureDocument(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getString("description"),resultSet.getString("contents")));
 		
