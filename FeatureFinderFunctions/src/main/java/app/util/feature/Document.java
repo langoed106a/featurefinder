@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
 
 import org.springframework.util.StreamUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class Document {
     String id;
     String description;
@@ -106,5 +108,15 @@ public class Document {
 
     public String getContents() {
         return contents;
+    }
+
+    public String toJson() {
+        String jsonStr = "";
+        try {
+            jsonStr = new ObjectMapper().writeValueAsString(this);
+        } catch (Exception exception) {
+                exception.printStackTrace();
+        }
+        return jsonStr;
     }
 }

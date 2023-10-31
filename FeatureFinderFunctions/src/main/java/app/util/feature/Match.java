@@ -1,6 +1,7 @@
 package app.util.feature;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Match {
     
@@ -13,6 +14,24 @@ public class Match {
     public Match() {
         start="";
         end="";
+    }
+
+    @JsonIgnore
+    public String getStart() {
+        return start;
+    }
+
+    public void setStart(String start) {
+        this.start = start;
+    }
+
+    @JsonIgnore
+    public String getEnd() {
+        return end;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
     }
 
     public void setMatch(String point) {
