@@ -149,7 +149,7 @@ const storeModel = createStore (
           }),
           add_document: thunk(async (actions, form) => {
             try {
-                const res = await axios.post(service_url+'/adddocument',{'name':form.name_input,'type':form.type_input,'contents':form.content_input,'description':form.description_input});
+                const res = await axios.post(service_url+'/adddocument',{'id':'','name':form.name_input,'type':form.type_input,'label':'','origin':'','contents':form.content_input,'description':form.description_input});
             } catch (error) {
              console.log(error);
            }

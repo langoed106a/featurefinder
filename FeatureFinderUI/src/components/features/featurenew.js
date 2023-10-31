@@ -25,7 +25,7 @@ function FeatureNew() {
        var form={}
        var form_field=""
        var content = {}
-       if (regex.current.value) {
+       if ((regex.current.value) && (name.current.value)) {
            form_field = encodeURIComponent(regex.current.value)
            content["regex"] = form_field
            form.name_input = name.current.value
@@ -39,19 +39,19 @@ function FeatureNew() {
            if (precondition.current.value) {
                    form_field = encodeURIComponent(precondition.current.value)
            } else {
-                  form_field = "undefined"
+                  form_field = ""
            }
            content["precondition"] = form_field
            if (postcondition.current.value) {
               form_field = encodeURIComponent(postcondition.current.value)
            } else {
-              form_field = "undefined"
+              form_field = ""
            }
            content["postcondition"] = form_field
            if (invariant.current.value) {
                form_field = encodeURIComponent(invariant.current.value)
            } else {
-                form_field = "undefined"
+                form_field = ""
            }
            content["invariant"] = form_field
            form.content_input = JSON.stringify(content)
