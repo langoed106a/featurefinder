@@ -162,9 +162,21 @@ public class RemoteDatabase {
 	  return result;
 	}
 	
-	public synchronized String addDocument(String name, String type, String contents, String description) {
-        String reply = "";
-        return reply;
+	public String addDocument(Document document) {
+        String destinationUrl = serviceLocator.getService(SERVICE_NAME);
+		String result="";
+		HttpEntity<Document> httpEntity=null;
+		HttpHeaders requestHeaders=null;
+		ResponseEntity<String> responseEntity = null;
+		if (destinationUrl != null) {
+           destinationUrl = destinationUrl.replace("%1","adddocument"); 
+		   requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		   requestHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		   httpEntity = new HttpEntity<>(document, requestHeaders);
+		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.POST, httpEntity, String.class);
+      	   result = responseEntity.getBody();
+		}
+		return result;
 	}
 
 	private HttpEntity getHeaders() {

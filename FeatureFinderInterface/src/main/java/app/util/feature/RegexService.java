@@ -246,14 +246,20 @@ public class RegexService {
 	@RequestMapping(value = "/addmodel", method = RequestMethod.GET)
     public String addmodel(@RequestParam String modelname, @RequestParam String description, @RequestParam String modelfilepath) { 
 	  featureFunction.initialise();
+	  Document document = null;
 	  String result="", contents="", runname="";
 	  if ((modelname!=null) && (modelname.length()>0)) {
 	      result = remoteAnalyzer.getResults(runname, modelname);
 	  }	 
 	  try {
+		   document = new Document();
 		   contents="\"file\":\""+modelfilepath+"\"}";
            contents = URLEncoder.encode(contents, "UTF-8");
-		   result = documentDatabase.addDocument(modelname, "model", contents, description);
+		   document.setContents(contents);
+		   document.setDescription(description);
+		   document.setType("model");
+		   document.setName(modelname);
+		   result = documentDatabase.addDocument(document);
 	  } catch (Exception exception) {
 		  exception.printStackTrace();
 	  } 
@@ -334,6 +340,7 @@ public class RegexService {
 
 	@RequestMapping(value = "/featureimport", method = RequestMethod.POST)
     public String featureimport(@RequestParam("file") MultipartFile file) throws InterruptedException {
+		Document document = null;
         JSONParser parser = null;
         JSONArray jsonArray=null;
         JSONObject jsonObject=null;
@@ -384,7 +391,12 @@ public class RegexService {
                                  }
                                  contents = "{"+ contents + "\"regex\":\""+regex+"\"}";
                                  contents = URLEncoder.encode(contents);
-                                 documentDatabase.addDocument(name, type, contents, description);
+								 document = new Document();
+								 document.setType(type);
+								 document.setDescription(description);
+								 document.setContents(contents);
+								 document.setName(name);
+                                 documentDatabase.addDocument(document);
                              }
                     }
                }
@@ -403,11 +415,19 @@ public class RegexService {
       return response;
     }
 	
-	@RequestMapping(value = "/adddocument", method = RequestMethod.GET)
-    public String adddocument(@RequestParam String documentname, @RequestParam String documenttype, @RequestParam String documentcontents, @RequestParam String documentdescription) { 
-	  String response = "";
-	  documentDatabase.addDocument(documentname, documenttype, documentcontents, documentdescription);
-      return response;
+    @PostMapping(value = "/buildclassifierfrommodel", produces = "application/json")
+    public String adddocument(@RequestBody String documentstr) { 
+       String response = "";
+	   Document document = null;
+	   try {
+		     document = new Document();
+			 document.fromJson(documentstr);
+			 documentDatabase.addDocument(document);
+			 response = "{\"message\":\"new document has been added\"}";
+	   } catch (Exception exception) {
+		  response = "{\"error\":\""+exception.getMessage()+"\"}";
+	   }
+       return response;
     }
 	
 	@RequestMapping(value = "/getdocument", method = RequestMethod.GET)
