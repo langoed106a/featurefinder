@@ -33,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.util.feature.Section;
 import app.util.feature.WordToken;
 
 import app.util.feature.ServiceLocator;
@@ -59,7 +58,6 @@ public class RemoteAnalyzer {
     public String addRun(String runname, String description, String language, String featuregroupname, String documentgroupname, String resultslocation) {	
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
-		Section section = new Section();
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		String result="";
 		String urlencodedtext="";
@@ -93,7 +91,6 @@ public class RemoteAnalyzer {
 	public String getResults(String runid, String model) {	
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
-		Section section = new Section();
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		String result="";
 		String urlencodedtext="";

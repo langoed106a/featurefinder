@@ -5,16 +5,14 @@ import java.util.ArrayList;
 
 import java.net.URLDecoder;
 
-import app.util.feature.FeatureStore;
-import app.util.feature.Feature;
-import app.util.feature.FeatureDocument;
-import app.util.feature.RegexFeature;
+import app.util.feature.Document;
+import app.util.feature.DocumentStore;
 import app.util.feature.RemoteDatabase;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class DocumentDatabase implements FeatureStore {
+public class DocumentDatabase implements DocumentStore {
 	RemoteDatabase remoteDatabase;
 	
 	public DocumentDatabase() {
@@ -25,15 +23,27 @@ public class DocumentDatabase implements FeatureStore {
 		this.remoteDatabase = remoteDatabase;
 	}
 
-	
-	public FeatureDocument getDocumentById(String id) {
-	    FeatureDocument featureDocument = this.remoteDatabase.getDocumentById(id);
-        return featureDocument;
+	@Override
+	public Document getDocumentById(Integer id) {
+	    Document document = this.remoteDatabase.getDocumentById(id);
+        return document;
+	}
+
+	public Document getDocumentById(String id) {
+	    Document document = this.getDocumentById(Integer.valueOf(id));
+        return document;
 	}
 	
-	public FeatureDocument getDocumentByName(String name, String type) {
-	    FeatureDocument featureDocument = this.remoteDatabase.getDocumentByName(name, type);
-        return featureDocument;
+	@Override
+	public List<Document> getDocumentByGroup(String groupname) {
+	    List<Document> documentList = this.remoteDatabase.getDocumentByGroup(groupname);
+        return documentList;
+	}
+
+	@Override
+	public Document getDocumentByName(String name) {
+	    Document document = this.remoteDatabase.getDocumentByName(name);
+        return document;
 	}
 
 	public String deleteDocument(String id) {
@@ -54,29 +64,11 @@ public class DocumentDatabase implements FeatureStore {
        return reply;
 	}
 	
-	public List<FeatureDocument> getDocumentByType(String type) {
-	    List<FeatureDocument> documents = null;
+	@Override
+	public List<Document> getDocumentByType(String type) {
+	    List<Document> documents = null;
 	    documents = this.remoteDatabase.getDocumentByType(type);
 		return documents;
-	}
-
-	public Feature getFeatureById(Integer id) {
-		FeatureDocument featureDocument = this.getDocumentById(id.toString());
-		RegexFeature regexFeature = null;
-		return regexFeature;
-	}
-
-    public Feature getFeatureByName(String name) {
-		FeatureDocument featureDocument = this.getDocumentByName(name, "regex");
-		RegexFeature regexFeature = null;
-		return regexFeature;
-	}
-
-    public List<Feature> getFeaturesByType(String type) {
-		List<FeatureDocument> featureDocumentList = this.getDocumentByType(type);
-		RegexFeature regexFeature = null;
-		List<Feature> featureList = null;
-		return featureList;
 	}
 	
 }

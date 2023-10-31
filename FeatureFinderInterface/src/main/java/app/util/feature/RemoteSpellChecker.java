@@ -30,7 +30,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import app.util.feature.Section;
 import app.util.feature.WordToken;
 
 import app.util.feature.ServiceLocator;
@@ -61,7 +60,6 @@ public class RemoteSpellChecker {
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
 		ResponseEntity<String> responseEntity = null;
-		Section section = new Section();
 		String destinationUrl = serviceLocator.getService(SPELL_CHECKER);
 		String result="";
 		String urlencodedtext="";

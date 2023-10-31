@@ -53,10 +53,9 @@ import org.json.simple.parser.JSONParser;
 
 import app.util.database.DocumentDatabase;
 
-import app.util.feature.Section;
 import app.util.feature.WordToken;
-import app.util.feature.FeatureDocument;
-import app.util.feature.FeatureDocumentList;
+import app.util.feature.Document;
+import app.util.feature.DocumentList;
 import app.util.feature.ServiceLocator;
 
 @Component
@@ -79,69 +78,69 @@ public class RemoteDatabase {
 		this.restTemplate = restTemplate;
     } 
      
-    public List<FeatureDocument> getDocumentGroup(String groupname) {
+    public List<Document> getDocumentByGroup(String groupname) {
     	HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
-		FeatureDocumentList featureDocumentList;
-		List<FeatureDocument> documentList = new ArrayList<>();
-		ResponseEntity<FeatureDocumentList> responseEntity = null;
+		DocumentList documentList;
+		List<Document> documents = new ArrayList<>();
+		ResponseEntity<DocumentList> responseEntity = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		String result="";
 		String urlencodedtext="";
 		if (destinationUrl != null) {
            httpEntity = this.getHeaders();
            destinationUrl = destinationUrl.replace("%1","getdocumentgroup?groupname="+groupname); 
-           responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, FeatureDocumentList.class);
-      	   featureDocumentList = responseEntity.getBody();
-		   documentList = featureDocumentList.getFeatureDocumentList();
+           responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, DocumentList.class);
+      	   documentList = responseEntity.getBody();
+		   documents = documentList.getDocumentList();
 		}
-	  return documentList;	
+	  return documents;	
 	}
 
-	public FeatureDocument getDocumentById(String id) {
+	public Document getDocumentById(Integer id) {
 		HttpEntity<String> httpEntity = null;
-		FeatureDocument document = null;
-		ResponseEntity<FeatureDocument> responseEntity = null;
+		Document document = null;
+		ResponseEntity<Document> responseEntity = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		if (destinationUrl != null) {
            httpEntity = this.getHeaders();
     	   destinationUrl = destinationUrl.replace("%1","getdocumentbyid?documentid"+id); 
-		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, FeatureDocument.class);
+		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, Document.class);
     	   document = responseEntity.getBody();
 		}
 	  return document;	
 	}
 
-    public FeatureDocument getDocumentByName(String name, String type) {
+    public Document getDocumentByName(String name) {
 		HttpEntity<String> httpEntity = null;
-		FeatureDocument document = null;
-		ResponseEntity<FeatureDocument> responseEntity = null;
+		Document document = null;
+		ResponseEntity<Document> responseEntity = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		if (destinationUrl != null) {
            httpEntity = this.getHeaders();
-           destinationUrl = destinationUrl.replace("%1","getdocumentbyname?name="+name+"&type="+type); 
-    	   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, FeatureDocument.class);
+           destinationUrl = destinationUrl.replace("%1","getdocumentbyname?name="+name); 
+    	   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, Document.class);
     	   document = responseEntity.getBody();
 		}
 	  return document;	
 	}
 
-	public List<FeatureDocument> getDocumentByType(String type) {
+	public List<Document> getDocumentByType(String type) {
 		HttpEntity<String> httpEntity = null;
-		FeatureDocumentList featureDocumentList;
-		List<FeatureDocument> documentList = new ArrayList<>();
-		ResponseEntity<FeatureDocumentList> responseEntity = null;
+		DocumentList documentList;
+		List<Document> documents = new ArrayList<>();
+		ResponseEntity<DocumentList> responseEntity = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		String result="";
 		String urlencodedtext="";
 		if (destinationUrl != null) {
            httpEntity = this.getHeaders();
  		   destinationUrl = destinationUrl.replace("%1","getdocumentsbytype?type="+type); 
-           responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, FeatureDocumentList.class);
-      	   featureDocumentList = responseEntity.getBody();
-		   documentList = featureDocumentList.getFeatureDocumentList();
+           responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, DocumentList.class);
+      	   documentList = responseEntity.getBody();
+		   documents = documentList.getDocumentList();
 		}
-	  return documentList;	
+	  return documents;	
 	}
 	
 	public String deleteDocument(String id) {

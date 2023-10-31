@@ -22,6 +22,7 @@ import java.util.Date;
 import java.net.URLEncoder;
 
 import java.util.concurrent.TimeUnit;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -44,6 +45,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import app.util.database.DocumentDatabase;
 import app.util.feature.FeatureDocument;
+import app.util.feature.FeatureResult;
+import app.util.feature.Match;
+import app.util.feature.RegexDocument;
+import app.util.feature.RegexDocumentList;
+import app.util.feature.TextDocument;
  
 @CrossOrigin
 @RestController
@@ -56,6 +62,7 @@ public class RegexService {
 	private ContractFunction contractFunction;
 	private FeatureFunction featureFunction;
 	private ServiceLocator serviceLocator;
+	private String tokenid;
 	private WordStorage wordStorage;
 
 	@Autowired
@@ -66,6 +73,8 @@ public class RegexService {
 	private RemoteAnalyzer remoteAnalyzer;
 	@Autowired
 	private RemoteParser remoteParser;
+	@Autowired
+	private RemoteProcessor remoteProcessor;
 	@Autowired
 	private RemoteBatch remoteBatch;
 	@Autowired
@@ -94,10 +103,15 @@ public class RegexService {
 		remoteAnalyzer.setRestTemplate(restSimpleTemplate);
 		remoteAnalyzer.setServiceLocator(serviceLocator);
 
+		remoteProcessor.setRestTemplate(restSimpleTemplate);
+		remoteProcessor.setServiceLocator(serviceLocator);
+
 		remoteBatch.setRestTemplate(restLoadBalancedTemplate);
 		remoteBatch.setServiceLocator(serviceLocator);
 		contractFunction = new ContractFunction(featureFunction, wordStorage);
 		documentDatabase.setRemoteDatabase(remoteDatabase);
+
+		tokenid = UUID.randomUUID().toString();
 	}
 	
 	@RequestMapping(value = "/health", method = RequestMethod.GET)
@@ -106,55 +120,26 @@ public class RegexService {
 	   return "healthy";
     }
 
-	@RequestMapping(value = "/runregex", method = RequestMethod.POST)
-    public String runregex(@RequestBody String text, @RequestParam String granularity, @RequestParam String regex ,@RequestParam String language, @RequestParam String precondition,@RequestParam String postcondition) { 
-	  String result="", matches="";	
-	  Integer count=0;
-	  RegexFeature regexFeature=null;
-	  featureFunction.initialise();
-	  Section section = new Section();
-	  if (text.length()>0) {
-		  text = General.decode(text);
-		  text = text.substring(9,text.length());
-		  text = text.substring(0,text.length()-2);
-	  }
-	  if (regex.length()>0) {
-		  regex = General.decode(regex);
-	  }
-	  if (precondition.length()>0) {
-		  precondition = General.decode(precondition);
-	  }
-	  result = remoteParser.parseTextToText(language, text);
-	  section.fromJson(result);
-
-	  regexFeature = new RegexFeature("test", "test", "test", regex, granularity, precondition, postcondition);
-	  Matcher matcher = new Matcher(regexFeature, featureFunction, wordStorage, contractFunction);
-	  try {
-            count = matcher.matchcount(section);
-            matches = "Regex matches:"+String.valueOf(count);
-	  } catch (ParseRegexException regexException) {
-		    matches = regexException.getMessage();
-	  }		
-      return matches;
-    }
-
 	@RequestMapping(value = "/regexmatches", method = RequestMethod.POST)
     public String regexmatches(@RequestBody String body) { 
 	  Boolean valid = false, showHighlight = false;
-	  RegexFeature regexFeature = null;
+	  FeatureResult featureResult = null;
+	  List<RegexDocument> regexFeatureList = new ArrayList<>();
+	  TextDocument textDocument = null;
+	  RegexDocument regexDocument = null;
+	  RegexDocumentList regexDocumentList = null;
 	  String result="", matchesStr="", text="", tokensStr="", entry="", regex="", highlight="", language="", granularity="", precondition="", postcondition="", invariant="";
 	  String[] parts=null;	
 	  Integer matchcount = 0;
 	  JSONParser jsonParser=null;
 	  JSONObject jsonObject=null;
-	  List<String> matches=null;
+	  List<Match> matches=null;
 	  List<WordToken> tokens=null;
 	  Matcher matcher = null;
 	  Object object = null;
 	  featureFunction.initialise();
 	  featureFunction.setFeatureStore(documentDatabase);
 	  featureFunction.setWordStorage(wordStorage);
-	  Section section = new Section();
 	  try {
          jsonParser = new JSONParser();
 		 object = jsonParser.parse(body);
@@ -189,35 +174,29 @@ public class RegexService {
 				 if ((language!=null) && (language.length()>0)) {
 					language = DEFAULT_LANGUAGE;
 				 }
+				
 
-				 result = remoteParser.parseTextToText(language, text); 
-                 section.fromJson(result);
 				 if ((regex!=null) && (regex.length()>0) && (text!=null) && (text.length()>0)) {
 					 valid = true;
 				 }
 				 if (valid) {
 					matches = null;
-                    regexFeature = new RegexFeature(); 
-					// regexFeature = new RegexFeature("test", "test", "test", regex, granularity, precondition, postcondition, invariant);
-                    //contractFunction.setLanguage(language);
-					matcher = new Matcher(regexFeature, featureFunction, wordStorage, contractFunction);
-					if (showHighlight) {
-					   matches = matcher.matchtext(section);
-					} else {
-						 matchcount = matcher.matchcount(section);
-					}
-	                section.toSingleSentence();
-                    tokens = section.getCurrentSentence();
-	                for (WordToken wordToken:tokens) {
-		               tokensStr = tokensStr + wordToken.toJson()+",";
-	                }
-			        if (tokensStr.endsWith(",")) {
-				       tokensStr = tokensStr.substring(0, tokensStr.length()-1);
-			        }		 
-                    tokensStr = "\"tokens\":"+"[" + tokensStr + "]";
-	                for (String match:matches) {
-                       parts = match.split(":");
-		               entry = "{\"start\":\""+parts[0]+"\",\"end\":\""+parts[1]+"\"},";
+					
+                    regexDocument = new RegexDocument("experiment", "none", "none", "", granularity, precondition, postcondition, invariant);
+					regexDocument.setRegex(regex);
+					regexFeatureList = new ArrayList<>();
+					regexFeatureList.add(regexDocument);
+					regexDocumentList = new RegexDocumentList();
+					regexDocumentList.setRegexDocumentList(regexFeatureList);
+					regexDocumentList.setMessageType("add");
+
+					result = remoteProcessor.processFeature(regexDocumentList, tokenid);
+					result = remoteProcessor.processText(text, tokenid);
+					featureResult = new FeatureResult();
+					featureResult.fromJson(result);
+					matches = featureResult.getMatches();
+	                for (Match match:matches) {
+		               entry = "{\"start\":\""+match.getStart()+"\",\"end\":\""+match.getEnd()+"\"},";
 		               matchesStr = matchesStr + entry;
 	                }
 	                if (matchesStr.length()>0) {
@@ -234,159 +213,6 @@ public class RegexService {
 			result = "{\"error\":\""+regexException.getMessage()+"\"}";
 		}	
       return result;
-    }
-
-	@RequestMapping(value = "/getmatches",  method = RequestMethod.POST)
-    public String getMatches(@RequestBody String text, @RequestParam String language, @RequestParam(required=false) Integer minimumWordMatch, @RequestParam(required=false) String startsWith, @RequestParam(value="",required=false) String contains, @RequestParam Integer matchgap, @RequestParam Boolean removeRepeatedGroups) { 
-	  Boolean finished=false, found=false;
-	  String firsttext="";
-	  String secondtext="";
-	  featureFunction.initialise();
-	  PartMatch lineMatch=null;
-	  SentenceMatch sentenceMatch=null;
-	  String id="", response="", firstId="", firstTextId="", secondTextId="", secondId="", strLine="", jsonStr="", reply="", content="", parsedText="";
-	  Integer sentenceCountFirst=0, sentenceCountSecond=0, sentenceFirstIndex=0, sentenceSecondIndex=0, index=0;
-	  JSONParser jsonParser=null;
-	  JSONObject jsonObject=null;
-	  JSONArray jsonArray=null;
-	  List<WordToken> sentenceFirst=null, sentenceSecond=null;
-	  List<String> idList = new ArrayList<>();
-	  List<PartMatch> uniqueMatches = new ArrayList<>();
-	  Map<String, Section> sectionMap = new HashMap<>();
-	  List<List<PartMatch>> matches=null;
-	  Object object=null;
-	  Section section=null, sectionFirst=null, sectionSecond=null;
-	  SentenceCompare sentenceCompare=null;
-	  
-	  if (text.length()>0) {
-		  featureFunction.setFeatureStore(documentDatabase);
-		  featureFunction.setWordStorage(wordStorage);
-		  try {
-			    jsonParser = new JSONParser();
-				object = jsonParser.parse(text);
-				if (object instanceof JSONObject) {
-					jsonObject = (JSONObject)object;
-					object = jsonObject.get("text");
-                    if (object instanceof JSONArray) {
-                        jsonArray = (JSONArray)object;
-                        for (int i = 0; i <jsonArray.size(); i++) {
-							object = jsonArray.get(i);
-                            if (object instanceof JSONObject) {
-                                jsonObject = (JSONObject)object;
-                                id = (String)jsonObject.get("id");
-                                content = (String) jsonObject.get("content");
-								content = URLDecoder.decode(content);
-								section = new Section();
-								parsedText = remoteParser.parseTextToText(language, content);
-								section.fromJson(parsedText);
-								sectionMap.put(id, section);
-								idList.add(id);
-							}
-						}
-					}
-				}
-				if ((sectionMap.size()>0) && (idList.size()==2)) {		
-					 firstTextId = idList.get(0);
-					 secondTextId = idList.get(1);
-					 sectionFirst = sectionMap.get(firstTextId);
-					 sectionSecond = sectionMap.get(secondTextId);		
-				     sentenceFirstIndex=0;
-				     sentenceSecondIndex=0;
-				     sentenceCountSecond=sectionSecond.getSentenceCount();
-				     sentenceCountFirst=sectionFirst.getSentenceCount();
-				     reply="[";
-				     jsonStr="";
-				     sentenceCompare = new SentenceCompare();
-                     while (sentenceFirstIndex<sentenceCountFirst) {
-					     sentenceFirst = sectionFirst.getSentenceAtIndex(sentenceFirstIndex);
-						 sentenceSecondIndex=0;
-					     while (sentenceSecondIndex<sentenceCountSecond) {
-						     sentenceSecond = sectionSecond.getSentenceAtIndex(sentenceSecondIndex);
-						     firstId=firstTextId+":"+String.valueOf(sentenceFirstIndex+1);
-						     secondId=secondTextId+":"+String.valueOf(sentenceSecondIndex+1);
-						     sentenceMatch = sentenceCompare.theSame(sentenceFirst,firstId,sentenceSecond,secondId,minimumWordMatch,startsWith, contains, matchgap, removeRepeatedGroups);
-                             sentenceSecondIndex++;
-						     if (sentenceMatch != null) {
-							     matches = sentenceMatch.getMatches();
-							    strLine="";
-							    if (matches.size()>0) {
-                                   for (List<PartMatch> matchList:matches) {
-								 	strLine="";
-									 for (PartMatch partMatch:matchList) {
-										 strLine = strLine + partMatch.getMatch()+" ";
-									 }
-                                     if (removeRepeatedGroups) {
-											 found = false;
-											 index = 0;
-											 while ((!found) && (index<uniqueMatches.size())) {
-                                                  lineMatch = uniqueMatches.get(index);
-												  if (lineMatch.theSame(strLine)) {
-													  lineMatch.incrementCount();
-													  found=true;
-												  }
-												index = index + 1;
-											 }
-											 if (!found) {
-												 lineMatch = new PartMatch(sentenceFirstIndex, sentenceSecondIndex, strLine);
-												 lineMatch.incrementCount();
-												 uniqueMatches.add(lineMatch);
-											 }
-									} else {
-											lineMatch = new PartMatch(sentenceFirstIndex, sentenceSecondIndex, strLine);
-											lineMatch.incrementCount();
-											uniqueMatches.add(lineMatch);
-									}
-							   }
-						     } 
-				           }
-						}
-					sentenceFirstIndex++;
-				  }
-				jsonStr="";
-				for (PartMatch partMatch:uniqueMatches) {
-					jsonStr = jsonStr + partMatch.toJson()+",";
-				}
-				if (jsonStr.length()>10) {
-					jsonStr = jsonStr.substring(0,jsonStr.length()-1);
-				}
-				reply = reply + jsonStr;
-			  }
-		  } catch (Exception regexException) {
-			   regexException.printStackTrace();
-			   reply = "{\"error\":\""+regexException.getMessage()+"\"}";
-		  }
-	  }	 
-	  reply = reply + "]"; 
-      return reply;
-    }
-	
-	@RequestMapping(value = "/runfeature", method = RequestMethod.GET)
-    public String runfeature(@RequestParam String featurename, @RequestParam String text, @RequestParam String granularity, @RequestParam String language) { 
-	  featureFunction.initialise();
-	  FeatureDocument featureDocument=null;
-	  RegexFeature regexFeature=null;
-	  Matcher matcher=null;
-	  String response="";
-	  Integer matches=0;
-	  Section section=new Section();
-	  String featureRegex ="";
-	  if (featurename.length()>0) {
-		  featureFunction.setFeatureStore(documentDatabase);
-		  featureFunction.setWordStorage(wordStorage);
-		  featureDocument = documentDatabase.getDocumentByName("regex", featurename);
-		  featureRegex = featureDocument.getContents();
-	      response = remoteParser.parseTextToText(language, text);
-	      section.fromJson(response);
-		  regexFeature = new RegexFeature(featurename, "test", "test", featureRegex, granularity, "", "");
-	      matcher = new Matcher(regexFeature, featureFunction, wordStorage, contractFunction);
-		  try {
-                matches = matcher.matchcount(section);
-				response = "Feature Matches:" + String.valueOf(matches);
-		  } catch (ParseRegexException regexException) {
-			   response = "{\"error\":\""+regexException.getMessage()+"\"}";
-		  }
-	  }	  
-      return response;
     }
 	
     @RequestMapping(value = "/getruns", method = RequestMethod.GET)
@@ -585,16 +411,16 @@ public class RegexService {
     }
 	
 	@RequestMapping(value = "/getdocument", method = RequestMethod.GET)
-    public FeatureDocument getdocument(@RequestParam String documentid) { 
-		 FeatureDocument document = null;
+    public Document getdocument(@RequestParam String documentid) { 
+		 Document document = null;
 		 document = documentDatabase.getDocumentById(documentid);
 	     return document;
     }
 	
 	@CrossOrigin(origins = "*")
 	@RequestMapping(value = "/getdocuments", method = RequestMethod.GET)
-    public List<FeatureDocument> getdocuments(@RequestParam String type) { 
-		 List<FeatureDocument> documents = null;
+    public List<Document> getdocuments(@RequestParam String type) { 
+		 List<Document> documents = null;
 		 documents = documentDatabase.getDocumentByType(type);
 	     return documents;
     }
@@ -632,9 +458,9 @@ public class RegexService {
 	@RequestMapping(value = "/featurelist", method = RequestMethod.GET)
     public String featurelist(@RequestParam String type) {
 	  String result="";
-	  List<FeatureDocument> featureDocumentList = documentDatabase.getDocumentByType("regex");	
-	  for (FeatureDocument featureDocument:featureDocumentList) {
-           result = result + featureDocument.toString() + ",";
+	  List<Document> documentList = documentDatabase.getDocumentByType("regex");	
+	  for (Document document:documentList) {
+           result = result + document.toJson() + ",";
 	  }
 	  result = result.substring(0,result.length()-1);
 	  result = "[" + result + "]";
