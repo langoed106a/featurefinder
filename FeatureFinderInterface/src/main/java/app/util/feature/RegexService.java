@@ -415,7 +415,7 @@ public class RegexService {
       return response;
     }
 	
-    @PostMapping(value = "/buildclassifierfrommodel", produces = "application/json")
+    @PostMapping(value = "/adddocument", produces = "application/json")
     public String adddocument(@RequestBody String documentstr) { 
        String response = "";
 	   Document document = null;
