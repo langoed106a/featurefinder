@@ -6,7 +6,9 @@ import regeneratorRuntime from "regenerator-runtime";
 
 const service_url=""
 const delay = ms => new Promise(res => setTimeout(res, ms));
-
+const featureheaders = {
+  'Content-Type': 'application/json'
+}
 const storeModel = createStore (
   persist({
            featurefunctionlist: [],
@@ -149,7 +151,7 @@ const storeModel = createStore (
           }),
           add_document: thunk(async (actions, form) => {
             try {
-                const res = await axios.post(service_url+'/adddocument',{'id':'','name':form.name_input,'type':form.type_input,'label':'','origin':'','contents':form.content_input,'description':form.description_input});
+                const res = await axios.post(service_url+'/adddocument',{'id':'','name':form.name_input,'type':form.type_input,'label':'','origin':'','contents':form.content_input,'description':form.description_input},{headers:featureheaders});
             } catch (error) {
              console.log(error);
            }
