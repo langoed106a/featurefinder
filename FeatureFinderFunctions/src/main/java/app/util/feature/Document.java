@@ -1,5 +1,12 @@
 package app.util.feature;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+import org.springframework.util.StreamUtils;
+
 public class Document {
     String id;
     String description;
@@ -28,6 +35,21 @@ public class Document {
         this.origin = "";
         this.label = "";
     }
+
+    public Document(Integer id, String name, String type, InputStream contentsStream, String description) {
+		this.id=String.valueOf(id);
+		this.name=name;
+		this.type=type;
+		this.description=description;
+		ByteArrayOutputStream arrayOutputStream;
+		arrayOutputStream = new ByteArrayOutputStream();
+		try {
+		      StreamUtils.copy(contentsStream, arrayOutputStream);
+		      this.contents = arrayOutputStream.toString(StandardCharsets.UTF_8.toString());
+		} catch (IOException ioException) {
+			ioException.printStackTrace();
+		}
+	}
 
 
     public void setId(String id) {
