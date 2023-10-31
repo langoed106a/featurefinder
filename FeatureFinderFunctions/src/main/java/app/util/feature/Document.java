@@ -19,6 +19,17 @@ public class Document {
        contents="";
     }
 
+    public Document(String id, String name, String type, String contents, String description) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.contents = contents;
+        this.description = description;
+        this.origin = "";
+        this.label = "";
+    }
+
+
     public void setId(String id) {
         this.id = id;
     }
