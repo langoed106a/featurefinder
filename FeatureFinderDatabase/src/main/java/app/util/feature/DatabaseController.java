@@ -3,8 +3,8 @@ package app.util.feature;
 import javax.annotation.PostConstruct;
 
 import app.util.database.DocumentDatabase;
-import app.util.feature.FeatureDocument;
-import app.util.feature.FeatureDocumentList;
+import app.util.feature.Document;
+import app.util.feature.DocumentList;
 import app.util.feature.FeatureFunction;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,40 +43,40 @@ public class DatabaseController {
     }	
 
 	@RequestMapping(value = "/adddocument", method = RequestMethod.POST)
-	public String adddocument(@RequestBody FeatureDocument featureDocument) {
+	public String adddocument(@RequestBody Document document) {
 		String response = "";
-		documentDatabase.addDocument(featureDocument.getName(), featureDocument.getType(), featureDocument.getContents(), featureDocument.getDescription());
+		documentDatabase.addDocument(document.getName(), document.getType(), document.getContents(), document.getDescription());
 		return response;
 	}
 
 	@RequestMapping(value = "/getdocumentsbytype", method = RequestMethod.GET)
-	public FeatureDocumentList getDocumentsByType(@RequestParam String type) {
-		FeatureDocumentList featureDocumentList = new FeatureDocumentList();
-		FeatureDocument featureDocument = null;
-		List<FeatureDocument> documents = new ArrayList<>();
+	public DocumentList getDocumentsByType(@RequestParam String type) {
+		DocumentList documentList = new DocumentList();
+		Document document = null;
+		List<Document> documents = new ArrayList<>();
 		String[] parts=null;
 		String function="";
 		if (type.equalsIgnoreCase(FUNCTION_TYPE)) {
             for (int i=0; i<functionList.length; i++) {
 			   function = functionList[i];
 			   parts = function.split(":");
-               featureDocument = new FeatureDocument(null, parts[0], FUNCTION_TYPE, parts[3], parts[1]);
-               documents.add(featureDocument);
+               document = new Document(null, parts[0], FUNCTION_TYPE, parts[3], parts[1]);
+               documents.add(document);
 			}
 		} else {
 		      documents = documentDatabase.getDocumentByType(type);
 		}
-		featureDocumentList.setFeatureDocumentList(documents);
-		return featureDocumentList;
+		documentList.setDocumentList(documents);
+		return documentList;
 	}
 
 	@RequestMapping(value = "/getdocumentgroup", method = RequestMethod.GET)
-	public FeatureDocumentList getDocumentsByGroup(@RequestParam String groupname) {
-		FeatureDocumentList featureDocumentList = new FeatureDocumentList();
-		List<FeatureDocument> documents = null;
+	public DocumentList getDocumentsByGroup(@RequestParam String groupname) {
+		DocumentList documentList = new DocumentList();
+		List<Document> documents = null;
 		documents = documentDatabase.getDocumentByGroup(groupname);
-		featureDocumentList.setFeatureDocumentList(documents);
-		return featureDocumentList;
+		documentList.setDocumentList(documents);
+		return documentList;
 	}
 
 	@RequestMapping(value = "/updatedocument", method = RequestMethod.GET)
@@ -94,8 +94,8 @@ public class DatabaseController {
 	}
 
 	@RequestMapping(value = "/getdocumentbyid", method = RequestMethod.GET)
-    public FeatureDocument getDocumentById(@RequestParam String documentid) {
-        FeatureDocument document = null;
+    public Document getDocumentById(@RequestParam String documentid) {
+        Document document = null;
 		document = documentDatabase.getDocumentById(Integer.valueOf(documentid));
 		return document;
     }
