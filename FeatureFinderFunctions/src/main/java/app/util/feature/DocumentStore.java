@@ -6,4 +6,5 @@ public interface DocumentStore {
     public Document getDocumentById(Integer id);
     public Document getDocumentByName(String name);
     public List<Document> getDocumentByType(String type);
+    public List<Document> getDocumentByGroup(String groupname);
 }
