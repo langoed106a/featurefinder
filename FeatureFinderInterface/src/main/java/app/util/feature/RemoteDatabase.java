@@ -170,6 +170,7 @@ public class RemoteDatabase {
 		ResponseEntity<String> responseEntity = null;
 		if (destinationUrl != null) {
            destinationUrl = destinationUrl.replace("%1","adddocument"); 
+		   requestHeaders = new HttpHeaders();
 		   requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		   requestHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
 		   httpEntity = new HttpEntity<>(document, requestHeaders);

@@ -415,7 +415,8 @@ public class RegexService {
       return response;
     }
 	
-    @PostMapping(value = "/adddocument", produces = "application/json")
+	@CrossOrigin(origins = "*")
+	@RequestMapping(value = "/adddocument", method = RequestMethod.POST)
     public String adddocument(@RequestBody String documentstr) { 
        String response = "";
 	   Document document = null;
@@ -425,6 +426,7 @@ public class RegexService {
 			 documentDatabase.addDocument(document);
 			 response = "{\"message\":\"new document has been added\"}";
 	   } catch (Exception exception) {
+		  exception.printStackTrace();
 		  response = "{\"error\":\""+exception.getMessage()+"\"}";
 	   }
        return response;
