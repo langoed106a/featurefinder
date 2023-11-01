@@ -10,29 +10,48 @@ import words_img from '../../images/featurefinder.jpg';
 function FeatureGroupNew() {
     const[spinner, setSpinner] = useState(false)
     const match_results = useStoreActions(actions => actions.get_match_results)
-    const feature_arr = useStoreState(state => state.featureregexlist)
+    const feature_arr = useStoreState(state => state.featureregexlist) 
     const matchreply = useStoreState(state => state.matchreply);
     const name = React.createRef()
     const description = React.createRef()
     const feature = React.createRef()
-    const features = React.createRef()
+    const features = []
 
     const show_feature_list =  feature_arr.map((feature, i) =>
-           <option>feature.name</option>);
+           <option>{feature.name}</option>);
 
    const perform_add = () => {
-       var form={}
+      var found = false;
+      var feature_to_add="";
+      var item = ""
+      var index=0, arr_index=-1;
        if (feature.current.value) {
-          features.append(feature)
+          feature_to_add = feature.current.value
+          features.append(feature_to_add)
+          while ((!found) && (index<feature_arr.length)) {
+              item = feature_arr[index]
+              if (feature_to_add==item) {
+                 arr_index = index
+                 found = true
+              }
+              index++
+          }
+          if (arr_index>-1) {
+             feature_arr.splice(arr_index, 1)
+          }
         }
    }
 
    const perform_submit = () => {
       var form={}
-      if (name.current.value) {
+      if ((features.length>0) && (name.current.value)) {
          form.name_input = name.current.value
+         form.type_input = "featuregroup"
+         form.content_input = features
+         form.description_input = description.current.value
+         add_document(form)
        }
-  }
+   }
         
     return (<div>
       <TopNavBar />
