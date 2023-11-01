@@ -12,6 +12,7 @@ import java.io.BufferedWriter;
 import java.util.concurrent.Future;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HTTPAsyncSender {
@@ -71,6 +72,7 @@ public class HTTPAsyncSender {
                 builder.addHeader("Accept", "application/json");
                 builder.setBody(content);
                 if (params!=null) {
+                    queryParams = new HashMap<>();
                     for (String key:params.keySet()) {
                         paramList = new ArrayList<>();
                         paramList.add(params.get(key));
