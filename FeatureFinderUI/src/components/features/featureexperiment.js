@@ -18,7 +18,6 @@ function FeatureExperiment() {
   const language = React.createRef()
   const textinput = React.createRef()
   const highlight = React.createRef()
-  matchresults = {}
 
   const perform_search = (event) => {
     var form = {}
@@ -71,9 +70,9 @@ function FeatureExperiment() {
     let spanStartHighlightText = "<span style=\"background-color: violet; color: black;\">"
     let spanStartLowlightText = "<span style=\"background-color: white; color: black;\">"
     let spanEndText = "</span>"
-    if ((results) && (results.tokens) && (results.tokens.length > 0)) {
+    if ((results) && (results.sentencelist)) {
       matches = results.matches
-      tokens = results.tokens
+      tokens = results.sentencelist
       if ((matches) && (matches.length > 0)) {
         firstmatch = matches[0]
         start = parseInt(firstmatch.start)
@@ -87,33 +86,42 @@ function FeatureExperiment() {
         highlighter = false
         text = text + spanStartLowlightText
       }
-      tokensize = tokens.length
-      while (tokenindex < tokensize) {
-        token = tokens[tokenindex]
-        check = check_highlight(matches, tokenindex)
-        if (part == 'token') {
-          item = token.token
-        } else {
-          item = token.postag
-        }
-        if (check) {
-          if (!highlighter) {
-            highlighter = true
-            text = text + spanEndText
-            text = text + spanStartHighlightText + item + " "
-          } else {
-            text = text + item + " "
-          }
-        } else {
-          if (highlighter) {
-            highlighter = false
-            text = text + spanEndText
-            text = text + spanStartLowlightText + item + " "
-          } else {
-            text = text + item + " "
-          }
-        }
-        tokenindex++
+      sentencesize = tokens.length
+      sentenceindex = 0
+      wordposition = 0
+      while (sentenceindex < sentencesize) {
+          sentence = tokens[sentenceindex]
+          wordsize = sentence.length
+          wordcount = 0
+          while (wordcount<wordsize) {
+              token = sentence[wordcount]
+              check = check_highlight(matches, wordposition)
+              if (part == 'token') {
+                  item = token.token
+              } else {
+                   item = token.postag
+              }
+              if (check) {
+                  if (!highlighter) {
+                      highlighter = true
+                      text = text + spanEndText
+                      text = text + spanStartHighlightText + item + " "
+                   } else {
+                       text = text + item + " "
+                   }
+              } else {
+                   if (highlighter) {
+                       highlighter = false
+                       text = text + spanEndText
+                       text = text + spanStartLowlightText + item + " "
+                   } else {
+                       text = text + item + " "
+                   }
+              }
+            wordcount++
+            wordposition++
+            }
+          sentenceindex++
       }
       text = text + spanEndText
     }
