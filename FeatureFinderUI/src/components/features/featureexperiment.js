@@ -8,7 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function FeatureExperiment() {
   const [spinner, setSpinner] = useState(false)
-  const [form, setForm] = useState({reg_input:"", gran_input:"", text_input:"", lang_input:"english", pre_input:"", post_input:"", inv_input:""})
+  const [form, setForm] = useState({reg_input:"", gran_input:"sentence", text_input:"", lang_input:"english", pre_input:"", post_input:"", inv_input:""})
   const { get_match_results } = useStoreActions((actions) => actions)
   const { matchresults, searching } = useStoreState((state) => state);
   const regex = React.createRef()
