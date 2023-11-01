@@ -10,6 +10,7 @@ import words_img from '../../images/featurefinder.jpg';
 function FeatureGroupNew() {
     const[spinner, setSpinner] = useState(false)
     const match_results = useStoreActions(actions => actions.get_match_results)
+    const add_document = useStoreActions(actions => actions.add_document)
     const feature_arr = useStoreState(state => state.featureregexlist) 
     const matchreply = useStoreState(state => state.matchreply);
     const name = React.createRef()
