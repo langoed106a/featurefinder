@@ -10,6 +10,9 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.io.BufferedWriter;
 import java.util.concurrent.Future;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class HTTPAsyncSender {
     AsyncHttpClient httpClient;
@@ -32,6 +35,50 @@ public class HTTPAsyncSender {
                 builder.addHeader("Content-type", "application/json;charset=utf-8");
                 builder.addHeader("Accept", "application/json");
                 builder.setBody(content);
+                try {
+                     reply = builder.execute(new ResponseHandler());
+                     message = reply.get();
+                } catch (Exception exception) {
+                    message = "500";
+                }
+            } else if (destination.startsWith("file")) {
+                destination = destination.substring(7, destination.length());
+                if ((destination!=null) && (destination.length()>0)) {
+                    try {
+                         message = writeToFile(destination, content);
+                    } catch (Exception exception) {
+                        message="500";
+                    }
+                } else {
+                    message="500";
+                }
+            }
+        }
+        return message;
+    }
+
+    public String sendpost(String documentType, String content, Map<String, String> params) {
+        BoundRequestBuilder builder=null;
+        Future<String> reply=null;
+        String message="500", destination="";
+        List<String> paramList = null;
+        Map<String, List<String>> queryParams=null;
+        destination = serviceLocator.getService(documentType);
+        if (destination !=null) {
+            if (destination.startsWith("http")) {
+                builder =  httpClient.preparePost(destination);
+                builder.addHeader("Content-type", "application/json;charset=utf-8");
+                builder.addHeader("Accept", "application/json");
+                builder.setBody(content);
+                if (params!=null) {
+                    for (String key:params.keySet()) {
+                        paramList = new ArrayList<>();
+                        paramList.add(params.get(key));
+                        queryParams.put(key, paramList);
+                    }
+                    builder.setQueryParams(queryParams);
+                }
+
                 try {
                      reply = builder.execute(new ResponseHandler());
                      message = reply.get();
