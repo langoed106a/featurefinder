@@ -191,7 +191,7 @@ public class RegexService {
 					regexDocumentList.setMessageType("add");
 
 					result = remoteProcessor.processFeature(regexDocumentList, tokenid);
-					result = remoteProcessor.processText(regexDocumentList, text, tokenid);
+					result = remoteProcessor.processText(text, tokenid);
 		        }
 			  }  
 		    }
