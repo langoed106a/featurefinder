@@ -18,6 +18,8 @@ import org.json.simple.parser.JSONParser;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;   
 import java.util.Date; 
+import java.util.HashMap;
+import java.util.Map;
 
 
 import org.slf4j.Logger;
@@ -36,8 +38,10 @@ import app.util.feature.TextDocument;
  
 @Component
 public class RemoteProcessor { 
-	private static String SERVICE_SYNC_PARSER="syncparser";
-	private static String SERVICE_ASYNC_PROCESSOR="syncprocess";
+	private static String DEFAULT_LANGUAGE="english";
+	private static String SERVICE_SYNC_PARSER="syncparsetext";
+	private static String SERVICE_ASYNC_PROCESS_FEATURE="asyncprocessfeature";
+	private static String SERVICE_SYNC_PROCESS_TEXT="syncprocesstext";
 	private static String PROPERTIES_NAME="server.properties";
 	private static final Logger logger=LoggerFactory.getLogger(RemoteProcessor.class);
 	private HTTPSyncSender httpSyncSender;
@@ -59,11 +63,21 @@ public class RemoteProcessor {
 		httpAsyncSender = new HTTPAsyncSender(serviceLocator);
     } 
 
-	public String processText(String text, String tokenid) {
-		String destinationUrl = serviceLocator.getService(SERVICE_SYNC_PARSER);
+	public String processText(RegexDocumentList regexDocumentList, String text, String tokenid) {
+		Map<String, String> params=null;
+		String languageUrl = serviceLocator.getService(SERVICE_SYNC_PARSER);
+		String processorUrl = serviceLocator.getService(SERVICE_SYNC_PROCESS_TEXT);
 		String response = "";
 		try {
-			  response=httpSyncSender.send(destinationUrl, text);
+			  response=httpSyncSender.sendpost(languageUrl, text);
+			  if (response!=null) {
+				   processorUrl = processorUrl + "?tokenid="+tokenid;
+                   response=httpSyncSender.sendpost(processorUrl, response);
+				   params = new HashMap<>();
+                   params.put("tokenid", tokenid);
+				   regexDocumentList.setMessageType("remove");
+			       response=httpAsyncSender.sendpost(SERVICE_ASYNC_PROCESS_FEATURE, regexDocumentList.toJson(), params);
+			  }
 		} catch (Exception exception) {
 			  exception.printStackTrace();
 		}
@@ -71,10 +85,12 @@ public class RemoteProcessor {
 	}
 	
 	public String processFeature(RegexDocumentList regexDocumentList, String tokenid) {
-		String destinationUrl = serviceLocator.getService(SERVICE_ASYNC_PROCESSOR);
 		String response = "";
+		Map<String, String> params = null;
 		try {
-			  response=httpAsyncSender.send(destinationUrl, regexDocumentList.toJson());
+			  params = new HashMap<>();
+              params.put("tokenid", tokenid);
+			  response=httpAsyncSender.sendpost(SERVICE_ASYNC_PROCESS_FEATURE, regexDocumentList.toJson(), params);
 		} catch (Exception exception) {
 			  exception.printStackTrace();
 		}

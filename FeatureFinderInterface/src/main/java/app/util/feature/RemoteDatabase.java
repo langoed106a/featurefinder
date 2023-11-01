@@ -104,7 +104,7 @@ public class RemoteDatabase {
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		if (destinationUrl != null) {
            httpEntity = this.getHeaders();
-    	   destinationUrl = destinationUrl.replace("%1","getdocumentbyid?documentid"+id); 
+    	   destinationUrl = destinationUrl.replace("%1","getdocumentbyid?documentid="+id); 
 		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, Document.class);
     	   document = responseEntity.getBody();
 		}

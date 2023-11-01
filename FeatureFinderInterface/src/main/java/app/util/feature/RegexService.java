@@ -103,8 +103,8 @@ public class RegexService {
 		remoteAnalyzer.setRestTemplate(restSimpleTemplate);
 		remoteAnalyzer.setServiceLocator(serviceLocator);
 
+        remoteProcessor.setServiceLocator(serviceLocator);
 		remoteProcessor.setRestTemplate(restSimpleTemplate);
-		remoteProcessor.setServiceLocator(serviceLocator);
 
 		remoteBatch.setRestTemplate(restLoadBalancedTemplate);
 		remoteBatch.setServiceLocator(serviceLocator);
@@ -191,21 +191,7 @@ public class RegexService {
 					regexDocumentList.setMessageType("add");
 
 					result = remoteProcessor.processFeature(regexDocumentList, tokenid);
-					result = remoteProcessor.processText(text, tokenid);
-					featureResult = new FeatureResult();
-					featureResult.fromJson(result);
-					matches = featureResult.getMatches();
-	                for (Match match:matches) {
-		               entry = "{\"start\":\""+match.getStart()+"\",\"end\":\""+match.getEnd()+"\"},";
-		               matchesStr = matchesStr + entry;
-	                }
-	                if (matchesStr.length()>0) {
-	                   matchesStr = matchesStr.substring(0,matchesStr.length()-1);
-	                   matchesStr = "\"matches\":"+"[" + matchesStr + "]";
-	                } else {
-		               matchesStr = "\"matches\":"+"[" + "]";
-	                }	   
-	            result = "{"+tokensStr+","+matchesStr+"}";
+					result = remoteProcessor.processText(regexDocumentList, text, tokenid);
 		        }
 			  }  
 		    }
