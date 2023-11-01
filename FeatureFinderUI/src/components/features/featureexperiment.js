@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function FeatureExperiment() {
   const [spinner, setSpinner] = useState(false)
+  const [form, setForm] = useState({reg_input:"", gran_input:"", text_input:"", lang_input:"english", pre_input:"", post_input:"", inv_input:""})
   const { get_match_results } = useStoreActions((actions) => actions)
   const { matchresults, searching } = useStoreState((state) => state);
   const regex = React.createRef()
@@ -20,7 +21,6 @@ function FeatureExperiment() {
   const highlight = React.createRef()
 
   const perform_search = (event) => {
-    var form = {}
     var input_text = ""
     event.preventDefault();
     form.reg_input = regex.current.value
@@ -60,24 +60,25 @@ function FeatureExperiment() {
 
   const add_highlight = (part) => {
     var tokenindex = 0
-    var text = "", token = "", item = ""
+    var text = "", item = ""
     var highlighter = false, check = false
     var firstmatch = {}
     var results = matchresults
     var matches = {}
     var tokens = {}
-    var start = 0, tokenindex = 0, tokensize = 0
+    var token = {}
+    var sentencetokens = {}
+    var start = 0, tokenindex = 0, tokensize = 0, sentencesize=0, sentenceindex=0, wordposition=0, wordsize=0, wordcount=0
     let spanStartHighlightText = "<span style=\"background-color: violet; color: black;\">"
     let spanStartLowlightText = "<span style=\"background-color: white; color: black;\">"
     let spanEndText = "</span>"
     if ((results) && (results.sentencelist)) {
       matches = results.matches
       tokens = results.sentencelist
+      start = -1
       if ((matches) && (matches.length > 0)) {
-        firstmatch = matches[0]
-        start = parseInt(firstmatch.start)
-      } else {
-        start = -1
+           firstmatch = matches[0]
+           start = parseInt(firstmatch.start)
       }
       if (start == 0) {
         highlighter = true
@@ -90,11 +91,12 @@ function FeatureExperiment() {
       sentenceindex = 0
       wordposition = 0
       while (sentenceindex < sentencesize) {
-          sentence = tokens[sentenceindex]
-          wordsize = sentence.length
+          sentencetokens = tokens[sentenceindex]
+          sentencetokens = sentencetokens.sentence
+          wordsize = sentencetokens.length
           wordcount = 0
           while (wordcount<wordsize) {
-              token = sentence[wordcount]
+              token = sentencetokens[wordcount]
               check = check_highlight(matches, wordposition)
               if (part == 'token') {
                   item = token.token
@@ -149,16 +151,16 @@ function FeatureExperiment() {
               <Form onSubmit={perform_search} id="experiment">
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1" role="form">
                   <Form.Label>Regex</Form.Label>
-                  <Form.Control as="textarea" rows={10} ref={regex} />
+                  <Form.Control as="textarea" rows={10}  defaultValue={form.reg_input} ref={regex} />
                   <Form.Label>Granularity</Form.Label>
-                  <Form.Control type="text" placeholder="sentence" ref={granularity} />
+                  <Form.Control type="text" placeholder="sentence" defaultValue={form.gran_input} ref={granularity} />
                   <Form.Label>Precondition</Form.Label>
-                  <Form.Control type="text" placeholder="<text=contains('comma')>" ref={precondition} />
+                  <Form.Control type="text" placeholder="<text=contains('comma')>" defaultValue={form.pre_input} ref={precondition} />
                   <Form.Label>Postcondition</Form.Label>
-                  <Form.Control type="text" placeholder="$matches=3" ref={postcondition} />
+                  <Form.Control type="text" placeholder="$matches=3" defaultValue={form.post_input} ref={postcondition} />
                   <Form.Label>Invariant</Form.Label>
-                  <Form.Control type="text" placeholder="<token='word'>" ref={invariant} />
-                  <Form.Select aria-label="Default select example" ref={language}>
+                  <Form.Control type="text" placeholder="<token='word'>" defaultValue={form.inv_input}  ref={invariant} />
+                  <Form.Select aria-label="Default select example" defaultValue={form.lang_input} ref={language}>
                     <option>Language</option>
                     <option value="1">English</option>
                     <option value="2">Chinese</option>
@@ -167,7 +169,7 @@ function FeatureExperiment() {
                   <Row>
                     <Col>
                       <Form.Label>Text Input</Form.Label>
-                      <Form.Control as="textarea" rows={10} ref={textinput} />
+                      <Form.Control as="textarea" rows={10} defaultValue={form.text_input}  ref={textinput} />
                     </Col>
                     <Col>
                       <Tabs defaultActiveKey="tokens" transition={false} id="tokens" className="mb-3">
