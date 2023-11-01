@@ -47,7 +47,7 @@ function FeatureDetail() {
                   <Form.Label>Type</Form.Label>
                   <Form.Control type="text" placeholder="type" defaultValue={document.type} />
                   <Form.Label>Contents</Form.Label>
-                  <Form.Control as="textarea" rows={10} defaultValue={document.contents} /> 
+                  <Form.Control as="textarea" rows={10} defaultValue={decodeURIComponent(document.contents)} /> 
                 </Form.Group>
                </Form>    
               </Container>
