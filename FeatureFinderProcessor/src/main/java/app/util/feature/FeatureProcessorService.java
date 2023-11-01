@@ -140,11 +140,6 @@ public class FeatureProcessorService {
 			    regexDocumentList = regexMapList.get(tokenid);
 				for (RegexDocument regexDocument:regexDocumentList.getRegexDocumentList()) {
 				   regexDocument.setId(tokenid);
-				   System.out.println("*********************");
-				   List<WordToken> line = textDocument.getSentenceAtIndex(1);
-				   for (WordToken token:line) {
-					System.out.println(token.getToken());
-				   }
 				   futureStr = regexService.doAsyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
 				   response = futureStr.get();
 			    }
@@ -172,11 +167,6 @@ public class FeatureProcessorService {
 			    regexDocumentList = regexMapList.get(tokenid);
 				for (RegexDocument regexDocument:regexDocumentList.getRegexDocumentList()) {
 				   regexDocument.setId(tokenid);
-				   System.out.println("*********************");
-				   List<WordToken> line = textDocument.getSentenceAtIndex(1);
-				   for (WordToken token:line) {
-					System.out.println(token.getToken());
-				   }
 				   futureResult= regexService.doSyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
 				   featureResult = futureResult.get();
 				   featureResult.setSentenceList(textDocument.getSentenceList());
@@ -212,7 +202,6 @@ public class FeatureProcessorService {
 	  // featureFunction.setFeatureStore(documentDatabase);
 	  featureFunction.setWordStorage(wordStorage);
 	  try {
-		  System.out.println("****MessageType:"+messageType);
 		  regexDocumentList.fromJson(featurelist);
 		  messageType = regexDocumentList.getMessageType();
 		  response="{\"message\":\"message type "+messageType+" has been applied\",\"status\":200}";
