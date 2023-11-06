@@ -15,7 +15,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"app.util.feature"})
+@ComponentScan(basePackages = {"app.util.feature","app.util.database"})
 public class IngestorApplication implements CommandLineRunner {
 
     public static void main(String[] args) {

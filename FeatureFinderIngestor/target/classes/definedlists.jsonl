@@ -1,3 +1,0 @@
-{"name":"animate","regex":["this","that","is","all"]}
-{"name":"cordinatingconjunctionlist","regex":["for","and","nor","but","or","yet","so"]}
-{"name":"verbpostaglist","regex":["VB","VBD","VBG","VBN","VBP","VBZ"]}

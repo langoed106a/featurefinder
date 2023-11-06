@@ -1,3 +1,0 @@
-csubj
-nsubj
-xsubj
