@@ -97,13 +97,14 @@ public class EnglishController {
     }
 
 	@RequestMapping(value = "/asyncprocesstext", method = RequestMethod.POST)
-    public String asyncProcessText(@RequestBody String text, @RequestParam String tokenid ) { 
+    public String asyncProcessText(@RequestBody String text, @RequestParam String tokenid, @RequestParam String name) { 
 	    String jsonStr="", response="", uniqueId="", reply="";
 		Map<String, String> params = new HashMap<>();
 		TextDocument textDocument = null;
         try {
 		     textDocument = englishParser.parseText(text);
 			 textDocument.setId(tokenid);
+			 textDocument.setName(name);
 			 params.put("tokenid", tokenid);
 		     jsonStr = textDocument.toJson();
 			 reply = asyncSender.sendpost("processedtext", jsonStr, params);
