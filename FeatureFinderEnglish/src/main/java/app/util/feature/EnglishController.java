@@ -95,6 +95,25 @@ public class EnglishController {
 		}
 	    return response;
     }
+
+	@RequestMapping(value = "/asyncprocesstext", method = RequestMethod.POST)
+    public String asyncProcessText(@RequestBody String text, @RequestParam String tokenid ) { 
+	    String jsonStr="", response="", uniqueId="", reply="";
+		Map<String, String> params = new HashMap<>();
+		TextDocument textDocument = null;
+        try {
+		     textDocument = englishParser.parseText(text);
+			 textDocument.setId(tokenid);
+			 params.put("tokenid", tokenid);
+		     jsonStr = textDocument.toJson();
+			 reply = asyncSender.sendpost("processedtext", jsonStr, params);
+			 response = "{\"token\":\""+tokenid+"\",\"status\":200}";
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			response = "{\"error\":\""+exception.getMessage()+"\",\"status\":500}";
+		}
+	    return response;
+    }
     
     @RequestMapping(value = "/wordexists", method = RequestMethod.GET)
     public Boolean wordexists(@RequestParam String listname, @RequestParam String word) { 
