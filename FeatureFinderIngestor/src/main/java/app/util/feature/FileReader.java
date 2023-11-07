@@ -10,18 +10,20 @@ import java.nio.charset.StandardCharsets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FileReader implements Runnable  {
     static char[] END_OF_SENTENCE={'.','?','!',':'};
     File filePath;
     String tokenid;
     Tracker tracker;
-    RemoteProcessor remoteProcessor;
+    HTTPAsyncSender asyncSender;
             
-    public FileReader(File filePath, RemoteProcessor remoteProcessor, Tracker tracker, String tokenid) {
+    public FileReader(File filePath, HTTPAsyncSender asyncSender, Tracker tracker, String tokenid) {
         this.filePath = filePath;
         this.tracker = tracker;
-        this.remoteProcessor = remoteProcessor;
+        this.asyncSender = asyncSender;
         this.tokenid = tokenid;
     }
 
@@ -30,6 +32,7 @@ public class FileReader implements Runnable  {
         Boolean finish=false;
         int value;
         char token, eol;
+        Map<String, String> params;
         Reader reader=null;
         String line="", reply="";
         StringBuffer strBuffer = null;
@@ -37,6 +40,9 @@ public class FileReader implements Runnable  {
         try{      
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(this.filePath), "UTF-8"));
             strBuffer = new StringBuffer();
+            params = new HashMap<>();
+            params.put("tokenid", tokenid);
+            params.put("name", this.filePath.getName());
             while ((value = reader.read()) != -1) {
                 finish = false;
                 index=0;
@@ -51,7 +57,7 @@ public class FileReader implements Runnable  {
                 strBuffer.append(token);
                 if (finish) {
                     line = strBuffer.toString();
-                    reply = remoteProcessor.processText(line, tokenid);
+                    reply = asyncSender.sendpost("asyncprocesstext", line, params);
                     strBuffer = new StringBuffer();
                 }
             }

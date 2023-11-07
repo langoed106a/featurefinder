@@ -41,7 +41,7 @@ public class RemoteProcessor {
 	private static String DEFAULT_LANGUAGE="english";
 	private static String SERVICE_SYNC_PARSER="syncparsetext";
 	private static String SERVICE_ASYNC_PROCESS_FEATURE="asyncprocessfeature";
-	private static String SERVICE_SYNC_PROCESS_TEXT="syncprocesstext";
+	private static String SERVICE_ASYNC_PROCESS_TEXT="asyncprocesstext";
 	private static String PROPERTIES_NAME="server.properties";
 	private static final Logger logger=LoggerFactory.getLogger(RemoteProcessor.class);
 	private HTTPSyncSender httpSyncSender;
@@ -66,14 +66,11 @@ public class RemoteProcessor {
 	public String processText(String text, String tokenid) {
 		Map<String, String> params=null;
 		String languageUrl = serviceLocator.getService(SERVICE_SYNC_PARSER);
-		String processorUrl = serviceLocator.getService(SERVICE_SYNC_PROCESS_TEXT);
+		String processorUrl = serviceLocator.getService(SERVICE_ASYNC_PROCESS_TEXT);
 		String response = "";
 		try {
-			  response=httpSyncSender.sendpost(languageUrl, text);
-			  if (response!=null) {
-				   processorUrl = processorUrl + "?tokenid="+tokenid;
-                   response=httpSyncSender.sendpost(processorUrl, response);
-			  }
+            params.put("tokenid", tokenid);
+			response=httpAsyncSender.sendpost(SERVICE_ASYNC_PROCESS_TEXT, text, params);
 		} catch (Exception exception) {
 			  exception.printStackTrace();
 		}

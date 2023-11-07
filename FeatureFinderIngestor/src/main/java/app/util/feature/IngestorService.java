@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -42,15 +43,22 @@ public class IngestorService {
    @Autowired
    private RemoteProcessor remoteProcessor;
 
+   @Autowired
+	private RestTemplate restTemplate;
+
    public IngestorService() {
       String properties_location = System.getProperty(PROPERTIES_NAME);
-	  serviceLocator = new ServiceLocator(properties_location);
+	   serviceLocator = new ServiceLocator(properties_location);
    }
 
    @PostConstruct
    public void initialise() {
       documentDatabase.setRemoteDatabase(remoteDatabase);
-      fileProcessor = new FileProcessor(remoteProcessor);
+      fileProcessor = new FileProcessor(serviceLocator);
+      remoteDatabase.setServiceLocator(serviceLocator);
+      remoteDatabase.setRestTemplate(restTemplate);
+      remoteProcessor.setServiceLocator(serviceLocator);
+      remoteProcessor.setRestTemplate(restTemplate);
    }
 
    @RequestMapping(value = "/processdocuments", method = RequestMethod.GET)
@@ -96,6 +104,24 @@ public class IngestorService {
              }
          }
          regexDocumentList.setRegexDocumentList(regexDocuments);
+         tokenid = UUID.randomUUID().toString();
+         remoteProcessor.processFeature(regexDocumentList, tokenid);
+         fileProcessor.processDocuments(documentList, tokenid);
+      }
+   }
+
+   @RequestMapping(value = "/processtext", method = RequestMethod.GET)
+   public void doAsyncProcessText(@RequestParam List<String> folderlist, @RequestParam String featurelist) {
+      Document document = null;
+      List<Document> documentList = new ArrayList<>();
+      RegexDocumentList regexDocumentList = new RegexDocumentList();
+      String contents = "", tokenid="";
+      if ((folderlist!=null) && (featurelist!=null)) {
+         for (String folderStr:folderlist) {
+             document = new Document("",folderStr,"folder",folderStr,"folder");
+             documentList.add(document);
+         } 
+         regexDocumentList.fromJson(featurelist);
          tokenid = UUID.randomUUID().toString();
          remoteProcessor.processFeature(regexDocumentList, tokenid);
          fileProcessor.processDocuments(documentList, tokenid);

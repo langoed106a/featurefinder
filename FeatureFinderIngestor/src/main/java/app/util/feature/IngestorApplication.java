@@ -18,6 +18,16 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {"app.util.feature","app.util.database"})
 public class IngestorApplication implements CommandLineRunner {
 
+    @Bean
+    public RestTemplate restTemplate() {
+        int connectionTimeout = 240000;
+	    int socketTimeout = 240000;
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(connectionTimeout);
+        factory.setReadTimeout(socketTimeout);
+        return new RestTemplate(factory);
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(IngestorApplication.class, args);
     }

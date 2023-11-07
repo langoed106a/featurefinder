@@ -8,26 +8,28 @@ public class FileProcessor {
   private static String FILE="file";
   private static String FOLDER="folder";
   private static Integer THREAD_ALIVE_LIMIT=10;
+
+  public HTTPAsyncSender asyncSender;
   private RemoteProcessor remoteProcessor;
   private Tracker tracker;
 
-    public FileProcessor(RemoteProcessor remoteProcessor) {
-       this.remoteProcessor = remoteProcessor;
-       this.tracker = new Tracker();
+    public FileProcessor(ServiceLocator serviceLocator) {
+       this.asyncSender = new HTTPAsyncSender(serviceLocator);
     }
 
     public void processDocuments(List<Document> documentList, String tokenid) {
         File fileToProcess = null;
         Integer fileCount = 0, threadAlive = 0, fileNumber=0;
         List<File> filePathList = this.getFileNames(documentList);
+        this.tracker = new Tracker();
         for (File file: filePathList) {
             try {
                   fileToProcess = file;
                   tracker.incrementThreadAlive();
-                  Thread t = new Thread(new FileReader(fileToProcess, remoteProcessor, tracker, tokenid));
+                  Thread t = new Thread(new FileReader(fileToProcess, this.asyncSender, tracker, tokenid));
                   t.start();
-            }catch (Exception e) {
-                    //do something  
+            } catch (Exception exception) {
+                exception.printStackTrace(); 
             }
            threadAlive = tracker.getThreadAlive();
            while(threadAlive > THREAD_ALIVE_LIMIT){//This while loop will control number of thread to be not more than 10
@@ -35,14 +37,6 @@ public class FileProcessor {
                     threadAlive = tracker.getThreadAlive();
                     System.out.println("Reached maximum");
             } 
-            fileNumber = tracker.getFilesProcessed();
-            while(fileNumber < filePathList.size()){
-                //wait till last thread complete it's task
-                //I am not using thread.join() for performance
-                  fileNumber = tracker.getFilesProcessed();
-                  System.out.println("Number of file processed :" + fileNumber);
-                try{Thread.sleep(100);}catch(Exception e){}
-            }
         }
     }
 
@@ -57,11 +51,14 @@ public class FileProcessor {
                 if (document.getType().equalsIgnoreCase(FILE)) {
                     filePathList.add(new File(document.getContents()));
                 } else if (document.getType().equalsIgnoreCase(FOLDER)) {
+                      folderPath = document.getContents();
                       directoryPath = new File(folderPath);
                       if (directoryPath !=null) {
                          filesList = directoryPath.listFiles();
-                         for (int i=0; i<filesList.length; i++) {
-                             filePathList.add(filesList[i]);
+                         if (filesList != null) {
+                             for (int i=0; i<filesList.length; i++) {
+                                 filePathList.add(filesList[i]);
+                             }
                          }
                       }
                 }
