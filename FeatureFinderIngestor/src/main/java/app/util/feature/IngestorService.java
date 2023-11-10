@@ -62,23 +62,27 @@ public class IngestorService {
    }
 
    @RequestMapping(value = "/processdocuments", method = RequestMethod.GET)
-   public void doAsyncProcessDocuments(@RequestParam List<String> documentgrouplist, @RequestParam List<String> featuregrouplist) {
+   public void doAsyncProcessDocuments(@RequestParam String documentgrouplist, @RequestParam String featuregrouplist, String tokenid) {
       Document document = null;
       HashMap<String, String> fieldValues = null;
       HashMap<String, String> contentValues = null;
       List<Document> documentList = new ArrayList<>();
       List<Document> regexList = new ArrayList<>();
       List<Document> regexFeatureList = new ArrayList<>();
+      List<String> documentgroup=null;
+      List<String> featuregroup=null;
       List<RegexDocument> regexDocuments = new ArrayList<>();
       RegexDocument regexDocument = null;
       RegexDocumentList regexDocumentList = new RegexDocumentList();
-      String contents = "", tokenid="";
-      if (((documentgrouplist!=null) && (documentgrouplist.size()>0)) && ((featuregrouplist!=null) && (featuregrouplist.size()>0))) {
-         for (String documentStr:documentgrouplist) {
+      String contents = "";
+      documentgroup = this.getGroupList(documentgrouplist);
+      featuregroup = this.getGroupList(documentgrouplist);
+      if (((documentgroup!=null) && (documentgroup.size()>0)) && ((featuregroup!=null) && (featuregroup.size()>0))) {
+         for (String documentStr:documentgroup) {
              document = documentDatabase.getDocumentByName(documentStr);
              documentList.add(document);
          } 
-         for (String featureStr:featuregrouplist) {
+         for (String featureStr:featuregroup) {
              regexList = documentDatabase.getDocumentByGroup(featureStr);
              for (Document doc:regexList) {
                 try {
@@ -104,7 +108,6 @@ public class IngestorService {
              }
          }
          regexDocumentList.setRegexDocumentList(regexDocuments);
-         tokenid = UUID.randomUUID().toString();
          remoteProcessor.processFeature(regexDocumentList, tokenid);
          fileProcessor.processDocuments(documentList, tokenid);
       }
@@ -126,6 +129,18 @@ public class IngestorService {
          remoteProcessor.processFeature(regexDocumentList, tokenid);
          fileProcessor.processDocuments(documentList, tokenid);
       }
+   }
+
+   private List<String> getGroupList(String groupList) {
+      String[] strList=null;
+      List<String> grpList = new ArrayList<>();
+      if (groupList !=null) {
+         strList = groupList.split(",");
+         for (int i=0; i<strList.length; i++) {
+            grpList.add(strList[i]);
+         }
+      }
+      return grpList;
    }
 
     
