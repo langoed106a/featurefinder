@@ -103,6 +103,39 @@ public class HTTPAsyncSender {
         return message;
     }
 
+    public String sendget(String documentType, Map<String, String> params) {
+        BoundRequestBuilder builder=null;
+        Future<String> reply=null;
+        String message="500", destination="";
+        List<String> paramList = null;
+        Map<String, List<String>> queryParams=null;
+        destination = serviceLocator.getService(documentType);
+        if (destination !=null) {
+            if (destination.startsWith("http")) {
+                builder =  httpClient.prepareGet(destination);
+                builder.addHeader("Content-type", "application/json;charset=utf-8");
+                builder.addHeader("Accept", "application/json");
+                if (params!=null) {
+                    queryParams = new HashMap<>();
+                    for (String key:params.keySet()) {
+                        paramList = new ArrayList<>();
+                        paramList.add(params.get(key));
+                        queryParams.put(key, paramList);
+                    }
+                    builder.setQueryParams(queryParams);
+                }
+
+                try {
+                     reply = builder.execute(new ResponseHandler());
+                     message = reply.get();
+                } catch (Exception exception) {
+                    message = "500";
+                }
+            } 
+        }
+        return message;
+    }
+
     public String send(String documentType, String content, String name) {
         BoundRequestBuilder builder=null;
         Future<String> reply=null;
