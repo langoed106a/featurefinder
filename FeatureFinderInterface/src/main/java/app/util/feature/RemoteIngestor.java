@@ -54,48 +54,50 @@ import app.util.database.DocumentDatabase;
 
 import app.util.feature.WordToken;
 import app.util.feature.FeatureDocument;
+import app.util.feature.HTTPAsyncSender;
 import app.util.feature.ServiceLocator;
+import app.util.feature.TokenGenerator;
 
 @Component
-public class RemoteBatch {
+public class RemoteIngestor {
     public static String SERVICE_NAME="batch";
+	private static String PROCESS_DOCUMENTS="asyncprocessdocuments";
 	private ServiceLocator serviceLocator;
 	private DocumentDatabase documentDatabase;
-	private AsyncHttpClient httpClient;
+	private HTTPAsyncSender httpAsyncSender;
 	private RestTemplate restTemplate;
     
-	public RemoteBatch() {
-		httpClient = new DefaultAsyncHttpClient();
+	public RemoteIngestor() {
 	}
     
     public void setServiceLocator(ServiceLocator serviceLocator) {
 		 this.serviceLocator = serviceLocator;
+		 httpAsyncSender = new HTTPAsyncSender(serviceLocator);
 	}
-
-	public void setRestTemplate(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-    } 
     
-    public void setFeatureStore(DocumentDatabase documentDatabase) {
+    public void setDatabase(DocumentDatabase documentDatabase) {
 		 this.documentDatabase = documentDatabase;
 	}
      
     public String runasyncgroupagainstdocument(String runname, String description, String language, String featuregroupname, String documentgroupname) {	
-    	String response="", destinationUrl="";
-		HttpHeaders headers = null;
-		HttpEntity<String> httpEntity = null;
-    	destinationUrl = destinationUrl.replace("%1","runsyncgroupagainstdocument?runname="+runname+"&description="+description+"&language="+language+"&groupname="+featuregroupname+"&documentname="+documentgroupname);    
-		if (destinationUrl != null) {
-			headers = new HttpHeaders();
-			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			httpEntity = new HttpEntity<String>(headers);
-			try {	 
-			       response = restTemplate.getForObject(destinationUrl, String.class);
-		    } catch (Exception exception) {
-			       exception.printStackTrace();
-		    }	
-		 }
-       return response;
+    	Document document = null;
+		String response = "", tokenId = "";
+		Map<String, String> params = null;
+		try {
+			  params = new HashMap<>();
+			  tokenId = TokenGenerator.newToken();
+              params.put("tokenid", tokenId);
+			  params.put("documentgrouplist",documentgroupname);
+			  params.put("featuregrouplist",featuregroupname);
+			  response=httpAsyncSender.sendget(PROCESS_DOCUMENTS, params);
+			  document = new Document("", runname, "run", tokenId, description);
+			  this.documentDatabase.addDocument(document);
+			  response="{\"message\":\"processing feature group against document group with tokenid:\"\""+tokenId+"\"}";
+		} catch (Exception exception) {
+			  exception.printStackTrace();
+			  response="{\"error\":\"unable to process feature group against document group\"}";
+		}
+		return response;
     }
 
 }

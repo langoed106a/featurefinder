@@ -66,9 +66,7 @@ public class RegexService {
 	private WordStorage wordStorage;
 
 	@Autowired
-	private RestTemplate restSimpleTemplate;
-	@Autowired
-    private RestTemplate restLoadBalancedTemplate;
+	private RestTemplate restTemplate;
 	@Autowired
 	private RemoteAnalyzer remoteAnalyzer;
 	@Autowired
@@ -76,7 +74,7 @@ public class RegexService {
 	@Autowired
 	private RemoteProcessor remoteProcessor;
 	@Autowired
-	private RemoteBatch remoteBatch;
+	private RemoteIngestor remoteIngestor;
 	@Autowired
 	private RemoteDatabase remoteDatabase;
 	@Autowired
@@ -94,22 +92,22 @@ public class RegexService {
 		String properties_location = System.getProperty(PROPERTIES_NAME);
 		serviceLocator = new ServiceLocator(properties_location);
 	
-		remoteParser.setRestTemplate(restSimpleTemplate);
+		remoteParser.setRestTemplate(restTemplate);
 		remoteParser.setServiceLocator(serviceLocator);
 
-		remoteDatabase.setRestTemplate(restSimpleTemplate);
-		remoteDatabase.setServiceLocator(serviceLocator);
-
-		remoteAnalyzer.setRestTemplate(restSimpleTemplate);
+		remoteAnalyzer.setRestTemplate(restTemplate);
 		remoteAnalyzer.setServiceLocator(serviceLocator);
 
         remoteProcessor.setServiceLocator(serviceLocator);
-		remoteProcessor.setRestTemplate(restSimpleTemplate);
+		remoteProcessor.setRestTemplate(restTemplate);
 
-		remoteBatch.setRestTemplate(restLoadBalancedTemplate);
-		remoteBatch.setServiceLocator(serviceLocator);
+		remoteDatabase.setRestTemplate(restTemplate);
+		remoteDatabase.setServiceLocator(serviceLocator);
 		contractFunction = new ContractFunction(featureFunction, wordStorage);
 		documentDatabase.setRemoteDatabase(remoteDatabase);
+
+		remoteIngestor.setServiceLocator(serviceLocator);
+		remoteIngestor.setDatabase(documentDatabase);
 
 		tokenid = UUID.randomUUID().toString();
 	}
@@ -396,8 +394,7 @@ public class RegexService {
 	@RequestMapping(value = "/runasyncgroupagainstdocument", method = RequestMethod.GET) 
     public String runasyncgroupagainstdocument(@RequestParam String runname, @RequestParam String description,  @RequestParam String language, @RequestParam String featuregroupname, @RequestParam String documentgroupname) throws InterruptedException { 
 	  String path="", response="";
-	  remoteBatch.setFeatureStore(documentDatabase);
-      response = remoteBatch.runasyncgroupagainstdocument(runname, description, language, featuregroupname, documentgroupname);	 
+      response = remoteIngestor.runasyncgroupagainstdocument(runname, description, language, featuregroupname, documentgroupname);	 
       return response;
     }
 	
@@ -429,8 +426,19 @@ public class RegexService {
 	@RequestMapping(value = "/getdocuments", method = RequestMethod.GET)
     public List<Document> getdocuments(@RequestParam String type) { 
 		 List<Document> documents = null;
-		 documents = documentDatabase.getDocumentByType(type);
-	     return documents;
+		 List<Document> allDocuments = new ArrayList<>();
+		 String someType="";
+		 String[] allTypes = type.split(",");
+		 if (allTypes.length>0) {
+			for (int i=0; i<allTypes.length; i++) {
+				someType = allTypes[i];
+		        documents = documentDatabase.getDocumentByType(type);
+				for (Document document:documents) {
+					allDocuments.add(document);
+				}
+			}
+		 }
+	     return allDocuments;
     }
 	
 	@RequestMapping(value = "/updatedocument", method = RequestMethod.GET)
