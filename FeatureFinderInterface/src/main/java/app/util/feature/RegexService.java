@@ -432,7 +432,7 @@ public class RegexService {
 		 if (allTypes.length>0) {
 			for (int i=0; i<allTypes.length; i++) {
 				someType = allTypes[i];
-		        documents = documentDatabase.getDocumentByType(type);
+		        documents = documentDatabase.getDocumentByType(someType);
 				for (Document document:documents) {
 					allDocuments.add(document);
 				}
