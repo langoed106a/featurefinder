@@ -75,39 +75,56 @@ public class IngestorService {
       RegexDocument regexDocument = null;
       RegexDocumentList regexDocumentList = new RegexDocumentList();
       String contents = "";
+      String[] regexArray = null;
       documentgroup = this.getGroupList(documentgrouplist);
       featuregroup = this.getGroupList(featuregrouplist);
       if (((documentgroup!=null) && (documentgroup.size()>0)) && ((featuregroup!=null) && (featuregroup.size()>0))) {
          for (String documentStr:documentgroup) {
              document = documentDatabase.getDocumentByName(documentStr);
+             contents = document.getContents();
+             contents = URLDecoder.decode(contents);
+             document.setContents(URLDecoder.decode(contents));
              documentList.add(document);
          } 
          for (String featureStr:featuregroup) {
-             regexList = documentDatabase.getDocumentByGroup(featureStr);
-             for (Document doc:regexList) {
-                try {
-                     fieldValues = new ObjectMapper().readValue(doc.toJson(), new TypeReference<HashMap<String,String>>() {});
-                     contents = fieldValues.get("contents");
-                     contents = URLDecoder.decode(contents);
-                     contentValues = new ObjectMapper().readValue(contents, new TypeReference<HashMap<String,String>>() {});
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                }
-                for (String key:contentValues.keySet()) {
-                     fieldValues.put(key, contentValues.get(key));
-                }
-                regexDocument = new RegexDocument(fieldValues.get("name"), 
+             document = documentDatabase.getDocumentByName(featureStr);
+             contents = document.getContents();
+             contents = URLDecoder.decode(contents);
+             if ((contents != null) && (contents.length()>0)) {
+                 regexArray = contents.split(",");
+                 for (int k=0; k<regexArray.length; k++) {
+                     document = documentDatabase.getDocumentByName(regexArray[k]);
+                     contents = document.getContents();
+                     document.setContents(URLDecoder.decode(contents));
+                     regexList.add(document);
+                 }
+                 for (Document doc:regexList) {
+                    try {
+                        fieldValues = new ObjectMapper().readValue(doc.toJson(), new TypeReference<HashMap<String,String>>() {});
+                        contents = fieldValues.get("contents");
+                        contents = URLDecoder.decode(contents);
+                        contentValues = new ObjectMapper().readValue(contents, new TypeReference<HashMap<String,String>>() {});
+                     } catch (Exception exception) {
+                            exception.printStackTrace();
+                     }
+                     for (String key:contentValues.keySet()) {
+                         fieldValues.put(key, contentValues.get(key));
+                     }
+                     regexDocument = new RegexDocument(fieldValues.get("name"), 
                                                   fieldValues.get("group"), 
                                                   fieldValues.get("description"),
                                                   "",
                                                   fieldValues.get("granularity"),
                                                   fieldValues.get("precondition"),
                                                   fieldValues.get("postcondition"),
-                                                  fieldValues.get("Invariant"));
-                regexDocuments.add(regexDocument);
+                                                  fieldValues.get("invariant"));
+                     regexDocument.setRegex(fieldValues.get("regex"));
+                     regexDocuments.add(regexDocument);
+                 }
              }
          }
          regexDocumentList.setRegexDocumentList(regexDocuments);
+         regexDocumentList.setMessageType("add");
          remoteProcessor.processFeature(regexDocumentList, tokenid);
          fileProcessor.processDocuments(documentList, tokenid);
       }
