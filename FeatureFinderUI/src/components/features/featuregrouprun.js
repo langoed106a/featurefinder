@@ -36,7 +36,7 @@ function FeatureGroupRun() {
           }
           form.lang_input="english"
           form.featuregroupname_input = featuregroup.current.value
-          form.documentgroupname_input = featuregroup.current.value
+          form.documentgroupname_input = documentgroup.current.value
           bulk_run(form)
           navigate("/");
        }
