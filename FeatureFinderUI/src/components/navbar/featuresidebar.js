@@ -21,6 +21,9 @@ function FeatureSideBar() {
                    <Link className="nav-link" to="/featureimport">Import Features</Link>
                </Nav.Item>
                <Nav.Item>
+                   <Link className="nav-link" to="/featuregrouprun">Run Group</Link>
+               </Nav.Item>
+               <Nav.Item>
                    <Link className="nav-link" to="/featuregroupnew">New Group</Link>
                </Nav.Item>
          </Nav> 

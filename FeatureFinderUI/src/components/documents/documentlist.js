@@ -16,10 +16,10 @@ function DocumentList() {
     const show_document_list =  document_list.map((doc, i) =>
           <Row key={i}>
              <Col>
-                  {doc.name}
+               <Link to= {`/documentdetail?id=${doc.id}`}>{doc.name}</Link>
              </Col> 
              <Col>
-               {doc.description}
+               {decodeURIComponent(doc.description)}
              </Col>  
              <Col>
                {doc.type}

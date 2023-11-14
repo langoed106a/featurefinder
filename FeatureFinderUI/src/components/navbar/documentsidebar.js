@@ -14,12 +14,6 @@ function DocumentSideBar() {
                <Nav.Item>
                    <Link className="nav-link" to="/documentlist">Document list</Link>
                </Nav.Item>
-               <Nav.Item>
-                   <Link className="nav-link" to="/documentgroup">Document Groups</Link>
-               </Nav.Item>
-               <Nav.Item>
-                   <Link className="nav-link" to="/documentgroupnew">New Group</Link>
-               </Nav.Item>
          </Nav> 
         );
 }

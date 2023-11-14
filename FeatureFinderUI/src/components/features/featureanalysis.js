@@ -10,6 +10,7 @@ import words_img from '../../images/featurefinder.jpg';
 function FeatureAnalysis() {
     const[spinner, setSpinner] = useState(false)
     const match_results = useStoreActions(actions => actions.get_match_results)
+    const run_list = useStoreActions(actions => actions.get_run_list)
     const result_list = useStoreState(state => state.resultlist);
     const model_list = useStoreState(state => state.modellist);
     const runname = React.createRef()
@@ -21,7 +22,7 @@ function FeatureAnalysis() {
     const show_result_list =  result_list.map((result, i) =>
         <Row>
           <Col xs={4}>
-              {result.name}
+              {result.contents}
           </Col> 
           <Col xs={4}>
              <Form.Select aria-label="Default select example" ref={modelname}>

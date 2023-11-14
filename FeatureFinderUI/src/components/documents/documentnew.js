@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {Button, Col, Container, Form, Row} from 'react-bootstrap';
 import { useStoreState, useStoreActions } from 'easy-peasy'
+import {useNavigate} from 'react-router-dom';
 import TopNavBar from '../navbar/topnavbar';
 import DocumentSideBar from '../navbar/documentsidebar';
 import FeatureSpinner from '../navbar/featurespinner';
@@ -14,6 +15,7 @@ function DocumentNew() {
     const type = React.createRef()
     const description = React.createRef()
     const content = React.createRef()
+    const navigate=useNavigate()
 
    const perform_add = () => {
        var form={}
@@ -33,6 +35,7 @@ function DocumentNew() {
             }
               add_document(form)
             }
+            navigate("/");
         }
    }
         
@@ -45,7 +48,7 @@ function DocumentNew() {
             </Col>
             <Col>
               <Container>
-              <Form id="documentnew">
+              <Form onSubmit={perform_add} id="documentnew">
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                   <Form.Label>Document Name</Form.Label>
                   <Form.Control type="text" placeholder="name" ref={name}/>
@@ -72,8 +75,8 @@ function DocumentNew() {
                 </Row>
                 <Row>
                   <Col>
-                    <Button variant="primary" onClick={() => perform_add()}>Submit</Button>
-                  </Col>
+                      <Button variant="primary" type="submit">Submit</Button>
+                  </Col>  
                 </Row>
                </Form>     
               </Container> 

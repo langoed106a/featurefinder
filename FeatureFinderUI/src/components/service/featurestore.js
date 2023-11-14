@@ -198,8 +198,10 @@ const storeModel = createStore (
           }),
           start_async_bulk_run: thunk(async (actions, form) => {
             try {
-              const res = await axios.get(service_url+'/runasyncgroupagainstdocument?runname='+form.name_input+'&description='+form.description_input+'&language='+form.lang_input+'&featuregroupname='+form.groupname_input+'&documentgroupname='+form.documentgroupname_input);
+              actions.set_searching();
+              const res = await axios.get(service_url+'/runasyncgroupagainstdocument?runname='+form.name_input+'&description='+form.description_input+'&language='+form.lang_input+'&featuregroupname='+form.featuregroupname_input+'&documentgroupname='+form.documentgroupname_input);
               actions.set_bulk_results(res?.data);
+              actions.set_searching();
             } catch (error) {
              console.log(error);
            }

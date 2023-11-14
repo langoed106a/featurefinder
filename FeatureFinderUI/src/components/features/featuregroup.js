@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import {Accordion, Col, Container, Row} from 'react-bootstrap';
+import {Link} from 'react-router-dom';
 import { useStoreState, useStoreActions } from 'easy-peasy'
 import TopNavBar from '../navbar/topnavbar';
 import FeatureSideBar from '../navbar/featuresidebar';
@@ -15,7 +16,7 @@ function FeatureGroup() {
     const show_feature_group_list =  featuregroup_arr.map((doc, i) =>
           <Row key={i}>
              <Col xs={2}>
-               {doc.name}
+               <Link to= {`/documentdetail?id=${doc.id}`}>{doc.name}</Link>
              </Col> 
              <Col xs={6}>
                {doc.description}

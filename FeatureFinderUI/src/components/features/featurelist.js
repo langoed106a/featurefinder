@@ -73,7 +73,7 @@ function FeatureList() {
                </Row>
                <Row>
             <Col className="col-md-10">
-         <Accordion defaultActiveKey="0">
+         <Accordion>
             <Accordion.Item eventKey="0">
                <Accordion.Header>
                   Inbuilt feature finder functions
