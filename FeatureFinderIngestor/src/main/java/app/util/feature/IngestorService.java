@@ -76,7 +76,7 @@ public class IngestorService {
       RegexDocumentList regexDocumentList = new RegexDocumentList();
       String contents = "";
       documentgroup = this.getGroupList(documentgrouplist);
-      featuregroup = this.getGroupList(documentgrouplist);
+      featuregroup = this.getGroupList(featuregrouplist);
       if (((documentgroup!=null) && (documentgroup.size()>0)) && ((featuregroup!=null) && (featuregroup.size()>0))) {
          for (String documentStr:documentgroup) {
              document = documentDatabase.getDocumentByName(documentStr);
