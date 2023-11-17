@@ -10,17 +10,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function FeatureDetail() {
     const [searchParams, setSearchParams] = useSearchParams()
     const[spinner, setSpinner] = useState(false)
+    const[contents, setContents] = useState({})
     const {searching} = useStoreState((state) => state);
     const document = useStoreState(state => state.document)
-    const {get_document} = useStoreActions((actions) => actions)
+    const {get_regex_document} = useStoreActions((actions) => actions)
     const [name, setName] = useState('')
     const [type, setType] = useState('')
     const [description, setDescription] = useState('')
-    const contents = JSON.parse(decodeURIComponent(document.contents))
-     
+   
     const getdocumentbyid = () => {
        let id = searchParams.get("id")
-       get_document(id)
+       get_regex_document(id)
     }
 
     useEffect(
@@ -49,15 +49,15 @@ function FeatureDetail() {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1" role="form">
                   <Form.Label>Regex</Form.Label>
-                  <Form.Control as="textarea" rows={10}  value={decodeURIComponent(contents.regex)} readOnly/>
+                  <Form.Control as="textarea" rows={10}  value={decodeURIComponent(document.regex)} readOnly/>
                   <Form.Label>Granularity</Form.Label>
-                  <Form.Control type="text" placeholder="" defaultValue={contents.granularity} readOnly />
+                  <Form.Control type="text" placeholder="" defaultValue={document.granularity} readOnly />
                   <Form.Label>Precondition</Form.Label>
-                  <Form.Control type="text" placeholder="" defaultValue={contents.precondition} readOnly/>
+                  <Form.Control type="text" placeholder="" defaultValue={decodeURIComponent(document.precondition)} readOnly/>
                   <Form.Label>Postcondition</Form.Label>
-                  <Form.Control type="text" placeholder="" defaultValue={contents.postcondition} readOnly />
+                  <Form.Control type="text" placeholder="" defaultValue={decodeURIComponent(document.postcondition)} readOnly />
                   <Form.Label>Invariant</Form.Label>
-                  <Form.Control type="text" placeholder="" defaultValue={contents.invariant}  readOnly />
+                  <Form.Control type="text" placeholder="" defaultValue={decodeURIComponent(document.invariant)}  readOnly />
                   <Form.Label>Language</Form.Label>
                   <Form.Control type="text" placeholder="" defaultValue="english" readOnly />
             </Form.Group>

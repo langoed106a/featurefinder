@@ -21,40 +21,40 @@ function FeatureNew() {
     const invariant = React.createRef()
     const navigate=useNavigate()
 
-   const perform_add = () => {
+   const perform_add = (event) => {
        var form={}
-       var form_field=""
-       var content = {}
+       var form_field="", reg="", gran="", pre="", post="", inv=""
+       event.preventDefault();
        if ((regex.current.value) && (name.current.value)) {
            form_field = encodeURIComponent(regex.current.value)
-           content["regex"] = form_field
-           form.name_input = name.current.value
+           reg="\"regex\":\""+form_field+"\""
            form.type_input = "regex"
+           form.name_input = name.current.value
            if (granularity.current.value) {
                    form_field = granularity.current.value
            } else {
                    form_field = "text"
            }
-           content["granularity"] = form_field
+           gran="\"granularity\":\""+form_field+"\""
            if (precondition.current.value) {
                    form_field = encodeURIComponent(precondition.current.value)
            } else {
-                  form_field = ""
+                   form_field=" "
            }
-           content["precondition"] = form_field
+           pre="\"precondition\":\""+form_field+"\""
            if (postcondition.current.value) {
               form_field = encodeURIComponent(postcondition.current.value)
            } else {
-              form_field = ""
+              form_field = " "
            }
-           content["postcondition"] = form_field
+           post="\"postcondition\":\""+form_field+"\""
            if (invariant.current.value) {
                form_field = encodeURIComponent(invariant.current.value)
            } else {
-                form_field = ""
+               form_field=" "
            }
-           content["invariant"] = form_field
-           form.content_input = JSON.stringify(content)
+           inv="\"invariant\":\""+form_field+"\""
+           form.content_input = "{"+reg+","+gran+","+pre+","+post+","+inv+"}"
            form.description_input = description.current.value
            add_document(form)
         }

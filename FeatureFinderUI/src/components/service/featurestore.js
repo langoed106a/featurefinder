@@ -115,6 +115,14 @@ const storeModel = createStore (
               console.log(error);
             }
            }),
+           get_regex_document: thunk(async (actions,id) => {
+            try {
+              const res = await axios.get(service_url+'/getregexdocument?documentid='+id);
+              actions.set_document(res?.data);
+            } catch (error) {
+              console.log(error);
+            }
+           }),
            set_document_list: action((state, documentlist) => {
                state.documentlist = documentlist
             }),
