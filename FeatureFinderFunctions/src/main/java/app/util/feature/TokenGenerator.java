@@ -1,6 +1,6 @@
 package app.util.feature;
 
-import java.util.UUID;
+import org.apache.commons.lang3.RandomStringUtils;
 
 public class TokenGenerator {
 
@@ -9,7 +9,7 @@ public class TokenGenerator {
     }
 
     public static String newToken() {
-        String uniqueID = UUID.randomUUID().toString();
+        String uniqueID = RandomStringUtils.random(20);
         return uniqueID;
     }
 }

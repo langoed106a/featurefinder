@@ -1,9 +1,12 @@
 package app.util.feature;
 
+import java.util.Map;
+
 import javax.json.JsonValue;
 import javax.json.JsonObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class RegexDocument extends Document {
     private String granularity;
@@ -105,8 +108,35 @@ public class RegexDocument extends Document {
          }
     }
 
+   public void fromDocument(Document document) {
+       String jsonStr = "", contents="";
+        Map<String, String> jsonMap=null;
+        ObjectMapper objectMapper=null;
+        try {
+            contents = document.getContents();
+            objectMapper = new ObjectMapper();
+            jsonMap = objectMapper.readValue(contents, new TypeReference<Map<String,String>>(){});
+            if (jsonMap !=null) {
+               this.setRegex(jsonMap.get("regex"));
+               this.setGranularity(jsonMap.get("granularity"));
+               this.setPrecondition(jsonMap.get("precondition"));
+               this.setPostcondition(jsonMap.get("precondition"));
+               this.setInvariant(jsonMap.get("invariant"));
+            }
+            System.out.println("*****Regex:"+this.getRegex());
+            this.setName(document.getName());
+            this.setType("regex");
+            this.setDescription(document.getDescription());
+            this.setId(document.getId());
+        } catch (Exception exception) {
+                exception.printStackTrace();
+        }
+   }
+
    public String toJson() {
         String jsonStr = "";
+        Map<String, String> jsonMap=null;
+        ObjectMapper objectMapper=null;
         try {
             jsonStr = new ObjectMapper().writeValueAsString(this);
         } catch (Exception exception) {
