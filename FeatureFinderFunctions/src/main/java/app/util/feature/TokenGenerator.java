@@ -9,7 +9,7 @@ public class TokenGenerator {
     }
 
     public static String newToken() {
-        String uniqueID = RandomStringUtils.random(20);
+        String uniqueID = RandomStringUtils.random(20).toString();
         return uniqueID;
     }
 }
