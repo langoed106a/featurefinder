@@ -16,6 +16,7 @@ const storeModel = createStore (
            wordlist: [],
            modellist: [],
            documentlist: [],
+           documentresultlist: [],
            document: {},
            featuregrouplist: [],
            documentgrouplist: [],
@@ -106,6 +107,17 @@ const storeModel = createStore (
             } catch (error) {
               console.log(error);
             }
+           }),
+           get_result_document_list: thunk(async (actions) => {
+            try {
+              const res = await axios.get(service_url+'/getdocuments?type=file,folder');
+              actions.set_result_document_list(res?.data);
+            } catch (error) {
+              console.log(error);
+            }
+           }),
+           set_result_document_list: action((state, documentlist) => {
+            state.documentresultlist = ['none',...documentlist]
            }),
            get_document: thunk(async (actions,id) => {
             try {
@@ -207,7 +219,7 @@ const storeModel = createStore (
           start_async_bulk_run: thunk(async (actions, form) => {
             try {
               actions.set_searching();
-              const res = await axios.get(service_url+'/runasyncgroupagainstdocument?runname='+form.name_input+'&description='+form.description_input+'&language='+form.lang_input+'&featuregroupname='+form.featuregroupname_input+'&documentgroupname='+form.documentgroupname_input);
+              const res = await axios.get(service_url+'/runasyncgroupagainstdocument?runname='+form.name_input+'&description='+form.description_input+'&language='+form.lang_input+'&featuregroupname='+form.featuregroupname_input+'&documentgroupname='+form.documentgroupname_input+'&outputlocation='+form.outputlocation_input);
               actions.set_bulk_results(res?.data);
               actions.set_searching();
             } catch (error) {

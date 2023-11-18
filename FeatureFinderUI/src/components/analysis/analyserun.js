@@ -28,6 +28,7 @@ function AnalyseRun() {
    const handle_change = (event) => {
       var modelname = event.target.value
       var id = event.target.id
+      
       setModel({'name':modelname,'id':id})
    }
 
@@ -58,7 +59,7 @@ function AnalyseRun() {
                     {run.description}
                   </Col>  
                   <Col xs={2}>
-                    {run.origin}
+                    {run.label}
                   </Col>  
                   <Col xs={2}>
                     <AnalyseModel elementid={run.contents} />

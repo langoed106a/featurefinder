@@ -17,8 +17,9 @@ function DocumentNew() {
     const content = React.createRef()
     const navigate=useNavigate()
 
-   const perform_add = () => {
+   const perform_add = (event) => {
        var form={}
+       event.preventDefault();
        if (name.current.value) {
            form.name_input = name.current.value
            if (type.current.value) {
