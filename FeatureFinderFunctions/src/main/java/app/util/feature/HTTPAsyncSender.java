@@ -66,21 +66,20 @@ public class HTTPAsyncSender {
         Map<String, List<String>> queryParams=null;
         destination = serviceLocator.getService(documentType);
         if (destination !=null) {
+            if (params!=null) {
+                queryParams = new HashMap<>();
+                for (String key:params.keySet()) {
+                    paramList = new ArrayList<>();
+                    paramList.add(params.get(key));
+                    queryParams.put(key, paramList);
+                }
+            }
             if (destination.startsWith("http")) {
                 builder =  httpClient.preparePost(destination);
                 builder.addHeader("Content-type", "application/json;charset=utf-8");
                 builder.addHeader("Accept", "application/json");
                 builder.setBody(content);
-                if (params!=null) {
-                    queryParams = new HashMap<>();
-                    for (String key:params.keySet()) {
-                        paramList = new ArrayList<>();
-                        paramList.add(params.get(key));
-                        queryParams.put(key, paramList);
-                    }
-                    builder.setQueryParams(queryParams);
-                }
-
+                builder.setQueryParams(queryParams);
                 try {
                      reply = builder.execute(new ResponseHandler());
                      message = reply.get();
@@ -88,7 +87,12 @@ public class HTTPAsyncSender {
                     message = "500";
                 }
             } else if (destination.startsWith("file")) {
-                destination = destination.substring(7, destination.length());
+                destination = params.get("param1");
+                if (destination.endsWith("/")) {
+
+                } else {
+                    destination = destination + File.separator + params.get("param2") + ".dat";
+                }
                 if ((destination!=null) && (destination.length()>0)) {
                     try {
                          message = writeToFile(destination, content);
