@@ -24,7 +24,7 @@ public class FeatureDocumentPreparedStatement implements PreparedStatementCallba
         preparedStatement.setString(paramId+3,document.getDescription());
         preparedStatement.setString(paramId+4,document.getLabel());
         preparedStatement.setString(paramId+5,document.getOrigin());
-        if (idStr !=null ) {
+        if ((idStr !=null) && (idStr.length()>0)) {
             preparedStatement.setInt(paramId+6,Integer.valueOf(document.getId()));
         }
         return preparedStatement.execute();
