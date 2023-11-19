@@ -52,9 +52,9 @@ public class DocumentDatabase implements DocumentStore {
        return reply;
 	}
 	
-	public String updateDocument(Integer id, String name, String type, String contents, String description) {
+	public String updateDocument(Document document) {
 	   String reply = "";
-       reply = this.remoteDatabase.updateDocument(id, name, type, contents, description);
+       reply = this.remoteDatabase.updateDocument(document);
        return reply;
 	}
 	

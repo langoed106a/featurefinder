@@ -392,20 +392,21 @@ public class RegexService {
     }
 
 	@RequestMapping(value = "/runasyncgroupagainstdocument", method = RequestMethod.GET) 
-    public String runasyncgroupagainstdocument(@RequestParam String runname, @RequestParam String description,  @RequestParam String language, @RequestParam String featuregroupname, @RequestParam String documentgroupname) throws InterruptedException { 
+    public String runasyncgroupagainstdocument(@RequestParam String runname, @RequestParam String description,  @RequestParam String language, @RequestParam String featuregroupname, @RequestParam String documentgroupname, @RequestParam String outputlocation) throws InterruptedException { 
 	  String path="", response="";
-      response = remoteIngestor.runasyncgroupagainstdocument(runname, description, language, featuregroupname, documentgroupname);	 
+      response = remoteIngestor.runasyncgroupagainstdocument(runname, description, language, featuregroupname, documentgroupname, outputlocation);	 
       return response;
     }
 	
 	@CrossOrigin(origins = "*")
 	@RequestMapping(value = "/adddocument", method = RequestMethod.POST)
-    public String adddocument(@RequestBody String documentstr) { 
+    public String adddocument(@RequestBody Document document) { 
        String response = "";
-	   Document document = null;
+	   // Document document = null;
 	   try {
-		     document = new Document();
-			 document.fromJson(documentstr);
+		     //document = new Document();
+			 //document.fromJson(documentstr);
+			 System.out.println(document.getContents());
 			 documentDatabase.addDocument(document);
 			 response = "{\"message\":\"new document has been added\"}";
 	   } catch (Exception exception) {
@@ -421,20 +422,42 @@ public class RegexService {
 		 document = documentDatabase.getDocumentById(documentid);
 	     return document;
     }
+
+	@RequestMapping(value = "/getregexdocument", method = RequestMethod.GET)
+    public RegexDocument getregexdocument(@RequestParam String documentid) { 
+		 Document document = null;
+		 RegexDocument regexDocument = new RegexDocument();
+		 document = documentDatabase.getDocumentById(documentid);
+		 if (document!=null) {
+            regexDocument.fromDocument(document);
+		 }
+	     return regexDocument;
+    }
 	
 	@CrossOrigin(origins = "*")
 	@RequestMapping(value = "/getdocuments", method = RequestMethod.GET)
     public List<Document> getdocuments(@RequestParam String type) { 
 		 List<Document> documents = null;
 		 List<Document> allDocuments = new ArrayList<>();
+		 List<String> typeList = new ArrayList<>();
+		 Document tempDocument = null;
 		 String someType="";
 		 String[] allTypes = type.split(",");
 		 if (allTypes.length>0) {
 			for (int i=0; i<allTypes.length; i++) {
 				someType = allTypes[i];
-		        documents = documentDatabase.getDocumentByType(someType);
-				for (Document document:documents) {
-					allDocuments.add(document);
+				if (!typeList.contains(someType)) {
+					typeList.add(someType);
+		            documents = documentDatabase.getDocumentByType(someType);
+				    for (Document document:documents) {
+					    allDocuments.add(document);
+				    }
+				    if (someType.equalsIgnoreCase("model")) {
+					    tempDocument = new Document("", "none", "model", "", "");
+					    allDocuments.add(tempDocument);
+                        tempDocument = new Document("", "nativenon", "model", "", "");
+					    allDocuments.add(tempDocument);
+				    }
 				}
 			}
 		 }
@@ -444,7 +467,8 @@ public class RegexService {
 	@RequestMapping(value = "/updatedocument", method = RequestMethod.GET)
     public String updatedocument(@RequestParam String id, @RequestParam String name, @RequestParam String type, @RequestParam String contents, @RequestParam String description) { 
 		 String reply = null;
-		 reply = documentDatabase.updateDocument(Integer.valueOf(id), name, type, contents, description);
+		 Document document = new Document(id, name, type, contents, description);
+		 reply = documentDatabase.updateDocument(document);
 	     return reply;
     }
 	
