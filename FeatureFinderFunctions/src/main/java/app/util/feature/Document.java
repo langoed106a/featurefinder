@@ -38,11 +38,13 @@ public class Document {
         this.label = "";
     }
 
-    public Document(Integer id, String name, String type, InputStream contentsStream, String description) {
+    public Document(Integer id, String name, String type, InputStream contentsStream, String description, String label, String origin) {
 		this.id=String.valueOf(id);
 		this.name=name;
 		this.type=type;
 		this.description=description;
+        this.label=label;
+        this.origin=origin;
 		ByteArrayOutputStream arrayOutputStream;
 		arrayOutputStream = new ByteArrayOutputStream();
 		try {
