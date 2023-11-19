@@ -62,7 +62,7 @@ public class IngestorService {
    }
 
    @RequestMapping(value = "/processdocuments", method = RequestMethod.GET)
-   public void doAsyncProcessDocuments(@RequestParam String documentgrouplist, @RequestParam String featuregrouplist, String tokenid) {
+   public void doAsyncProcessDocuments(@RequestParam String documentgrouplist, @RequestParam String featuregrouplist, String runname) {
       Document document = null;
       HashMap<String, String> fieldValues = null;
       HashMap<String, String> contentValues = null;
@@ -125,8 +125,8 @@ public class IngestorService {
          }
          regexDocumentList.setRegexDocumentList(regexDocuments);
          regexDocumentList.setMessageType("add");
-         remoteProcessor.processFeature(regexDocumentList, tokenid);
-         fileProcessor.processDocuments(documentList, tokenid);
+         remoteProcessor.processFeature(regexDocumentList, runname);
+         fileProcessor.processDocuments(documentList, runname);
       }
    }
 

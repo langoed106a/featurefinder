@@ -16,15 +16,15 @@ import java.util.Map;
 public class FileReader implements Runnable  {
     static char[] END_OF_SENTENCE={'.','?','!',':'};
     File filePath;
-    String tokenid;
+    String runname;
     Tracker tracker;
     HTTPAsyncSender asyncSender;
             
-    public FileReader(File filePath, HTTPAsyncSender asyncSender, Tracker tracker, String tokenid) {
+    public FileReader(File filePath, HTTPAsyncSender asyncSender, Tracker tracker, String runname) {
         this.filePath = filePath;
         this.tracker = tracker;
         this.asyncSender = asyncSender;
-        this.tokenid = tokenid;
+        this.runname = runname;
     }
 
     @SuppressWarnings("unchecked")
@@ -41,7 +41,7 @@ public class FileReader implements Runnable  {
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(this.filePath), "UTF-8"));
             strBuffer = new StringBuffer();
             params = new HashMap<>();
-            params.put("tokenid", tokenid);
+            params.put("runname", runname);
             params.put("name", this.filePath.getName());
             while ((value = reader.read()) != -1) {
                 finish = false;

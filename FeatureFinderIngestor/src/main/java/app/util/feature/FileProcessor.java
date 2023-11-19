@@ -17,7 +17,7 @@ public class FileProcessor {
        this.asyncSender = new HTTPAsyncSender(serviceLocator);
     }
 
-    public void processDocuments(List<Document> documentList, String tokenid) {
+    public void processDocuments(List<Document> documentList, String runname) {
         File fileToProcess = null;
         Integer fileCount = 0, threadAlive = 0, fileNumber=0;
         List<File> filePathList = this.getFileNames(documentList);
@@ -26,7 +26,7 @@ public class FileProcessor {
             try {
                   fileToProcess = file;
                   tracker.incrementThreadAlive();
-                  Thread t = new Thread(new FileReader(fileToProcess, this.asyncSender, tracker, tokenid));
+                  Thread t = new Thread(new FileReader(fileToProcess, this.asyncSender, tracker, runname));
                   t.start();
             } catch (Exception exception) {
                 exception.printStackTrace(); 
