@@ -1,5 +1,7 @@
 package app.util.feature;
 
+import java.net.URLDecoder;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -21,7 +23,11 @@ public Matcher(RegexDocument regexDocument, FeatureFunction featureFunction, Wor
      this.regexHandler = new RegexHandler(featureFunction, wordStorage);
      this.regexDocument = regexDocument;
      this.contractFunction = contractFunction;
-     this.parseRegex = regexHandler.parseRegex(regexDocument.getRegex());
+     try {
+           this.parseRegex = regexHandler.parseRegex(URLDecoder.decode(regexDocument.getRegex()));
+     } catch (Exception exception) {
+          exception.printStackTrace();
+     }
      this.wordStorage = wordStorage;
 }
 
