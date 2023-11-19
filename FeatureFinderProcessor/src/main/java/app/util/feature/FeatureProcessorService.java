@@ -48,6 +48,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import app.util.database.DocumentDatabase;
+
 import app.util.feature.FeatureDocument;
  
 @CrossOrigin
@@ -69,11 +71,14 @@ public class FeatureProcessorService {
 	private ObjectMapper objectMapper;
 	private Integer lastStart;
 
+    @Autowired
+	private DocumentDatabase documentDatabase;
 	@Autowired
-	private RestTemplate restSimpleTemplate;
+	private RemoteDatabase remoteDatabase;
+	@Autowired
+	private RestTemplate restTemplate;
 	@Autowired
 	private WebApplicationContext applicationContext;
-    
 	
 	@PostConstruct
 	public void initialise() {
@@ -81,7 +86,10 @@ public class FeatureProcessorService {
 		String properties_location = System.getProperty(PROPERTIES_NAME);
 		serviceLocator = new ServiceLocator(properties_location);
 		contractFunction = new ContractFunction(featureFunction, wordStorage);
-		regexService = new RegexService(serviceLocator);
+        remoteDatabase.setServiceLocator(serviceLocator);
+		remoteDatabase.setRestTemplate(restTemplate);
+		documentDatabase.setRemoteDatabase(remoteDatabase);
+		regexService = new RegexService(serviceLocator, documentDatabase);
 		regexMapList = new HashMap<>();
 		objectMapper = new ObjectMapper();
 		wordStorage = new WordStorage();
@@ -126,7 +134,7 @@ public class FeatureProcessorService {
     }
 
 	@RequestMapping(value = "/asyncprocesstext", method = RequestMethod.POST)
-    public String asyncprocesstext(@RequestBody String text, @RequestParam String tokenid) { 
+    public String asyncprocesstext(@RequestBody String text, @RequestParam String runname) { 
 	   CompletableFuture<String> futureStr;
 	   String status="{\"message\":\"received text\",\"status\":200}", response="";
 	   RegexDocumentList regexDocumentList=null;
@@ -136,10 +144,10 @@ public class FeatureProcessorService {
 		    logger.info("Received new text document");
 			textDocument = new TextDocument();
 	        textDocument.fromJson(text);
-			if (regexMapList.containsKey(tokenid)) {
-			    regexDocumentList = regexMapList.get(tokenid);
+			if (regexMapList.containsKey(runname)) {
+			    regexDocumentList = regexMapList.get(runname);
 				for (RegexDocument regexDocument:regexDocumentList.getRegexDocumentList()) {
-				   regexDocument.setId(tokenid);
+				   regexDocument.setId(runname);
 				   futureStr = regexService.doAsyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
 				   response = futureStr.get();
 			    }
@@ -152,7 +160,7 @@ public class FeatureProcessorService {
     }	
 
 	@RequestMapping(value = "/syncprocesstext", method = RequestMethod.POST)
-    public String syncprocesstext(@RequestBody String text, @RequestParam String tokenid) { 
+    public String syncprocesstext(@RequestBody String text, @RequestParam String runname) { 
 	   CompletableFuture<FeatureResult> futureResult=null;
 	   FeatureResult featureResult = null;
 	   RegexDocumentList regexDocumentList=null;
@@ -163,14 +171,14 @@ public class FeatureProcessorService {
 		    logger.info("Received new text document");
 			textDocument = new TextDocument();
 	        textDocument.fromJson(text);
-			if (regexMapList.containsKey(tokenid)) {
-			    regexDocumentList = regexMapList.get(tokenid);
+			if (regexMapList.containsKey(runname)) {
+			    regexDocumentList = regexMapList.get(runname);
 				for (RegexDocument regexDocument:regexDocumentList.getRegexDocumentList()) {
-				   regexDocument.setId(tokenid);
+				   regexDocument.setId(runname);
 				   futureResult= regexService.doSyncRegex(textDocument, regexDocument, featureFunction, wordStorage, contractFunction);
 				   featureResult = futureResult.get();
 				   featureResult.setSentenceList(textDocument.getSentenceList());
-				   regexMapList.remove(tokenid);
+				   regexMapList.remove(runname);
 				   response = featureResult.toJson();
 			    }
 			}
@@ -182,7 +190,7 @@ public class FeatureProcessorService {
     }	
 
 	@RequestMapping(value = "/asyncprocessfeature", method = RequestMethod.POST)
-    public String asyncProcessfeature(@RequestBody String featurelist, @RequestParam String tokenid) { 
+    public String asyncProcessfeature(@RequestBody String featurelist, @RequestParam String runname) { 
 	  Boolean valid = false, keepDocument = true;
 	  CompletableFuture<String> futureStr = null;
 	  FeatureResult featureResult = new FeatureResult();
@@ -206,20 +214,20 @@ public class FeatureProcessorService {
 		  messageType = regexDocumentList.getMessageType();
 		  response="{\"message\":\"message type "+messageType+" has been applied\",\"status\":200}";
 		  if (messageType.equalsIgnoreCase("add")) {
-			  if (!regexMapList.containsKey(tokenid)) {
-				  regexMapList.put(tokenid, regexDocumentList);
+			  if (!regexMapList.containsKey(runname)) {
+				  regexMapList.put(runname, regexDocumentList);
 			  } else {
 				  response="{\"error\":\"regex feature list already present\",\"status\":500}";
 			  } 
 		  } else if (messageType.equalsIgnoreCase("remove")) {
-			  if (regexMapList.containsKey(tokenid)) {
-				  regexMapList.remove(tokenid);
+			  if (regexMapList.containsKey(runname)) {
+				  regexMapList.remove(runname);
 			  } else {
 				  response="{\"error\":\"regex feature list is not present\",\"status\":500}";
 			  } 
 		  } else if (messageType.equalsIgnoreCase("replace")) {
-			  if (regexMapList.containsKey(tokenid)) {
-				  regexMapList.replace(tokenid, regexDocumentList);
+			  if (regexMapList.containsKey(runname)) {
+				  regexMapList.replace(runname, regexDocumentList);
 			  } else {
 				  response="{\"error\":\"regex feature list is not present\",\"status\":500}";
 			  } 

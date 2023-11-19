@@ -3,10 +3,14 @@ package app.util.feature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import app.util.feature.Matcher;
@@ -18,29 +22,45 @@ import app.util.feature.ServiceLocator;
 import app.util.feature.WordStorage;
 import app.util.feature.ContractFunction;
 
+import app.util.database.DocumentDatabase;
+
 public class RegexService {
     Logger logger = LoggerFactory.getLogger(RegexService.class);
+    DocumentDatabase documentDatabase;
+
     private HTTPAsyncSender asyncSender;
 
-    public RegexService(ServiceLocator serviceLocator) {
+    public RegexService(ServiceLocator serviceLocator, DocumentDatabase documentDatabase) {
         asyncSender = new HTTPAsyncSender(serviceLocator);
+        this.documentDatabase = documentDatabase;
     }
 
     @Async("taskExecutor")
     public CompletableFuture<String> doAsyncRegex(TextDocument textDocument, RegexDocument regexDocument, FeatureFunction featureFunction, WordStorage wordStorage, ContractFunction contractFunction) throws InterruptedException {
+        Document outputDocument = null;
         Matcher matcher = null;
+        Map<String, String> params = null;
         RegexResult regexResult = new RegexResult();
         Integer matchcount = 0;
-        String jsonStr="", response="";
+        String jsonStr="", response="", param1="", param2="";
         logger.info("Starting: regex-"+regexDocument.getRegex());
         matcher = new Matcher(regexDocument, featureFunction, wordStorage, contractFunction);
         try {
+             params = new HashMap<>();
+             System.out.println("****TextDoc Id:"+textDocument.getId());
+             System.out.println("****RegexDoc Id:"+regexDocument.getId());
+             outputDocument = this.documentDatabase.getDocumentByName(regexDocument.getId());
+             System.out.println("****OutDoc Id:"+textDocument.getContents());
 		     matchcount = matcher.matchcount(textDocument);
              regexResult.setCount(matchcount);
              regexResult.setRegexName(regexDocument.getName());
              regexResult.setTextName(textDocument.getName());
+             param1=outputDocument.getOrigin();
+             param2=outputDocument.getLabel();
+             params.put("param1", param1);
+             params.put("param2", param2);
              jsonStr = regexResult.toJson();
-             response = asyncSender.send("regexresult", jsonStr, regexDocument.getId());
+             response = asyncSender.sendpost("regexresult", jsonStr, params);
         } catch(Exception exception) {
             exception.printStackTrace();
             logger.error("Error: async regex error");
