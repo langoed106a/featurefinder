@@ -45,7 +45,7 @@ public class DatabaseController {
 	@RequestMapping(value = "/adddocument", method = RequestMethod.POST)
 	public String adddocument(@RequestBody Document document) {
 		String response = "";
-		response = documentDatabase.addDocument(document.getName(), document.getType(), document.getContents(), document.getDescription());
+		response = documentDatabase.addDocument(document);
 		return response;
 	}
 
@@ -79,11 +79,11 @@ public class DatabaseController {
 		return documentList;
 	}
 
-	@RequestMapping(value = "/updatedocument", method = RequestMethod.GET)
-	public String updatedocument(@RequestParam String id, @RequestParam String name, @RequestParam String type, @RequestParam String contents, @RequestParam String description) {
-		String reply = null;
-		reply = documentDatabase.updateDocument(Integer.valueOf(id), name, type, contents, description);
-		return reply;
+    @RequestMapping(value = "/updatedocument", method = RequestMethod.POST)
+	public String updatedocument(@RequestBody Document document) {
+		String response = "";
+		response = documentDatabase.updateDocument(document);
+		return response;
 	}
 
 	@RequestMapping(value = "/deletedocument", method = RequestMethod.GET)

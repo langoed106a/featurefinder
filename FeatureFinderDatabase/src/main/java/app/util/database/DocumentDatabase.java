@@ -52,18 +52,16 @@ public class DocumentDatabase {
         return result;
     }
 
-    public String updateDocument(Integer id, String name, String type, String contents, String description) {
-        Document document = new Document(String.valueOf(id), name, type, contents, description);
+    public String updateDocument(Document document) {
         String query = "UPDATE featuredocumentstore SET name=?,type=?,contents=?,description=? WHERE id=?";
         Boolean result = jdbcTemplate.execute(query, new FeatureDocumentPreparedStatement(document));
         String reply = "Document has been updated";
         return reply;
     }
 
-    public String addDocument(String name, String type, String contents, String description) {
+    public String addDocument(Document document) {
         byte[] contentBlob;
-        Document document = new Document(null, name, type, contents, description);
-        String query = "INSERT OR REPLACE INTO featuredocumentstore (name, type, contents, description) VALUES (?,?,?,?)";
+        String query = "INSERT OR REPLACE INTO featuredocumentstore (name, type, contents, description, label, origin) VALUES (?,?,?,?,?,?)";
         Boolean result = jdbcTemplate.execute(query, new FeatureDocumentPreparedStatement(document));
         String reply = "{\"message\":\"Document has been stored\"}";
         return reply;
