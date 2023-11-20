@@ -62,7 +62,6 @@ public class RegexService {
 	private ContractFunction contractFunction;
 	private FeatureFunction featureFunction;
 	private ServiceLocator serviceLocator;
-	private String tokenid;
 	private WordStorage wordStorage;
 
 	@Autowired
@@ -108,8 +107,6 @@ public class RegexService {
 
 		remoteIngestor.setServiceLocator(serviceLocator);
 		remoteIngestor.setDatabase(documentDatabase);
-
-		tokenid = UUID.randomUUID().toString();
 	}
 	
 	@RequestMapping(value = "/health", method = RequestMethod.GET)
@@ -188,8 +185,8 @@ public class RegexService {
 					regexDocumentList.setRegexDocumentList(regexFeatureList);
 					regexDocumentList.setMessageType("add");
 
-					result = remoteProcessor.processFeature(regexDocumentList, tokenid);
-					result = remoteProcessor.processText(text, tokenid);
+					result = remoteProcessor.processFeature(regexDocumentList, "experiment");
+					result = remoteProcessor.processText(text, "experiment");
 		        }
 			  }  
 		    }
