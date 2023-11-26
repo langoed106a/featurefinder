@@ -96,8 +96,8 @@ public class FeatureFunction {
 		return featureFunctionList.getPreDefinedFeature(name);
 	}
 
-	public Document getPreDefinedList(String name) {
-		return featureFunctionList.getPreDefinedFeature(name);
+	public String getPreDefinedList(String name) {
+		return featureFunctionList.getPreDefinedList(name);
 	}
 
 	public Boolean regexExists(String name) {
