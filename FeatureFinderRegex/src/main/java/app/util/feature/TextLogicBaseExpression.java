@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import app.util.feature.Document;
+import app.util.feature.RegexDocument;
 import app.util.feature.FeatureFunction;
 import app.util.feature.TextDocument;
 import app.util.feature.General;
@@ -108,6 +109,12 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
             type = isFunction(value);
             if (type.length()==0) {
                 type = isList(value);
+                if (type.length()==0) {
+                    type = isPredefinedList(value);
+                    if (type.length()==0) {
+                        type = isPredefinedRegex(value);
+                    }
+                }
             }
         }
     }
@@ -182,6 +189,38 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
                    type="function";
                 }
             }
+     }
+    return type;
+  }
+
+  private String isPredefinedList(String value) {
+      Boolean exists = false;
+      String type="", prefix="";
+      if (value.length()>0) {
+        prefix = value.substring(0,1);
+        if (prefix.equalsIgnoreCase("$")) {
+           value = value.substring(1, value.length());
+           exists = featureFunction.listExists(value);
+           if (exists) {
+            type="predefinedlist";
+           }
+        }
+     }
+    return type;
+  }
+
+  private String isPredefinedRegex(String value) {
+      Boolean exists = false;
+      String type="", prefix="";
+      if (value.length()>0) {
+        prefix = value.substring(0,1);
+        if (prefix.equalsIgnoreCase("$")) {
+           value = value.substring(1, value.length());
+           exists = featureFunction.regexExists(value);
+           if (exists) {
+            type="predefinedregex";
+           }
+        }
      }
     return type;
   }
@@ -304,8 +343,20 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
      
       private Boolean checkPreDefinedList(String part, String valueType, String value, WordToken wordToken, TextBlock textBlock) {
           Boolean found=false;
-          if (wordToken != null) {  
-              found = featureFunction.checkPreDefinedList(part, wordToken, textBlock.getTextDocument(), value);
+          Integer index=0;
+          String wordList = null, word = "", currentWord = "";
+          String[] words = null;
+          if ((wordToken != null) && (valueType.equalsIgnoreCase("predefinedlist"))) {  
+              currentWord = wordToken.getToken();
+              wordList = featureFunction.getPreDefinedList(value);
+              words = wordList.split(",");
+              while ((!found) && (index<words.length)) {
+                word = words[index];
+                if (word.equalsIgnoreCase(currentWord)) {
+                    found = true;
+                }
+                index++;
+              }
           }    
         return found;
        }
@@ -315,6 +366,7 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
       Boolean found=false, finished=false;
       CustomRegularExpression logicExpression;
       Document feature = null;
+      RegexDocument regexDocument = null;
       String functionType="", definedRegex="", contents="", word="", wordToCheck;
       String[] wordList, items;
       List<WordToken> currentWordList = null, wordTokenList = null;
@@ -323,7 +375,7 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
       Integer matchCount=0, index=0, wordIndex=0, position=0, start=0, end=0, finds=0, sentenceIndex=0;
       if ((wordToken != null) && (value.startsWith("$"))) {
           value = value.substring(1,value.length());
-          //feature = featureFunction.getPredefinedFeature(value);
+          feature = featureFunction.getPreDefinedFeature(value);
           if ((feature!=null) && (feature.getType().equalsIgnoreCase("regex"))) {
               currentWordList = new ArrayList<>();
               wordIndex = wordToken.getIndex();
@@ -337,11 +389,9 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
                         index = index + 1;
                   }
                  wordIndex = wordToken.getIndex();
-                 definedRegex = feature.getContents();
-                 if (definedRegex.startsWith("{")) {
-                      definedRegex = this.getRegex(definedRegex);
-                 }
-     
+                 regexDocument = new RegexDocument();
+                 regexDocument.fromDocument(feature);
+                 definedRegex = regexDocument.getRegex();
                  logicExpression = customRegularExpressionParser.process(definedRegex);
                  customMatches = logicExpression.findAll(currentWordList);
               }
@@ -354,27 +404,5 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
       }
       return found;
    }
- 
- 
-  private String getRegex(String jsonString) {
-  JSONParser parser = new JSONParser();
-  JSONObject jsonObject=null;
-  String regex="", contents="";
-  Object element=null;
-    try {
-           element = parser.parse(jsonString);
-           if (element instanceof JSONObject) {
-           jsonObject = (JSONObject)element;
-           contents = (String)jsonObject.get("regex");
-           if ((contents!=null) && (contents.length()>0)) {
-           regex = (String)URLDecoder.decode(contents);
-           }
-           }
-    } catch (Exception exception) {
-    exception.printStackTrace();
-    element = null;
-    }
-  return regex;  
-  }
  
 }
