@@ -77,9 +77,7 @@ public class FeatureFunction {
 											   "verblinked:identifies whether a word islinked to a verb:function:none:function",
 											   "verb:identifies whether a word is a verb:function:none:function",
 											   "wordslice:removes a portion of a word and check whether the remaining is aknown token,postag or lemma:function:none:function"};
-	private WordStorage wordStorage;
-	private DocumentStore documentStore;
-	private List<String> definedRegexList;
+
 	private FeatureFunctionList featureFunctionList;
 
 	public FeatureFunction() {
@@ -94,17 +92,26 @@ public class FeatureFunction {
 		featureFunctionList.setDocumentStore(documentStore);
 	}
 
-	public List<String> getDefinedRegexList() {
-		return featureFunctionList.getDefinedRegexList();
+	public Document getPreDefinedFeature(String name) {
+		return featureFunctionList.getPreDefinedFeature(name);
 	}
 
-	public void setDefinedRegexList(List<String> definedRegexList) {
-		featureFunctionList.setDefinedRegexList(definedRegexList);
+	public Boolean regexExists(String name) {
+		Boolean exists = false;
+		Document document = null;
+		document = featureFunctionList.getPreDefinedFeature(name);
+		if ((document != null) && (document.getType().equalsIgnoreCase("regex"))) {
+           exists = true;
+		}
+		return exists;
 	}
 
-	public Boolean checkPreDefinedList(String part, WordToken wordToken, TextDocument textDocument, String value) {
-	       return featureFunctionList.checkPreDefinedList(part, wordToken, textDocument, value);
+	public Boolean listExists(String name) {
+		Boolean exists = false;
+		exists = featureFunctionList.getWordStorage().listExists(name);
+		return exists;
 	}
+
 
 	public void setWordStorage(WordStorage wordStorage) {
 		featureFunctionList.setWordStorage(wordStorage);

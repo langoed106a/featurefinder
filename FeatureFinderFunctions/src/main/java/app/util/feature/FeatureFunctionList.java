@@ -40,15 +40,19 @@ public class FeatureFunctionList {
 	public void setDocumentStore(DocumentStore documentStore) {
 		this.documentStore = documentStore;
 	}
-	public List<String> getDefinedRegexList() {
-		return definedRegexList;
-	}
-	public void setDefinedRegexList(List<String> definedRegexList) {
-		this.definedRegexList = definedRegexList;
+	
+	public Document getPreDefinedFeature(String name) {
+		Document featureDocument=null;
+		featureDocument = documentStore.getDocumentByName(name);
+		return featureDocument;
 	}
 
 	public void setWordStorage(WordStorage wordStorage) {
 		this.wordStorage = wordStorage;
+	}
+
+    public WordStorage getWordStorage() {
+		return wordStorage;
 	}
 
     public Boolean checkExists(String name, String part, WordToken wordToken, TextDocument textDocument, List<String> parameters)  {
