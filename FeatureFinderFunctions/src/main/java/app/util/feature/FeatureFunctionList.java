@@ -47,6 +47,12 @@ public class FeatureFunctionList {
 		return featureDocument;
 	}
 
+	public String getPreDefinedList(String name) {
+		String list = "";
+		list = wordStorage.getList(name);
+		return list;
+	}
+
 	public void setWordStorage(WordStorage wordStorage) {
 		this.wordStorage = wordStorage;
 	}

@@ -81,6 +81,44 @@ public class WordStorage {
        return response;
     }
 
+	public String getList(String listname) {	
+    	String destinationUrl = serviceLocator.getService(SERVICE_NAME), list = ""; 
+    	Boolean response=false;
+		HttpHeaders headers = null;
+		HttpEntity<String> httpEntity = null;
+    	destinationUrl = destinationUrl.replace("%1","getlist?listname="+listname);    
+		if (destinationUrl != null) {
+			headers = new HttpHeaders();
+			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+			httpEntity = new HttpEntity<String>(headers);
+			try {	 
+			       list = restTemplate.getForObject(destinationUrl, String.class);
+		    } catch (Exception exception) {
+			       exception.printStackTrace();
+		    }	
+		 }
+       return list;
+    }
+
+	public Boolean addList(Document document) {	
+    	String destinationUrl = serviceLocator.getService(SERVICE_NAME), list = ""; 
+    	Boolean response=false;
+		HttpHeaders headers = null;
+		HttpEntity<String> httpEntity = null;
+    	destinationUrl = destinationUrl.replace("%1","addlist?listname="+document.getName());    
+		if (destinationUrl != null) {
+			headers = new HttpHeaders();
+			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+			httpEntity = new HttpEntity<String>(headers);
+			try {	 
+			       response = restTemplate.getForObject(destinationUrl, Boolean.class);
+		    } catch (Exception exception) {
+			       exception.printStackTrace();
+		    }	
+		 }
+       return response;
+    }
+
 	public Boolean listExists(String listname) {	
     	String destinationUrl = serviceLocator.getService(SERVICE_NAME); 
     	Boolean response=false;

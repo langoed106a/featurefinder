@@ -96,6 +96,10 @@ public class FeatureFunction {
 		return featureFunctionList.getPreDefinedFeature(name);
 	}
 
+	public Document getPreDefinedList(String name) {
+		return featureFunctionList.getPreDefinedFeature(name);
+	}
+
 	public Boolean regexExists(String name) {
 		Boolean exists = false;
 		Document document = null;
