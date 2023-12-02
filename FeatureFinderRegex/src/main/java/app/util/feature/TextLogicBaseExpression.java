@@ -118,6 +118,7 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
             }
         }
     }
+    System.out.println("***Type:"+type+"    Value"+value);
    return type;
   };
 
@@ -217,6 +218,7 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
         if (prefix.equalsIgnoreCase("$")) {
            value = value.substring(1, value.length());
            exists = featureFunction.regexExists(value);
+           System.out.println("***Value:"+value+"   Exists:"+exists);
            if (exists) {
             type="predefinedregex";
            }
@@ -344,14 +346,15 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
       private Boolean checkPreDefinedList(String part, String valueType, String value, WordToken wordToken, TextBlock textBlock) {
           Boolean found=false;
           Integer index=0;
-          String wordList = null, word = "", currentWord = "";
+          List<String> wordList = null; 
+          String word = "", currentWord = "";
           String[] words = null;
           if ((wordToken != null) && (valueType.equalsIgnoreCase("predefinedlist"))) {  
               currentWord = wordToken.getToken();
+              value = value.substring(1, value.length());
               wordList = featureFunction.getPreDefinedList(value);
-              words = wordList.split(",");
-              while ((!found) && (index<words.length)) {
-                word = words[index];
+              while ((!found) && (index<wordList.size())) {
+                word = wordList.get(index);
                 if (word.equalsIgnoreCase(currentWord)) {
                     found = true;
                 }
@@ -392,6 +395,11 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
                  regexDocument = new RegexDocument();
                  regexDocument.fromDocument(feature);
                  definedRegex = regexDocument.getRegex();
+                 try {
+                      definedRegex = URLDecoder.decode(definedRegex);
+                 } catch (Exception exception) {
+                    exception.printStackTrace();
+                 }
                  logicExpression = customRegularExpressionParser.process(definedRegex);
                  customMatches = logicExpression.findAll(currentWordList);
               }
