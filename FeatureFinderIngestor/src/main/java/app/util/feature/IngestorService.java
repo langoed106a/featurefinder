@@ -94,32 +94,16 @@ public class IngestorService {
                  regexArray = contents.split(",");
                  for (int k=0; k<regexArray.length; k++) {
                      document = documentDatabase.getDocumentByName(regexArray[k]);
-                     contents = document.getContents();
-                     document.setContents(URLDecoder.decode(contents));
                      regexList.add(document);
                  }
                  for (Document doc:regexList) {
                     try {
-                        fieldValues = new ObjectMapper().readValue(doc.toJson(), new TypeReference<HashMap<String,String>>() {});
-                        contents = fieldValues.get("contents");
-                        contents = URLDecoder.decode(contents);
-                        contentValues = new ObjectMapper().readValue(contents, new TypeReference<HashMap<String,String>>() {});
+                        regexDocument = new RegexDocument();
+                        regexDocument.fromDocument(doc);
+                        regexDocuments.add(regexDocument);
                      } catch (Exception exception) {
                             exception.printStackTrace();
                      }
-                     for (String key:contentValues.keySet()) {
-                         fieldValues.put(key, contentValues.get(key));
-                     }
-                     regexDocument = new RegexDocument(fieldValues.get("name"), 
-                                                  fieldValues.get("group"), 
-                                                  fieldValues.get("description"),
-                                                  "",
-                                                  fieldValues.get("granularity"),
-                                                  fieldValues.get("precondition"),
-                                                  fieldValues.get("postcondition"),
-                                                  fieldValues.get("invariant"));
-                     regexDocument.setRegex(fieldValues.get("regex"));
-                     regexDocuments.add(regexDocument);
                  }
              }
          }
