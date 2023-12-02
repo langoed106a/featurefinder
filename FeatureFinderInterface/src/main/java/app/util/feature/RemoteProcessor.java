@@ -69,7 +69,13 @@ public class RemoteProcessor {
 		String processorUrl = serviceLocator.getService(SERVICE_SYNC_PROCESS_TEXT);
 		String response = "";
 		try {
+			  System.out.println("***Sending***");
+			  System.out.println(text);
+			  System.out.println("*************");
 			  response=httpSyncSender.sendpost(languageUrl, text);
+			  System.out.println("***From Parser***");
+			  System.out.println(response);
+			  System.out.println("*************");
 			  if (response!=null) {
 				   processorUrl = processorUrl + "?runname="+runname;
                    response=httpSyncSender.sendpost(processorUrl, response);

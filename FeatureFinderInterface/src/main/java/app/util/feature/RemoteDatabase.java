@@ -144,8 +144,20 @@ public class RemoteDatabase {
 	}
 	
 	public String deleteDocument(String id) {
+		HttpEntity<String> httpEntity = null;
+		DocumentList documentList;
+		List<Document> documents = new ArrayList<>();
+		ResponseEntity<String> responseEntity = null;
+		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
 		String result="";
-                return result;
+		String urlencodedtext="";
+		if (destinationUrl != null) {
+           httpEntity = this.getHeaders();
+ 		   destinationUrl = destinationUrl.replace("%1","deletedocument?documentid="+id); 
+           responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, String.class);
+      	   result = responseEntity.getBody();
+		}
+	  return result;	
 	}
 
 	public String updateDocument(Document document) {

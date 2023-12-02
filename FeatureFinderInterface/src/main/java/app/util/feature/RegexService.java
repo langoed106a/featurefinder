@@ -138,6 +138,8 @@ public class RegexService {
 	  try {
          jsonParser = new JSONParser();
 		 object = jsonParser.parse(body);
+		 System.out.println("***Body:");
+		 System.out.println(body);
 	     if (object != null) {
 			 object = jsonParser.parse(body);
              jsonObject = (JSONObject)object;
@@ -399,12 +401,14 @@ public class RegexService {
 	@RequestMapping(value = "/adddocument", method = RequestMethod.POST)
     public String adddocument(@RequestBody Document document) { 
        String response = "";
-	   // Document document = null;
+	   String type="";
 	   try {
-		     //document = new Document();
-			 //document.fromJson(documentstr);
-			 System.out.println(document.getContents());
-			 documentDatabase.addDocument(document);
+			 type = document.getType();
+			 if (type.equalsIgnoreCase("list")) {
+				 remoteParser.addList(DEFAULT_LANGUAGE, document);
+			 } else {
+			     documentDatabase.addDocument(document);
+			 }
 			 response = "{\"message\":\"new document has been added\"}";
 	   } catch (Exception exception) {
 		  exception.printStackTrace();
@@ -417,6 +421,13 @@ public class RegexService {
     public Document getdocument(@RequestParam String documentid) { 
 		 Document document = null;
 		 document = documentDatabase.getDocumentById(documentid);
+	     return document;
+    }
+
+	@RequestMapping(value = "/getlistdocument", method = RequestMethod.GET)
+    public Document getlistdocument(@RequestParam String documentid) { 
+		 Document document = null;
+         document = remoteParser.getList(DEFAULT_LANGUAGE, documentid);
 	     return document;
     }
 
@@ -445,7 +456,11 @@ public class RegexService {
 				someType = allTypes[i];
 				if (!typeList.contains(someType)) {
 					typeList.add(someType);
-		            documents = documentDatabase.getDocumentByType(someType);
+					if (someType.equalsIgnoreCase("list")) {
+						documents = remoteParser.getDocuments(DEFAULT_LANGUAGE, someType);
+					} else {
+		                documents = documentDatabase.getDocumentByType(someType);
+					}
 				    for (Document document:documents) {
 					    allDocuments.add(document);
 				    }

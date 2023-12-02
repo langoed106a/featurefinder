@@ -31,6 +31,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import app.util.feature.WordToken;
+import app.util.feature.DocumentList;
+import app.util.feature.WordList;
 
 import app.util.feature.ServiceLocator;
 
@@ -73,24 +75,114 @@ public class RemoteParser {
 	return result;	   
    }
 
-   public Boolean wordexists(String language, String listname, String text) {	
+   public Boolean wordexists(String language, String listname, String word) {	
 		Boolean result=false;
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
 		ResponseEntity<Boolean> responseEntity = null;
 		String destinationUrl = serviceLocator.getService(language);
 		String urlencodedtext="";
-
 		if (destinationUrl != null) {
-           headers = new HttpHeaders();
-		   destinationUrl = destinationUrl.replace("%1","wordexists?listname="+listname+",&word="+text);
-           headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		   headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
-           httpEntity = new HttpEntity<String>(text, headers);
+           httpEntity = this.getHeaders();
+		   destinationUrl = destinationUrl.replace("%1","wordexists?listname="+listname+",&word="+word);
 		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, Boolean.class); 
            result = (Boolean)responseEntity.getBody();	
      	}
 	return result;	   
    }
+
+   public Boolean listexists(String language, String listname) {	
+		Boolean result=false;
+		HttpHeaders headers = null;
+		HttpEntity<String> httpEntity = null;
+		ResponseEntity<Boolean> responseEntity = null;
+		String destinationUrl = serviceLocator.getService(language);
+		String urlencodedtext="";
+		if (destinationUrl != null) {
+           httpEntity = this.getHeaders();
+		   destinationUrl = destinationUrl.replace("%1","listexists?listname="+listname);
+		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, Boolean.class); 
+           result = (Boolean)responseEntity.getBody();	
+     	}
+	return result;	   
+   }
+
+   public String addList(String language, Document document) {
+        String destinationUrl = serviceLocator.getService(language);
+		String result="";
+		HttpEntity<Document> httpEntity=null;
+		HttpHeaders requestHeaders=null;
+		ResponseEntity<String> responseEntity = null;
+		if (destinationUrl != null) {
+           destinationUrl = destinationUrl.replace("%1","addlist"); 
+		   requestHeaders = new HttpHeaders();
+		   requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		   requestHeaders.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		   httpEntity = new HttpEntity<>(document, requestHeaders);
+		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.POST, httpEntity, String.class);
+      	   result = responseEntity.getBody();
+		}
+		return result;
+	}
+
+    public Document getList(String language, String documentId) {
+        String destinationUrl = serviceLocator.getService(language);
+		Document result=null;
+		HttpEntity<String> httpEntity=null;
+		HttpHeaders requestHeaders=null;
+		ResponseEntity<Document> responseEntity = null;
+		if (destinationUrl != null) {
+		   httpEntity = this.getHeaders();
+           destinationUrl = destinationUrl.replace("%1","wordlistbyid?id="+documentId); 
+		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, Document.class);
+      	   result = responseEntity.getBody();
+		}
+		return result;
+	}
+
+   public List<String> listnames(String language) {	
+		WordList result=null;
+		HttpHeaders headers = null;
+		HttpEntity<String> httpEntity = null;
+		List<String> nameList = null;
+		ResponseEntity<WordList> responseEntity = null;
+		String destinationUrl = serviceLocator.getService(language);
+		String urlencodedtext="";
+		if (destinationUrl != null) {
+           httpEntity = this.getHeaders();
+		   destinationUrl = destinationUrl.replace("%1","listnames");
+		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, WordList.class); 
+           result = responseEntity.getBody();	
+		   nameList = result.getWordList();
+     	}
+	return nameList;	   
+   }
+
+   public List<Document> getDocuments(String language, String type) {
+	    List<Document> allDocuments = new ArrayList<>();
+		DocumentList documentList = null;
+	    HttpHeaders headers = null;
+		HttpEntity<String> httpEntity = null;
+		ResponseEntity<DocumentList> responseEntity = null;
+		String destinationUrl = serviceLocator.getService(language);
+		String urlencodedtext="";
+		if (destinationUrl != null) {
+           httpEntity = this.getHeaders();
+		   destinationUrl = destinationUrl.replace("%1","documentbytype?type="+type);
+		   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, DocumentList.class); 
+           documentList = responseEntity.getBody();	
+		   allDocuments = documentList.getDocumentList();
+     	}
+	return allDocuments;
+   }
+
+   private HttpEntity getHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity httpEntity = null;
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+        httpEntity = new HttpEntity<String>(headers);
+		return httpEntity; 
+	}
 	
 }
