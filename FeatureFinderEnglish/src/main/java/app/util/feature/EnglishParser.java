@@ -43,7 +43,7 @@ import edu.stanford.nlp.ie.util.RelationTriple;
 public class EnglishParser {
     private StanfordCoreNLP stanfordParser;
     private Boolean termsLoaded;
-    private SimpleSentenceSplitter sentenceSplitter;
+    private SentenceSplitterNLP sentenceSplitter;
     private WebApplicationContext applicationContext;
     private WordStorage wordStorage;
    
@@ -51,7 +51,7 @@ public class EnglishParser {
         Properties props = new Properties();
         this.applicationContext = applicationContext;
         this.wordStorage = wordStorage;
-        sentenceSplitter = new SimpleSentenceSplitter(applicationContext, wordStorage);
+        sentenceSplitter = new SentenceSplitterNLP(applicationContext);
         try {
                props.setProperty("annotators","tokenize,ssplit,pos,lemma,parse");
                props.setProperty("tokenize.options","ptb3Escaping=false");
@@ -77,10 +77,14 @@ public class EnglishParser {
         List<String> wordList=null;
         List<String> sentences = this.getSentences(text);
         WordToken wordToken=null, itemToken=null;
+        System.out.println("*****************Text*****************");
+        System.out.println(text);
+        System.out.println("********Number of sentence:"+sentences.size());
         for (String line:sentences) {
              document = new Annotation(line);
              stanfordParser.annotate(document);
              wordTokenList = new ArrayList<>();
+             System.out.println("********Line:"+line);
              for (CoreLabel item: document.get(TokensAnnotation.class)) {
                   tag = item.get(CoreAnnotations.PartOfSpeechAnnotation.class);
                   token = item.originalText();
