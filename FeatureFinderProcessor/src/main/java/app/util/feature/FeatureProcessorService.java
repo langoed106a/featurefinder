@@ -82,17 +82,22 @@ public class FeatureProcessorService {
 	
 	@PostConstruct
 	public void initialise() {
-		featureFunction = new FeatureFunction();
+		
 		String properties_location = System.getProperty(PROPERTIES_NAME);
 		serviceLocator = new ServiceLocator(properties_location);
 		contractFunction = new ContractFunction(featureFunction, wordStorage);
         remoteDatabase.setServiceLocator(serviceLocator);
 		remoteDatabase.setRestTemplate(restTemplate);
 		documentDatabase.setRemoteDatabase(remoteDatabase);
+		featureFunction = new FeatureFunction();
+		featureFunction.setFeatureStore(documentDatabase);
+		wordStorage = new WordStorage();
+		wordStorage.setServiceLocator(serviceLocator);
+		wordStorage.setRestTemplate(restTemplate);
+		featureFunction.setWordStorage(wordStorage);
 		regexService = new RegexService(serviceLocator, documentDatabase);
 		regexMapList = new HashMap<>();
 		objectMapper = new ObjectMapper();
-		wordStorage = new WordStorage();
 		lastStart = 0;
 		textToProcess=null;
 	}
