@@ -11,7 +11,7 @@ import words_img from '../../images/featurefinder.jpg';
 function FeatureList() {
     const[spinner, setSpinner] = useState(false)
     const populate_regexes = useStoreActions((actions) => actions.get_regex_feature_list)
-    const populate_wordlists = useStoreActions((actions) => actions.get_word_list)
+    const populate_lists = useStoreActions((actions) => actions.get_word_list)
     const populate_functions = useStoreActions((actions) => actions.get_function_feature_list)
     const function_arr = useStoreState(state => state.featurefunctionlist)
     const regex_arr = useStoreState(state => state.featureregexlist)
@@ -46,10 +46,10 @@ function FeatureList() {
    const show_word_lists =  word_arr.map((func, i) =>
           <Row key={i}>
              <Col xs={2}>
-               {func.name}
+               <Link to= {`/listdetail?id=${func.id}`}>{func.name}</Link>
              </Col>
              <Col xs={6}>
-               {func.description}
+               {decodeURIComponent(func.description)}
              </Col>  
              <Col xs={2}>
                {func.type}
@@ -116,9 +116,9 @@ function FeatureList() {
 
    useEffect(() => {
       populate_regexes();
-      populate_wordlists();
+      populate_lists();
       populate_functions();
-   }, [populate_regexes, populate_wordlists, populate_functions]);
+   }, [populate_regexes, populate_lists, populate_functions]);
 
     return (<div>
              {spinner ? <FeatureSpinner/>: <MainContent />}

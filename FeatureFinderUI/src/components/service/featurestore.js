@@ -75,6 +75,10 @@ const storeModel = createStore (
            set_run_list: action((state, runlist) => {
                state.runlist = runlist
            }),
+           adjust_run_list: action((state, index) => {
+            let temp_arr= state.runlist.filter(item => item.id !== index )
+            state.runlist = temp_arr
+           }),
            get_results_list: thunk(async (actions, form) => {
             try {
               const res = await axios.get(service_url+'/modelresults?runname='+form.runname+"&modelname="+form.modelname);
@@ -127,9 +131,25 @@ const storeModel = createStore (
               console.log(error);
             }
            }),
+           delete_document: thunk(async (actions,id) => {
+            try {
+              const res = await axios.get(service_url+'/deletedocument?documentid='+id);
+              actions.adjust_run_list(id)
+            } catch (error) {
+              console.log(error);
+            }
+           }),
            get_regex_document: thunk(async (actions,id) => {
             try {
               const res = await axios.get(service_url+'/getregexdocument?documentid='+id);
+              actions.set_document(res?.data);
+            } catch (error) {
+              console.log(error);
+            }
+           }),
+           get_list_document: thunk(async (actions,id) => {
+            try {
+              const res = await axios.get(service_url+'/getlistdocument?documentid='+id);
               actions.set_document(res?.data);
             } catch (error) {
               console.log(error);

@@ -42,18 +42,21 @@ function FeatureExperiment() {
     var check = false
     var start = 0, end = 0
     var match = {}
-    var allmatches = matches.length
-    while ((index < allmatches) && (!finish)) {
-      match = matches[index]
-      end = parseInt(match.end)
-      start = parseInt(match.start)
-      if ((tokenindex >= start) && (tokenindex < end)) {
-        check = true
-        finish = true
-      } else if (tokenindex < start) {
-        finish = true
-      }
-      index++
+    var allmatches = []
+    if (matches) {
+        allmatches = matches.length
+        while ((index < allmatches) && (!finish)) {
+            match = matches[index]
+            end = parseInt(match.end)
+            start = parseInt(match.start)
+            if ((tokenindex >= start) && (tokenindex < end)) {
+                check = true
+                finish = true
+            } else if (tokenindex < start) {
+                finish = true
+            }
+            index++
+         }
     }
     return check
   }

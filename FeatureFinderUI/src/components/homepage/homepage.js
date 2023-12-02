@@ -14,6 +14,7 @@ import DocumentList from '../documents/documentlist';
 import Settings from '../configuration/settings';
 import DocumentNew from '../documents/documentnew';
 import DocumentDetail from '../documents/documentdetail';
+import ListDetail from '../features/listdetail';
 import ModelNew from '../analysis/modelnew';
 import ConfusionMatrix from '../analysis/confusionmatrix';
 
@@ -37,6 +38,7 @@ function HomePage() {
                          <Route path="/documentlist" element={<DocumentList />} exact />
                          <Route path="/documentnew" element={<DocumentNew />} exact />
                          <Route path="/documentdetail" element={<DocumentDetail />} exact />
+                         <Route path="/listdetail" element={<ListDetail />} exact />
                          <Route path="/modelnew" element={<ModelNew />} exact />
                          <Route path="/confusionmatrix" element={<ConfusionMatrix />} exact />
                          <Route path="/settings" element={<Settings />} exact />

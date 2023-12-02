@@ -61,6 +61,7 @@ function DocumentNew() {
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                   <Form.Label>Document Type</Form.Label>
                   <Form.Select aria-label="Default select example" ref={type}>
+                    <option>list</option>
                     <option>text</option>
                     <option>file</option>
                     <option>folder</option>
