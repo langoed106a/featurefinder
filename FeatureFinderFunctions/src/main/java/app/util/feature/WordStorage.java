@@ -27,7 +27,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.net.URI;
 import java.net.URLDecoder;
@@ -81,23 +84,39 @@ public class WordStorage {
        return response;
     }
 
-	public String getList(String listname) {	
-    	String destinationUrl = serviceLocator.getService(SERVICE_NAME), list = ""; 
+	public List<String> getList(String listname) {	
+    	String destinationUrl = serviceLocator.getService(SERVICE_NAME), contents=""; 
+		List<String> nameList=null;
     	Boolean response=false;
+		Document document=null;
 		HttpHeaders headers = null;
+		ResponseEntity<Document> responseEntity = null;
 		HttpEntity<String> httpEntity = null;
-    	destinationUrl = destinationUrl.replace("%1","getlist?listname="+listname);    
+		ObjectMapper objectMapper = null;
+    	destinationUrl = destinationUrl.replace("%1","wordlistbyname?listname="+listname);    
 		if (destinationUrl != null) {
 			headers = new HttpHeaders();
 			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		    headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 			httpEntity = new HttpEntity<String>(headers);
 			try {	 
-			       list = restTemplate.getForObject(destinationUrl, String.class);
+                   responseEntity = restTemplate.exchange(destinationUrl, HttpMethod.GET, httpEntity, Document.class); 
+                   document = responseEntity.getBody();
+				   if (document != null) {
+					  contents = document.getContents();
+					  try {
+						    contents=URLDecoder.decode(contents);
+							objectMapper = new ObjectMapper();
+							nameList = objectMapper.readValue(contents, new TypeReference<List<String>>(){});
+					  } catch (Exception exception) {
+						  exception.printStackTrace();
+					  }
+				   }
 		    } catch (Exception exception) {
 			       exception.printStackTrace();
 		    }	
 		 }
-       return list;
+       return nameList;
     }
 
 	public Boolean addList(Document document) {	

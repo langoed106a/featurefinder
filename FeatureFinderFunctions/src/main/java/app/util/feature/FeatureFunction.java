@@ -45,9 +45,11 @@ public class FeatureFunction {
 											   "misspeltdoublevowel:identifies whether a word has a double vowel by accident:function:none:function",
 											   "nan:identifies whether a word is not a number:function:none:function",
 											   "notcontains:identifies whether one or more words are not present:function:none:function",
+											   "notendswith:identifies whether a word doesn't end with the given part of a word:function:none:function",
 											   "notexistsbefore:identifies whether a word doesn't exist before the current word:function:none:function",
 											   "notexistsafter:identifies whether a word doesn't exist after the current word:function:none:function",
 											   "notprevious:identifies whether a word is nor preceded by another word:function:none:function",
+											   "notstartswith:identifies whether a word doesn't start with a given partial word:function:none:function",
 											   "notmorethan:identifies whether the text has more words ($token) or sentences ($sentence) than a number specified:function:none:function",
 											   "next:identifies whether a word is followed by another word:function:none:function",
 											   "notnext:identifies whether a word is not followd by another word:function:none:function",
@@ -96,7 +98,7 @@ public class FeatureFunction {
 		return featureFunctionList.getPreDefinedFeature(name);
 	}
 
-	public String getPreDefinedList(String name) {
+	public List<String> getPreDefinedList(String name) {
 		return featureFunctionList.getPreDefinedList(name);
 	}
 

@@ -47,8 +47,8 @@ public class FeatureFunctionList {
 		return featureDocument;
 	}
 
-	public String getPreDefinedList(String name) {
-		String list = "";
+	public List<String> getPreDefinedList(String name) {
+		List<String> list = null;
 		list = wordStorage.getList(name);
 		return list;
 	}
@@ -285,6 +285,28 @@ public class FeatureFunctionList {
 				if (content.startsWith(param)) {
 					found = true;
 				}
+			}
+		}
+		return found;
+	}
+
+	public boolean notstartswith(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
+		boolean found = false, exists = false;
+		Integer index = 0;
+		String content = "", param="";
+		content = General.getValue(part, wordToken);
+		content = General.removeQuotes(content);
+		if ((content != null) && (content.length() > 0) && (params!=null)) {
+			while ((index<params.size()) && (!exists)) {
+				param = params.get(index);
+				param = General.removeQuotes(param);
+				if (content.startsWith(param)) {
+					exists = true;
+				}
+				index++;
+			}
+			if (!exists) {
+				found = true;
 			}
 		}
 		return found;
@@ -901,6 +923,28 @@ public class FeatureFunctionList {
 				if (content.endsWith(param)) {
 					found = true;
 				}
+			}
+		}
+		return found;
+	}
+
+	public boolean notendswith(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
+		boolean found = false, exists = false;
+		Integer index = 0;
+		String content = "", param="";
+		content = General.getValue(part, wordToken);
+		content = General.removeQuotes(content);
+		if ((content != null) && (content.length() > 0) && (params!=null)) {
+			while ((index<params.size()) && (!exists)) {
+				param = params.get(index);
+				param = General.removeQuotes(param);
+				if (content.endsWith(param)) {
+					exists = true;
+				}
+				index++;
+			}
+			if (!exists) {
+				found = true;
 			}
 		}
 		return found;
