@@ -7,6 +7,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ public class RegexService {
 
     @Async("taskExecutor")
     public CompletableFuture<String> doAsyncRegex(TextDocument textDocument, RegexDocument regexDocument, FeatureFunction featureFunction, WordStorage wordStorage, ContractFunction contractFunction) throws InterruptedException {
-        Document outputDocument = null;
+        Document runDocument = null, outputDocument = null;
         Matcher matcher = null;
         Map<String, String> params = null;
         RegexResult regexResult = new RegexResult();
@@ -47,16 +48,19 @@ public class RegexService {
         matcher = new Matcher(regexDocument, featureFunction, wordStorage, contractFunction);
         try {
              params = new HashMap<>();
-             System.out.println("****TextDoc Id:"+textDocument.getId());
-             System.out.println("****RegexDoc Id:"+regexDocument.getId());
-             outputDocument = this.documentDatabase.getDocumentByName(regexDocument.getId());
-             System.out.println("****OutDoc Id:"+textDocument.getContents());
+             runDocument = this.documentDatabase.getDocumentByName(regexDocument.getId());
+             outputDocument = this.documentDatabase.getDocumentByName(runDocument.getOrigin());
 		     matchcount = matcher.matchcount(textDocument);
              regexResult.setCount(matchcount);
              regexResult.setRegexName(regexDocument.getName());
              regexResult.setTextName(textDocument.getName());
-             param1=outputDocument.getOrigin();
-             param2=outputDocument.getLabel();
+             try {
+                  param1=outputDocument.getContents();
+                  param2=runDocument.getContents();
+                  param1 = URLDecoder.decode(param1);
+             } catch (Exception exception) {
+                exception.printStackTrace();
+             }
              params.put("param1", param1);
              params.put("param2", param2);
              jsonStr = regexResult.toJson();
