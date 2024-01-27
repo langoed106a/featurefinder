@@ -165,7 +165,7 @@ public class RegexService {
 						 showHighlight = true;
 					 }
 				 }
-				 if ((granularity!=null) && (granularity.length()>0)) {
+				 if ((granularity==null) || (granularity.length()==0)) {
 					granularity = DEFAULT_GRANULARITY;
 				 }
 				 if ((language!=null) && (language.length()>0)) {
@@ -212,11 +212,11 @@ public class RegexService {
     }
 
 	@RequestMapping(value = "/modelresults", method = RequestMethod.GET)
-    public String getModelResults(@RequestParam String runname, @RequestParam String modelname) { 
+    public String getModelResults(@RequestParam String token, @RequestParam String runname, @RequestParam String model) { 
 	  featureFunction.initialise();
 	  String response="";
-	  if ((runname!=null) && (runname.length()>0)) {
-	      response = remoteAnalyzer.getResults(runname, modelname);
+	  if ((token!=null) && (token.length()>0)) {
+	      response = remoteAnalyzer.getResults(token, runname, model);
 	  }	 
 	  try {
            response = URLEncoder.encode(response, "UTF-8");
@@ -230,10 +230,7 @@ public class RegexService {
     public String addmodel(@RequestParam String modelname, @RequestParam String description, @RequestParam String modelfilepath) { 
 	  featureFunction.initialise();
 	  Document document = null;
-	  String result="", contents="", runname="";
-	  if ((modelname!=null) && (modelname.length()>0)) {
-	      result = remoteAnalyzer.getResults(runname, modelname);
-	  }	 
+	  String result="", contents="", runname=""; 
 	  try {
 		   document = new Document();
 		   contents="\"file\":\""+modelfilepath+"\"}";
@@ -298,7 +295,7 @@ public class RegexService {
 	  featureFunction.initialise();
 	  String response="";
 	  if ((runid!=null) && (runid.length()>0)) {
-	      response = remoteAnalyzer.getResults(runid, model);
+	      response = remoteAnalyzer.getResultsById(runid, model);
 	  }	 
 	  try {
            response = URLEncoder.encode(response, "UTF-8");
@@ -467,7 +464,7 @@ public class RegexService {
 				    if (someType.equalsIgnoreCase("model")) {
 					    tempDocument = new Document("", "none", "model", "", "");
 					    allDocuments.add(tempDocument);
-                        tempDocument = new Document("", "nativenon", "model", "", "");
+                        tempDocument = new Document("", "native_english", "model", "", "");
 					    allDocuments.add(tempDocument);
 				    }
 				}

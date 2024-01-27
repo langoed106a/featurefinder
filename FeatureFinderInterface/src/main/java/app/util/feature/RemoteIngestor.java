@@ -93,6 +93,7 @@ public class RemoteIngestor {
 			  tokenId = TokenGenerator.newToken();
 			  params.put("documentgrouplist",documentgroupname);
 			  params.put("featuregrouplist",featuregroupname);
+			  params.put("tokenid",tokenId);
 			  params.put("runname",runname);
 			  document = new Document("", runname, "run", tokenId, description);
 			  document.setOrigin(outputlocation);
@@ -102,7 +103,7 @@ public class RemoteIngestor {
 			  System.out.println("****Saved new run document:"+document.getContents());
 			  response=httpAsyncSender.sendget(PROCESS_DOCUMENTS, params);
 			  System.out.println("****After http async sender");
-			  response="{\"message\":\"processing feature group against document group with runname:\"\""+runname+"\"}";
+			  response="{\"token\":\""+tokenId+"\"}";
 		} catch (Exception exception) {
 			  exception.printStackTrace();
 			  response="{\"error\":\"unable to process feature group against document group\"}";

@@ -87,8 +87,7 @@ public class RemoteAnalyzer {
 	  return result;	   
     }
 
-
-	public String getResults(String runid, String model) {	
+	public String getResults(String token, String runname, String model) {	
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
@@ -98,11 +97,27 @@ public class RemoteAnalyzer {
            headers = new HttpHeaders();
            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
            httpEntity = new HttpEntity<String>(headers);
-		   destinationUrl = destinationUrl.replace("%1","getresults?runid="+runid+"&model="+model); 
+		   destinationUrl = destinationUrl.replace("%1","getresults?token="+token+"&runname="+runname+"&model="+model); 
            result = restTemplate.getForObject(destinationUrl, String.class);
 		}
-	return result;	   
-   }
+	 return result;	   
+    }
+
+	public String getResultsById(String runid, String model) {	
+		HttpHeaders headers = null;
+		HttpEntity<String> httpEntity = null;
+		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
+		String result="";
+		String urlencodedtext="";
+		if (destinationUrl != null) {
+           headers = new HttpHeaders();
+           headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+           httpEntity = new HttpEntity<String>(headers);
+		   destinationUrl = destinationUrl.replace("%1","getresultsbyid?runid="+runid+"&model="+model); 
+           result = restTemplate.getForObject(destinationUrl, String.class);
+		}
+	 return result;	   
+    }
 
     public String getModels() { 	
 		HttpHeaders headers = null;
