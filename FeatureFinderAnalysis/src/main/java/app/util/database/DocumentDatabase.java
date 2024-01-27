@@ -2,8 +2,10 @@ package app.util.database;
 
 import java.util.List;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
+import app.util.feature.Document;
+import app.util.feature.RemoteDatabase;
 
 @Component
 public class DocumentDatabase {
@@ -17,10 +19,10 @@ public class DocumentDatabase {
         this.remoteDatabase = remoteDatabase;
     }
 
-    public FeatureDocument getDocumentById(String id) {
-       FeatureDocument featureDocument=null;
-       featureDocument = remoteDatabase.getDocumentById(id);
-       return featureDocument;
+    public Document getDocumentById(String id) {
+       Document document=null;
+       document = remoteDatabase.getDocumentById(Integer.valueOf(id));
+       return document;
     }
 
     public String deleteDocument(String id) {
@@ -29,33 +31,33 @@ public class DocumentDatabase {
        return reply;
     }
 
-    public List<FeatureDocument> getDocumentByGroup(String groupname) {
-       List<FeatureDocument> featureDocumentList=null;
-       featureDocumentList = remoteDatabase.getDocumentByGroup(groupname);
-       return featureDocumentList;
+    public List<Document> getDocumentByGroup(String groupname) {
+       List<Document> documentList=null;
+       documentList = remoteDatabase.getDocumentByGroup(groupname);
+       return documentList;
     }
 
-    public List<FeatureDocument> getDocumentByType(String type) {
-       List<FeatureDocument> featureDocumentList=null;
-       featureDocumentList = remoteDatabase.getDocumentByType(type);
-       return featureDocumentList;
+    public List<Document> getDocumentByType(String type) {
+       List<Document> documentList=null;
+       documentList = remoteDatabase.getDocumentByType(type);
+       return documentList;
     }
 
-    public FeatureDocument getDocumentByName(String type, String name) {
-       FeatureDocument featureDocument=null;
-       featureDocument = remoteDatabase.getDocumentByName(type, name);
-       return featureDocument;
+    public Document getDocumentByName(String name) {
+       Document document=null;
+       document = remoteDatabase.getDocumentByName(name);
+       return document;
     }
 
-    public String updateDocument(Integer id, String name, String type, String contents, String description) {
+    public String updateDocument(Document document) {
        String reply="";
-       reply = remoteDatabase.updateDocument(id, name, type, contents, description);
+       reply = remoteDatabase.updateDocument(document);
        return reply;
     }
    
-    public String addDocument(String name, String type, String contents, String description) {
+    public String addDocument(Document document) {
        String reply="";
-       reply = remoteDatabase.addDocument(name, type, contents, description);
+       reply = remoteDatabase.addDocument(document);
        return reply;
     }
 

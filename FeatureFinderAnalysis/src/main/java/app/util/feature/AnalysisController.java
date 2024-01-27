@@ -3,8 +3,6 @@ package app.util.feature;
 import javax.annotation.PostConstruct;
 
 import app.util.database.DocumentDatabase;
-import app.util.database.FeatureDocument;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
  
+import java.io.FileReader;
+import java.io.BufferedReader;
+
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -31,7 +33,10 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import app.util.database.RemoteDatabase;
+import app.util.feature.Document;
+import app.util.feature.RemoteDatabase;
+import app.util.feature.WordList;
+import app.util.feature.RegexResult;
  
 @RestController
 public class AnalysisController { 
@@ -40,6 +45,7 @@ public class AnalysisController {
     private static final Logger logger = LoggerFactory.getLogger(AnalysisController.class);
     private ServiceLocator serviceLocator;
     private WekaModelGenerator wekaModelGenerator;
+    private NativeWeighting nativeWeighting;
     
     @Autowired
 	private RestTemplate restTemplate;
@@ -58,6 +64,7 @@ public class AnalysisController {
         remoteDatabase.setServiceLocator(serviceLocator);
 	    documentDatabase.setRemoteDatabase(remoteDatabase);
         wekaModelGenerator = new WekaModelGenerator();
+        nativeWeighting = new NativeWeighting();
     }	
 
     @RequestMapping(value = "/buildclassifierfromfile", method = RequestMethod.GET, produces="application/json")
@@ -75,58 +82,85 @@ public class AnalysisController {
 	   return ResponseEntity.ok(success);
 	}
 
-    @RequestMapping(value = "/buildclassifierfromfile", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value = "/buildclassifierfrommodel", method = RequestMethod.GET, produces="application/json")
     public ResponseEntity<Boolean> buildClassifierFromModel(@RequestParam String model) {
 	    Boolean success = false;
         success = this.createClassifierFromModel(model);
 	  return new ResponseEntity<>(success, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/adddocument", method = RequestMethod.GET)
-	public String adddocument(@RequestParam String documentname, @RequestParam String documenttype, @RequestParam String documentcontents, @RequestParam String documentdescription) {
-		String response = "";
-		documentDatabase.addDocument(documentname, documenttype, documentcontents, documentdescription);
-		return response;
+    @RequestMapping(value = "/getresults", method = RequestMethod.GET, produces="application/json")
+    public WordList getResults(@RequestParam String runname, @RequestParam String token, @RequestParam String model) {
+	    Boolean success = false;
+        Document document = null, outputDocument = null;
+        List<String> resultList = new ArrayList<>(), modelListResults = new ArrayList<>();
+        String path = "", filename="", results = "", docId="";
+        WordList wordList = new WordList();
+        if (runname != null) {
+            document = documentDatabase.getDocumentByName(runname);
+            if (document!=null) {
+                filename = token;
+                docId = document.getOrigin();
+                outputDocument = documentDatabase.getDocumentByName(docId);
+                if (outputDocument != null) {
+                    path = outputDocument.getContents();
+                    path = URLDecoder.decode(path);
+                    if (!path.endsWith("/")) {
+                       path = path + "/";
+                    }
+                    path = path + filename + ".dat";
+                   resultList = this.readjsonFile(path);
+                   if (model.equalsIgnoreCase("native_english")) {
+                       results = nativeWeighting.getModelResults(resultList);
+                       modelListResults.add(results);
+                       wordList.setWordList(modelListResults);
+                   } else {
+                       wordList.setWordList(resultList);
+                  }
+                }
+            }
+        } 
+	  return wordList;
 	}
 
-	@RequestMapping(value = "/getdocumentsbytype", method = RequestMethod.GET)
-	public List<FeatureDocument> getDocumentByType(@RequestParam String type) {
-		List<FeatureDocument> documents = null;
-		documents = documentDatabase.getDocumentByType(type);
-		return documents;
+    @RequestMapping(value = "/getresultsbyid", method = RequestMethod.GET, produces="application/json")
+    public WordList getResultsById(@RequestParam String runid, @RequestParam String model) {
+	    Boolean success = false;
+        Document document = null, outputDocument = null;
+        List<String> resultList = new ArrayList<>(), modelListResults = new ArrayList<>();
+        String path = "", filename="", results = "", docId="";
+        WordList wordList = new WordList();
+        if (runid != null) {
+            document = documentDatabase.getDocumentById(runid);
+            if (document!=null) {
+                filename = document.getContents();
+                filename = URLDecoder.decode(filename);
+                docId = document.getOrigin();
+                outputDocument = documentDatabase.getDocumentByName(docId);
+                if (outputDocument != null) {
+                    path = outputDocument.getContents();
+                    path = URLDecoder.decode(path);
+                    if (!path.endsWith("/")) {
+                       path = path + "/";
+                    }
+                    path = "/"+path + filename + ".dat";
+                   resultList = this.readjsonFile(path);
+                   if (model.equalsIgnoreCase("native_english")) {
+                       results = nativeWeighting.getModelResults(resultList);
+                       modelListResults.add(results);
+                       wordList.setWordList(modelListResults);
+                   } else {
+                       wordList.setWordList(resultList);
+                  }
+                }
+            }
+        } 
+	  return wordList;
 	}
-
-	@RequestMapping(value = "/getdocumentgroup", method = RequestMethod.GET)
-	public List<FeatureDocument> getDocumentsByGroup(@RequestParam String groupname) {
-		List<FeatureDocument> documents = null;
-		documents = documentDatabase.getDocumentByGroup(groupname);
-		return documents;
-	}
-
-	@RequestMapping(value = "/updatedocument", method = RequestMethod.GET)
-	public String updatedocument(@RequestParam String id, @RequestParam String name, @RequestParam String type, @RequestParam String contents, @RequestParam String description) {
-		String reply = null;
-		reply = documentDatabase.updateDocument(Integer.valueOf(id), name, type, contents, description);
-		return reply;
-	}
-
-	@RequestMapping(value = "/deletedocument", method = RequestMethod.GET)
-	public String deletedocument(@RequestParam String documentid) {
-		String reply = null;
-		reply = documentDatabase.deleteDocument(documentid);
-		return reply;
-	}
-
-	@RequestMapping(value = "/getdocumentbyid", method = RequestMethod.GET)
-    public FeatureDocument getDocumentById(@RequestParam String documentid) {
-        FeatureDocument document = null;
-		document = documentDatabase.getDocumentById(documentid);
-		return document;
-    }
 
     private Boolean createClassifierFromModel(String model) {
 	    Boolean success = false;
-        FeatureDocument featureDocument=null;
+        Document document=null;
         Integer intValue=0;
         JSONArray jsonArray = null, rowArray = null;
         JSONObject jsonObject = null;
@@ -158,8 +192,8 @@ public class AnalysisController {
                           }
                           data.add(row);
                        }
-                       featureDocument = documentDatabase.getDocumentByName(modelName, "model");
-                       contents = featureDocument.getContents();
+                       document = documentDatabase.getDocumentByName(modelName);
+                       contents = document.getContents();
                        contents = URLDecoder.decode(contents);
                        object = jsonParser.parse(contents);
                        if (object!=null) {
@@ -185,6 +219,69 @@ public class AnalysisController {
     private String readjsonModel(String name) {
         String jsonModel = "";
         return jsonModel;
+    }
+
+    private List<String> readjsonFile(String path) {
+        FileReader reader = null;
+        BufferedReader bufferedReader = null; 
+        Integer valIndex = 0, valCount=0, count=0, regexCount=0;
+        List<String> featureNames = new ArrayList<>();
+        List<String> dataLines = new ArrayList<>();
+        Map<String, Map<String, Integer>> fileMap = new HashMap<>();
+        Map<String, Integer> featureMap = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        RegexResult regexResult = null;
+        String regexName="", regexNumber="", textName="", row="", currentLine="";
+        try {
+              reader = new FileReader(path);
+              bufferedReader = new BufferedReader(reader);
+              while((currentLine=bufferedReader.readLine()) != null) {
+                regexResult = mapper.readValue(currentLine, RegexResult.class);
+                regexName = regexResult.getRegexName();
+                regexCount = regexResult.getCount();
+                textName = regexResult.getTextName();
+                if (!(featureNames.contains(regexName))) {
+                    featureNames.add(regexName);
+                }
+                if (fileMap.containsKey(textName)) {
+                     featureMap = (Map) fileMap.get(textName);
+                     if (featureMap.containsKey(regexName)) {
+                        count = featureMap.get(regexName);
+                        count = count + regexCount;
+                        featureMap.replace(regexName, count);
+                     } else {
+                        featureMap.put(regexName, regexCount);
+                     }
+                } else {
+                    featureMap = new HashMap<>();
+                    featureMap.put(regexName, regexCount);
+                    fileMap.put(textName, featureMap);
+                }
+              } 
+        } catch (Exception exception) {
+            logger.error("File at "+path+" doesn't exist");
+        }
+        row = "";
+        for (String feature:featureNames) {
+                row = row + feature + ",";
+        }
+        row = row.substring(0,row.length()-1);
+        dataLines.add(row);
+        row="";
+        for (String key:fileMap.keySet()) {
+           row = key + ",";
+           featureMap = fileMap.get(key);
+           for (String feature:featureNames) {
+               regexCount = featureMap.get(feature);
+               if (regexCount==null) {
+                regexCount=0;
+               }
+               row = row + regexCount + ",";
+           }
+           row = row.substring(0,row.length()-1);
+           dataLines.add(row);
+        }
+      return dataLines;
     }
 	 
 }

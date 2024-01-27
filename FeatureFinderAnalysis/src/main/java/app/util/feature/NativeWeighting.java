@@ -1,8 +1,10 @@
 package app.util.feature;
 
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Formatter;
 
 import org.json.simple.JSONValue;
@@ -10,38 +12,111 @@ import org.json.simple.JSONValue;
 public class NativeWeighting {
     private Formatter formatter;
     private String[] ROUNDED_LIST={"comma","uniquewords","uniquecommon","uncommonwords","infinitive","mainverb","meansentencelength","passives","participle"};
-    private List<String> featuresToDisplay;
+    private String[] FUNCTIONAL={"participle","infinitive","withfrominoncount","whichcount" , "althoughcount","conjunctioncount","orcount","andcount","butcount","becausecount","withcount","thiscount","fromcount","atcount","forcount","thatcount","thecount","suchcount","ofcount"};
+    private String[] STRUCTURAL={"impersonal","complexsentences","meansentencelength","uniquewords","misspeltcount","uncommonwords","reportedspeech","numberregularword","uniqueuncommon","pronouns","passives","presentonly","singleverb","multitense","multiclause","multipasttense","mainverb"};
+    private String[] FEATURES_TO_DISPLAY={"comma","uniquewords","uniquecommon","uncommonwords","infinitive","mainverb","meansentencelength","passives","participle","participle","infinitive","withfrominoncount","whichcount" ,"althoughcount","conjunctioncount","orcount","andcount","butcount","becausecount","withcount","thiscount","fromcount","atcount","forcount","thatcount","thecount","suchcount","ofcount"};
     private Model model;
 
-    public NativeWeighting(String modelName, String fileLocation){
-        ModelStore modelStore = new ModelStore(fileLocation);
-        Model model = null;
-        modelStore.loadModelList();
-        JSONValue jsonValue = modelStore.get(modelName);
-        if (jsonValue != null) {
-            model = new Model(modelName);
-            model.fromJson(jsonValue);
-        }
-        featuresToDisplay = model.getFeatureList();
+    public NativeWeighting() {
+        model = new Model("test");
+    }
+
+    public String getModelResults(List<String> featuresResults) {
+        Boolean found = false;
+        Double valueDbl = 0.0;
+        Integer index=0, functionIndex = 0, valueInt=0, value = 0, functionalTotal=0, structuralTotal=0;
+        StringBuffer outputBuffer = new StringBuffer();
+        String line = "", firstRow = "", valueStr = "", result="", fileName="", outputLine="", decision="";
+        String[] parts = null;
+        String[] headers = null;
+        List<Integer> featureValueList = null;
+        List<String> featureNameList = null;
+        List<String> functionalList = Arrays.asList(FUNCTIONAL);
+        List<String> structuralList = Arrays.asList(STRUCTURAL);
+        List<String> structuralAdjustmentList = null;
+        List<String> functionalAdjustmentList = null;
+        Map<String, Double> featureMapResults = new HashMap<>();
+        if ((featuresResults!=null) && (featuresResults.size()>1)) {
+            firstRow = featuresResults.get(0);
+            headers = firstRow.split(",");
+            featureNameList = Arrays.asList(headers);
+            outputBuffer = this.getHeading(outputBuffer);
+            index = 1;
+            while (index<featuresResults.size()) {
+                line = featuresResults.get(index);
+                outputBuffer.append(line);
+                parts = line.split(",");
+                featureValueList = new ArrayList<>();
+                for (int i=0; i<headers.length; i++) {
+                    valueStr = parts[i+1];
+                    valueDbl =  Double.valueOf(valueStr);
+                    featureMapResults.put(headers[i], valueDbl);  
+                }
+                fileName = parts[0];
+                outputLine = fileName + ",";
+                for (String feature: FEATURES_TO_DISPLAY) {
+                    found = false;
+                    functionIndex = 0;
+                    valueDbl = featureMapResults.get(feature);
+                    if (valueDbl != null) {
+                        found = true;
+                    }
+                    if (found) {
+                        result = getEnglishValueForSmallFiles(feature, valueDbl, featureMapResults);
+                        if (functionalList.contains(feature)) {
+                            functionalTotal = functionalTotal + this.getFunctionalValue(result, feature);
+                        } else {
+                            structuralTotal = structuralTotal + this.getStructuralValue(result, feature);
+                        }
+                        outputLine = outputLine + result+ ","+structuralTotal+","+functionalTotal;
+                        structuralAdjustmentList = new ArrayList<>();
+                        functionalAdjustmentList = new ArrayList<>();
+                        valueInt = this.getStructuralAdjustment(featureMapResults, structuralAdjustmentList);
+                        structuralTotal = structuralTotal - valueInt;
+                        valueInt = this.getFunctionalAdjustment(featureMapResults, functionalAdjustmentList);
+                        functionalTotal = functionalTotal - valueInt;
+                        decision = this.getDecision(functionalTotal, structuralTotal);
+                        outputLine = outputLine + decision + ",";
+                        for (String str1:structuralAdjustmentList) {
+                            outputLine = outputLine + str1 + ",";
+                        }
+                        for (String str2:functionalAdjustmentList) {
+                            outputLine = outputLine + str2 + ",";
+                        }
+                    }
+                }
+                index++;
+                outputBuffer.append(outputLine);
+                outputBuffer.append("\n");
+            }
+         }
+      return outputBuffer.toString();
     }
 
     public StringBuffer getHeading(StringBuffer csvBuffer) {
         String featureName="";
-        for (String name:featuresToDisplay) {
+        Integer number = FEATURES_TO_DISPLAY.length, counter=0;
+        for (String name:FEATURES_TO_DISPLAY) {
             featureName = name;
-            csvBuffer.append(featureName+",");
+            csvBuffer.append(featureName);
+            counter = counter + 1;
+            if (counter<number) {
+                csvBuffer.append(",");
+            } else {
+                csvBuffer.append("\n");
+            }
         }
         return csvBuffer;
     }
 
     public List<String> getFeaturesToDisplay() {
-        List<String> featuresToShow = featuresToDisplay;
+        List<String> featuresToShow = Arrays.asList(FEATURES_TO_DISPLAY);
         return featuresToShow;
     }
 
     public StringBuffer getOutputResults(StringBuffer csvBuffer, Map<String, String> featureResultList) {
         String resultStr="";
-        for (String name:featuresToDisplay) {
+        for (String name:FEATURES_TO_DISPLAY) {
             resultStr = featureResultList.get(name);
             if (resultStr==null) {
                 resultStr = "0.0";
@@ -51,7 +126,7 @@ public class NativeWeighting {
         return csvBuffer;
     }
 
-    public Integer getStructuralAdjustment(Map<String, String> featureResults, List<String> adjustmentList) {
+    public Integer getStructuralAdjustment(Map<String, Double> featureResults, List<String> adjustmentList) {
         Boolean words_alteration=false, s5_applied=false;
         Integer alterStructural = 0;
         String threshold="",appliedAdjustments="";
@@ -77,11 +152,11 @@ public class NativeWeighting {
          *    then deduct 1 from the structural count
          */
          
-        pronouns =getFeatureValue(featureResults, "pronouns");
+        pronouns = getFeatureValue(featureResults, "pronouns");
         threshold = this.getFunctionalThreshold("pronouns");
         thresholds = threshold.split(",");
         threshold=thresholds[1];
-        value = Double.valueOf(threshold);
+        value =  Double.valueOf(threshold);
         if ((pronouns!=null) && ((pronouns>value))) {
             words_alteration = true;
         }
@@ -92,9 +167,9 @@ public class NativeWeighting {
                 threshold = this.getStructuralThreshold("uncommonwords");
                 thresholds = threshold.split(",");
                 threshold = thresholds[0];
-                lower = Double.valueOf(threshold);
+                lower =  Double.valueOf(threshold);
                 threshold = thresholds[1];
-                upper = Double.valueOf(threshold);
+                upper =  Double.valueOf(threshold);
                 if ((uncommonwords<lower) || (uncommonwords>upper)) {
                     totalthreshold = totalthreshold + 1.0;
                 }
@@ -105,9 +180,9 @@ public class NativeWeighting {
                 threshold = this.getStructuralThreshold("uniquewords");
                 thresholds = threshold.split(",");
                 threshold = thresholds[0];
-                lower = Double.valueOf(threshold);
+                lower =  Double.valueOf(threshold);
                 threshold = thresholds[1];
-                upper = Double.valueOf(threshold);
+                upper =  Double.valueOf(threshold);
                 if ((uniquewords<lower) || (uniquewords>upper)) {
                     totalthreshold = totalthreshold + 1.0;
                 }
@@ -118,9 +193,9 @@ public class NativeWeighting {
                 threshold = this.getStructuralThreshold("uniqueuncommonwords");
                 thresholds = threshold.split(",");
                 threshold = thresholds[0];
-                lower = Double.valueOf(threshold);
+                lower =  Double.valueOf(threshold);
                 threshold = thresholds[1];
-                upper = Double.valueOf(threshold);
+                upper =  Double.valueOf(threshold);
                 if ((uniqueuncommonwords<lower) || (uniqueuncommonwords>upper)) {
                     totalthreshold = totalthreshold + 1.0;
                 }
@@ -163,18 +238,18 @@ public class NativeWeighting {
             threshold = this.getStructuralThreshold("infinitive");
             thresholds=threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            upper = Double.valueOf(threshold);
+            upper =  Double.valueOf(threshold);
             if ((infinitive<lower) || (infinitive>upper)) {
                 totalthreshold = totalthreshold + 1.0;
             }
             threshold = this.getStructuralThreshold("participle");
             thresholds = threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            upper = Double.valueOf(threshold);
+            upper =  Double.valueOf(threshold);
             if ((participle<lower) || (participle>upper)) {
                 totalthreshold=totalthreshold+1.0;
             }
@@ -198,9 +273,9 @@ public class NativeWeighting {
             threshold = this.getStructuralThreshold("multipasttense");
             thresholds=threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            upper = Double.valueOf(threshold);
+            upper =  Double.valueOf(threshold);
             if ((pastTenseCount>=lower) && (pastTenseCount<=upper)) {
                 alterStructural=alterStructural+(-1);
                 appliedAdjustments=appliedAdjustments+",S4(-1)";
@@ -222,9 +297,9 @@ public class NativeWeighting {
             threshold = this.getStructuralThreshold("multipasttense");
             thresholds=threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            upper = Double.valueOf(threshold);
+            upper =  Double.valueOf(threshold);
             if ((pastTenseCount<lower) || (pastTenseCount>upper)) {
                 alterStructural=alterStructural+(-1);
                 appliedAdjustments=appliedAdjustments+",S5(-1)";
@@ -247,9 +322,9 @@ public class NativeWeighting {
             threshold = this.getStructuralThreshold("complexsentences");
             thresholds=threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            upper = Double.valueOf(threshold);
+            upper =  Double.valueOf(threshold);
             if ((complexsentences>=lower) || (complexsentences<=upper)) {
                 complexsentencesthreshold=1.0;
             }
@@ -261,9 +336,9 @@ public class NativeWeighting {
             threshold = this.getStructuralThreshold("multiclause");
             thresholds=threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            upper = Double.valueOf(threshold);
+            upper =  Double.valueOf(threshold);
             if ((multiclause>=lower) || (multiclause<=upper)) {
                 multiclausethreshold=1.0;
             }
@@ -275,9 +350,9 @@ public class NativeWeighting {
             threshold = this.getStructuralThreshold("presentonly");
             thresholds=threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            upper = Double.valueOf(threshold);
+            upper =  Double.valueOf(threshold);
             if ((presentonly>=lower) || (presentonly<=upper)) {
                 presentonlythreshold=1.0;
             }
@@ -290,9 +365,9 @@ public class NativeWeighting {
             threshold = this.getStructuralThreshold("numberregularword");
             thresholds=threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            upper = Double.valueOf(threshold);
+            upper =  Double.valueOf(threshold);
             if ((regularwords>=lower) && (regularwords<=upper)) {
                 regularwordsthreshold=1.0;
             }
@@ -305,9 +380,9 @@ public class NativeWeighting {
                 threshold = this.getStructuralThreshold("uncommonwords");
                 thresholds=threshold.split(",");
                 threshold = thresholds[0];
-                lower = Double.valueOf(threshold);
+                lower =  Double.valueOf(threshold);
                 threshold = thresholds[1];
-                upper = Double.valueOf(threshold);
+                upper =  Double.valueOf(threshold);
                 if ((uncommonwords<lower) || (uncommonwords>upper)) {
                     totalthreshold=totalthreshold + 1.0;
                 }
@@ -320,9 +395,9 @@ public class NativeWeighting {
             threshold = this.getStructuralThreshold("uniquewords");
             thresholds=threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            upper = Double.valueOf(threshold);
+            upper =  Double.valueOf(threshold);
             if ((uniquewords<lower) && (uniquewords>upper)) {
                 totalthreshold=totalthreshold + 1.0;
             }
@@ -335,9 +410,9 @@ public class NativeWeighting {
             threshold = this.getStructuralThreshold("uniqueuncommon");
             thresholds=threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            upper = Double.valueOf(threshold);
+            upper =  Double.valueOf(threshold);
             if ((uniqueuncommonwords<lower) && (uniqueuncommonwords>upper)) {
                 totalthreshold=totalthreshold + 1.0;
             }
@@ -362,15 +437,15 @@ public class NativeWeighting {
             threshold = this.getStructuralThreshold("multipasttense");
             thresholds=threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            mupper = Double.valueOf(threshold);
+            mupper =  Double.valueOf(threshold);
             threshold = this.getStructuralThreshold("multiclause");
             thresholds=threshold.split(",");
             threshold = thresholds[0];
-            lower = Double.valueOf(threshold);
+            lower =  Double.valueOf(threshold);
             threshold = thresholds[1];
-            cupper = Double.valueOf(threshold);
+            cupper =  Double.valueOf(threshold);
             Double multiCount = getFeatureValue(featureResults, "multipasttense");
             Double clauseCount = getFeatureValue(featureResults, "multiclause");
             if ((multiCount!=null) && (multiCount>mupper)) {
@@ -390,22 +465,13 @@ public class NativeWeighting {
     return alterStructural;
   }
 
-  public Integer getFeatureValue(List<Integer> featureValueList, List<String> featurenameList, String featurename) {
-    Integer value=0, index=0;
-    Boolean found=false;
-    String feature="";
-    while ((!found) && (index<featurenameList.size())) {
-        feature = featurenameList.get(index);
-        if (feature.equalsIgnoreCase(featurename)) {
-            value = featureValueList.get(index);
-            found = true;
-        }
-        index++;
-    }
+  public Double getFeatureValue(Map<String, Double> featureMapResults, String featurename) {
+    Double value=0.0;
+    value = featureMapResults.get(featurename);
     return value;
   }
 
-  public Integer getFunctionalAdjustment(Map<String, String> percResultMap, List<String> adjustmentList) {
+  public Integer getFunctionalAdjustment(Map<String, Double> percResultMap, List<String> adjustmentList) {
     Integer alterFunctional=0;
     Double whichCount, thatCount, aCount, pronounCount, infinitiveCount, theCount;
     Double theCountUpperThreshold, theCountLowerThreshold, aCountLowerThreshold, aCountUpperThreshold;
@@ -422,15 +488,15 @@ public class NativeWeighting {
     threshold = this.getFunctionalThreshold("thecount");
     thresholds = threshold.split(",");
     threshold = thresholds[0];
-    theCountLowerThreshold = Double.valueOf(threshold);
+    theCountLowerThreshold =  Double.valueOf(threshold);
     threshold = thresholds[1];
-    theCountUpperThreshold = Double.valueOf(threshold);
+    theCountUpperThreshold =  Double.valueOf(threshold);
     threshold = this.getFunctionalThreshold("acount");
     thresholds = threshold.split(",");
     threshold = thresholds[1];
-    aCountUpperThreshold = Double.valueOf(threshold);
+    aCountUpperThreshold =  Double.valueOf(threshold);
     threshold = thresholds[0];
-    aCountLowerThreshold = Double.valueOf(threshold);
+    aCountLowerThreshold =  Double.valueOf(threshold);
     if ((aCount!=null) && (theCount!=null) && (theCount<theCountLowerThreshold) && (aCount>aCountUpperThreshold)) {
         alterFunctional=alterFunctional + (-2);
         appliedAdjustments = appliedAdjustments + ",F1(-2)";
@@ -450,13 +516,13 @@ public class NativeWeighting {
     threshold = this.getFunctionalThreshold("tocount");
     thresholds = threshold.split(",");
     threshold = thresholds[0];
-    lowerTo = Double.valueOf(threshold);
+    lowerTo =  Double.valueOf(threshold);
     threshold = thresholds[1];
-    upperTo = Double.valueOf(threshold);
+    upperTo =  Double.valueOf(threshold);
     threshold = this.getFunctionalThreshold("infinitive");
     thresholds = threshold.split(",");
     threshold = thresholds[1];
-    upperInfinitive = Double.valueOf(threshold);
+    upperInfinitive =  Double.valueOf(threshold);
     toCount = getFeatureValue(percResultMap, "tocount");
     infinitiveCount = getFeatureValue(percResultMap, "infinitive");
     if ((toCount!=null) && (infinitiveCount!=null) && (toCount>upperTo) && (infinitiveCount>upperInfinitive)) {
@@ -473,9 +539,9 @@ public class NativeWeighting {
     threshold = this.getFunctionalThreshold("forcount");
     thresholds = threshold.split(",");
     threshold = thresholds[0];
-    lowerFor = Double.valueOf(threshold);
+    lowerFor =  Double.valueOf(threshold);
     threshold = thresholds[1];
-    upperFor = Double.valueOf(threshold);
+    upperFor =  Double.valueOf(threshold);
     toCount = getFeatureValue(percResultMap, "tocount");
     forCount = getFeatureValue(percResultMap, "forcount");
     if ((toCount!=null) && (forCount!=null) && (toCount>upperTo) && (forCount<lowerTo)) {
@@ -493,9 +559,9 @@ public class NativeWeighting {
     threshold = this.getFunctionalThreshold("forcount");
     thresholds = threshold.split(",");
     threshold = thresholds[0];
-    lowerFor = Double.valueOf(threshold);
+    lowerFor =  Double.valueOf(threshold);
     threshold = thresholds[1];
-    upperFor = Double.valueOf(threshold);
+    upperFor =  Double.valueOf(threshold);
     toCount = getFeatureValue(percResultMap, "tocount");
     forCount = getFeatureValue(percResultMap, "forcount");
     if ((toCount!=null) && (forCount!=null) && (toCount<lowerTo) && (forCount>upperFor)) {
@@ -513,9 +579,9 @@ public class NativeWeighting {
     threshold = this.getFunctionalThreshold("pronouns");
     thresholds = threshold.split(",");
     threshold = thresholds[0];
-    lower = Double.valueOf(threshold);
+    lower =  Double.valueOf(threshold);
     threshold = thresholds[1];
-    upper = Double.valueOf(threshold);
+    upper =  Double.valueOf(threshold);
     pronounCount = getFeatureValue(percResultMap, "pronouns");
     if ((pronounCount!=null) && (pronounCount>upper)) {
         if ((aCount!=null) && (theCount!=null) && (aCount>=aCountLowerThreshold && aCount<=aCountUpperThreshold) && (theCount>=theCountLowerThreshold && theCount<=theCountUpperThreshold)) {
@@ -533,14 +599,14 @@ public class NativeWeighting {
     String lowerThresholdStr = "Lower Threshold,";
     String threshold="";
     String[] parts=null;
-    for (String name: featuresToDisplay) {
+    for (String name: FEATURES_TO_DISPLAY) {
         threshold = this.getStructuralThreshold(name);
         if (threshold.length()>0) {
             parts = threshold.split(",");
             lowerThresholdStr = lowerThresholdStr + parts[0] +",";
         }
     }
-    for (String fname:featuresToDisplay) {
+    for (String fname:FEATURES_TO_DISPLAY) {
         threshold = this.getFunctionalThreshold(fname);
         if (threshold.length()>0) {
             parts = threshold.split(",");
@@ -554,14 +620,14 @@ public class NativeWeighting {
     String lowerThresholdStr = "Upper Threshold,";
     String threshold="";
     String[] parts=null;
-    for (String name: featuresToDisplay) {
+    for (String name: FEATURES_TO_DISPLAY) {
         threshold = this.getStructuralThreshold(name);
         if (threshold.length()>0) {
             parts = threshold.split(",");
             lowerThresholdStr = lowerThresholdStr + parts[1] +",";
         }
     }
-    for (String fname:featuresToDisplay) {
+    for (String fname:FEATURES_TO_DISPLAY) {
         threshold = this.getFunctionalThreshold(fname);
         if (threshold.length()>0) {
             parts = threshold.split(",");
@@ -581,12 +647,12 @@ public class NativeWeighting {
         parts = threshold.split(",");
         lowerStr = parts[0];
         upperStr = parts[1];
-        lower = Double.valueOf(lowerStr);
-        upper = Double.valueOf(upperStr);
+        lower =  Double.valueOf(lowerStr);
+        upper =  Double.valueOf(upperStr);
         if (valueStr.contains("(")) {
             valueStr =valueStr.substring(0,valueStr.length()-7);
         }
-        value=Double.valueOf(valueStr);
+        value= Double.valueOf(valueStr);
         if ((value<lower) || (value>upper)) {
             functionalValue = 1;
         }
@@ -605,19 +671,19 @@ public class NativeWeighting {
         parts = threshold.split(",");
         lowerStr = parts[0];
         upperStr = parts[1];
-        lower = Double.valueOf(lowerStr);
-        upper = Double.valueOf(upperStr);
+        lower =  Double.valueOf(lowerStr);
+        upper =  Double.valueOf(upperStr);
         if (valueStr.contains("(")) {
             position = valueStr.indexOf("(");
             threshold = valueStr.substring(position+1, valueStr.length()-1);
             parts = threshold.split(":");
             lowerStr = parts[0];
             upperStr = parts[1];
-            lower = Double.valueOf(lowerStr);
-            upper = Double.valueOf(upperStr);
+            lower =  Double.valueOf(lowerStr);
+            upper =  Double.valueOf(upperStr);
             valueStr =valueStr.substring(0,position);
         }
-        value=Double.valueOf(valueStr);
+        value= Double.valueOf(valueStr);
         if ((value<lower) || (value>upper)) {
             structuralValue = 1;
         }
@@ -641,7 +707,7 @@ public class NativeWeighting {
     return threshold;
   }
 
-  private Double getFeatureValue(Map<String, String> featureValueList, String featurename) {
+  private Double getFeatureValueFromString(Map<String, String> featureValueList, String featurename) {
     String valueStr = featureValueList.get(featurename);
     Integer position=0;
     Double result = null;
@@ -650,7 +716,7 @@ public class NativeWeighting {
             position = valueStr.indexOf("(");
             valueStr = valueStr.substring(0,position);
         }
-        result = Double.valueOf(valueStr);
+        result =  Double.valueOf(valueStr);
     }
     return result;
   }
@@ -704,11 +770,11 @@ public class NativeWeighting {
     return result;
   }
 
-  public String getEnglshValueForSmallFiles(String header, Integer value, List<Integer> featurevalueList, List<String> featurenameList) {
+  public String getEnglishValueForSmallFiles(String header, Double value, Map<String, Double> featureMapResults) {
     List<String> roundedList = Arrays.asList(ROUNDED_LIST);
     Double cell=0.0, pastparticiple=0.0,presentparticiple=0.0,passiveparticiple=0.0,divider=1.0;
     Double temp1, temp2, temp3,temp4,temp5,temp6;
-    Double divisor=Double.valueOf(value);
+    Double divisor= value;
     String str="",result="";
     String[] numbers=null;
     String appendix="";
@@ -716,15 +782,15 @@ public class NativeWeighting {
     cell=divisor;
     switch(header){
         case "meansentencelength": {
-            divisor = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "sentencecount"));
+            divisor =  this.getFeatureValue(featureMapResults, "wordcount");
+            divider =  this.getFeatureValue(featureMapResults, "sentencecount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (divisor/divider);
         }; break;
        case "uniquewords": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
             }
@@ -735,14 +801,14 @@ public class NativeWeighting {
         }; break;
 
         case "misspeltcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "uncommonwords": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null || divider==0.0) {
                 divider = 1.0;
             }
@@ -756,21 +822,21 @@ public class NativeWeighting {
             }
         }; break;
         case "reportedspeech": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "mainverb"));
+            divider =  this.getFeatureValue(featureMapResults, "mainverb");
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "numberregularword": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "uniqueuncommon": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
             }
@@ -784,7 +850,7 @@ public class NativeWeighting {
             }
         }; break;
         case "pronouns": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
             }
@@ -792,7 +858,7 @@ public class NativeWeighting {
         }; break;
         case "passives": {
             temp1 = divisor;
-            temp2 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "allverbs"));
+            temp2 =  this.getFeatureValue(featureMapResults, "allverbs");
             divider = temp1 + temp2;
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
@@ -800,44 +866,44 @@ public class NativeWeighting {
             cell = (100*(divisor/divider));
         }; break;
        case "presentonly": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "sentencecount"));
+            divider =  this.getFeatureValue(featureMapResults, "sentencecount");
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
        case "singleverb": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "sentencecount"));
+            divider =  this.getFeatureValue(featureMapResults, "sentencecount");
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
        case "multitense": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "sentencecount"));
+            divider =  this.getFeatureValue(featureMapResults, "sentencecount");
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "multiclause": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "sentencecount"));
+            divider =  this.getFeatureValue(featureMapResults, "sentencecount");
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "multipasttense": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "sentencecount"));
+            divider =  this.getFeatureValue(featureMapResults, "sentencecount");
             if (divider==null)  {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "infinitive": {
-            temp1 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "mainverb"));
+            temp1 =  this.getFeatureValue(featureMapResults, "mainverb");
             temp2 = divisor;
-            temp3 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "participle"));
+            temp3 =  this.getFeatureValue(featureMapResults, "participle");
             divider = temp1 + temp2 +temp3;
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
@@ -845,8 +911,8 @@ public class NativeWeighting {
             cell = (100*(divisor/divider));
         }; break;
        case "participle": {
-            temp1 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "mainverb"));
-            temp2 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "infinitive"));
+            temp1 =  this.getFeatureValue(featureMapResults, "mainverb");
+            temp2 =  this.getFeatureValue(featureMapResults, "infinitive");
             temp3 = divisor;
             divider = temp1 + temp2 + temp3;
             if ((divider==null) || (divider==0.0)) {
@@ -856,8 +922,8 @@ public class NativeWeighting {
         }; break;
        case "mainverb": {
             temp1 = divisor;
-            temp2 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "infinitive"));
-            temp3 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "participle"));
+            temp2 =  this.getFeatureValue(featureMapResults, "infinitive");
+            temp3 =  this.getFeatureValue(featureMapResults, "participle");
             divider = temp1 +temp2 + temp3;
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
@@ -866,168 +932,168 @@ public class NativeWeighting {
         }; break;
        case "punctuations": {
             temp1 = divisor;
-            temp2 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "punctuationcount"));
+            temp2 =  this.getFeatureValue(featureMapResults, "punctuationcount");
             cell = temp2;
         }; break;
        case "complexsentences": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "sentencecount"));
+            divider =  this.getFeatureValue(featureMapResults, "sentencecount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
        case "impersonal": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "allverbs"));
+            divider =  this.getFeatureValue(featureMapResults, "allverbs");
             if ((divider==null) || (divider==0.0)) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "ofcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "suchcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "thecount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "thatcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "forcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "acount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "tocount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "incount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "atcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "fromcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "thiscount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "withcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "becausecount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "butcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "andcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "orcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "althoughcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "conjunctioncount": {
-            temp1 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "andcount"));
-            temp2 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "becausecount"));
-            temp3 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "butcount"));
-            temp4 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "althoughcount"));
-            temp5 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "orcount"));
+            temp1 =  this.getFeatureValue(featureMapResults, "andcount");
+            temp2 =  this.getFeatureValue(featureMapResults, "becausecount");
+            temp3 =  this.getFeatureValue(featureMapResults, "butcount");
+            temp4 =  this.getFeatureValue(featureMapResults, "althoughcount");
+            temp5 =  this.getFeatureValue(featureMapResults, "orcount");
             divisor = temp1 + temp2 + temp3 + temp4 +temp5;
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "whichcount": {
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             if (divider==null) {
                 divider = 1.0;
             }
             cell = (100*(divisor/divider));
         }; break;
         case "withfrominoncount": {
-            temp1 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "withcount"));
-            temp2 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "fromcount"));
-            temp3 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "incount"));
-            temp4 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "oncount"));
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            temp1 =  this.getFeatureValue(featureMapResults, "withcount");
+            temp2 =  this.getFeatureValue(featureMapResults, "fromcount");
+            temp3 =  this.getFeatureValue(featureMapResults, "incount");
+            temp4 =  this.getFeatureValue(featureMapResults, "oncount");
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             divisor = temp1 + temp2 + temp3 + temp4;
             if (divider==null) {
                 divider = 1.0;
@@ -1035,11 +1101,11 @@ public class NativeWeighting {
             cell = (100*(divisor/divider));
         }; break;
         case "thatwhichcount": {
-            temp1 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "withcount"));
-            temp2 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "fromcount"));
-            temp3 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "incount"));
-            temp4 = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "oncount"));
-            divider = Double.valueOf(this.getFeatureValue(featurevalueList, featurenameList, "wordcount"));
+            temp1 =  this.getFeatureValue(featureMapResults, "withcount");
+            temp2 =  this.getFeatureValue(featureMapResults, "fromcount");
+            temp3 =  this.getFeatureValue(featureMapResults, "incount");
+            temp4 =  this.getFeatureValue(featureMapResults, "oncount");
+            divider =  this.getFeatureValue(featureMapResults, "wordcount");
             divisor = temp1 + temp2 + temp3 + temp4;
             if (divider==null) {
                 divider = 1.0;
@@ -1049,6 +1115,8 @@ public class NativeWeighting {
     }
     if (roundedList.contains(header)) {
         result = this.roundup(cell, "%3.2f");
+    } else {
+         result = this.roundup(cell, "%3.0f");
     }
     if ((appendix!=null) && (appendix.length()>0)) {
         result = result+appendix;
