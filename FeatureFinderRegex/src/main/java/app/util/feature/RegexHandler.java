@@ -51,7 +51,7 @@ public class RegexHandler {
      if (!regexError) {
           matches = regularExpression.findAll(document.getSentenceAtIndex(lineIndex));
           finds = matches.size();
-     }      
+     }     
    return finds;
  }
  

@@ -89,6 +89,7 @@ public class ContractFunction {
                String post=null; 
                if (regexDocument!=null) { 
                       post = regexDocument.getPostcondition(); 
+                      post = post.trim();
                       if ((post!=null) && (post.length()>0)) { 
                             exists = true; 
                    } 

@@ -11,13 +11,14 @@ import org.json.simple.parser.JSONParser;
 import app.util.feature.Document;
 import app.util.feature.RegexDocument;
 import app.util.feature.FeatureFunction;
+import app.util.feature.FunctionCallback;
 import app.util.feature.TextDocument;
 import app.util.feature.General;
 import app.util.feature.WordToken;
 import edu.washington.cs.knowitall.logic.Expression.Arg;
 import edu.washington.cs.knowitall.regex.Match;
 
-public class TextLogicBaseExpression extends Arg<WordToken> {
+public class TextLogicBaseExpression extends Arg<WordToken> implements FunctionCallback {
   private static String[] PART_LIST = {"firsttoken","FIRSTTOKEN","firstpostag","FIRSTPOSTAG","postag","POSTAG","token","TOKEN","lemma","LEMMA","type","TYPE","text","TEXT","phrase","PHRASE"};
   private CustomRegularExpressionParser customRegularExpressionParser;
   private List<Match<WordToken>> customMatches;
@@ -76,8 +77,8 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
         case "name": {found = checkName(part, value, wordToken);}; break;
         case "list": {found = checkList(part, value, wordToken, textBlock);}; break;
         case "function": {found= checkFunction(part, valueType, value, wordToken, textBlock);}; break;
-        case "predefinedlist": {found= checkPreDefinedList(part, valueType, value, wordToken, textBlock);}; break;
-        case "predefinedregex": {found= checkPreDefinedRegex(part, valueType, value, wordToken, textBlock);}; break;
+        case "predefinedlist": {found= checkPreDefinedList(part, valueType, value, wordToken, textBlock.getTextDocument());}; break;
+        case "predefinedregex": {found= checkPreDefinedRegex(part, valueType, value, wordToken, textBlock.getTextDocument());}; break;
     }
     return found;
   }
@@ -201,7 +202,7 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
         prefix = value.substring(0,1);
         if (prefix.equalsIgnoreCase("$")) {
            value = value.substring(1, value.length());
-           exists = featureFunction.listExists(value);
+           exists = featureFunction.isPredefinedList(value);
            if (exists) {
             type="predefinedlist";
            }
@@ -217,7 +218,7 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
         prefix = value.substring(0,1);
         if (prefix.equalsIgnoreCase("$")) {
            value = value.substring(1, value.length());
-           exists = featureFunction.regexExists(value);
+           exists = featureFunction.isPredefinedRegex(value);
            System.out.println("***Value:"+value+"   Exists:"+exists);
            if (exists) {
             type="predefinedregex";
@@ -339,11 +340,11 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
      private Boolean checkFunction(String part, String valueType, String value, WordToken wordToken, TextBlock textBlock) {
          boolean found = false;
          String functionName = this.getName(value);
-         found = featureFunction.doFunction(part,functionName,value,wordToken,textBlock.getTextDocument());
+         found = featureFunction.doFunction(part,functionName,value,wordToken,textBlock.getTextDocument(), this);
          return found;
       }
      
-      private Boolean checkPreDefinedList(String part, String valueType, String value, WordToken wordToken, TextBlock textBlock) {
+      private Boolean checkPreDefinedList(String part, String valueType, String value, WordToken wordToken, TextDocument textDocument) {
           Boolean found=false;
           Integer index=0;
           List<String> wordList = null; 
@@ -352,7 +353,7 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
           if ((wordToken != null) && (valueType.equalsIgnoreCase("predefinedlist"))) {  
               currentWord = wordToken.getToken();
               value = value.substring(1, value.length());
-              wordList = featureFunction.getPreDefinedList(value);
+              wordList = featureFunction.getPredefinedList(value);
               while ((!found) && (index<wordList.size())) {
                 word = wordList.get(index);
                 if (word.equalsIgnoreCase(currentWord)) {
@@ -363,9 +364,13 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
           }    
         return found;
        }
-       
-       
-  private Boolean checkPreDefinedRegex(String part, String valueType, String value, WordToken wordToken, TextBlock textBlock) {
+
+   @Override
+   public Boolean doFunction(String part, String valueType, String value, WordToken wordToken, TextDocument textDocument) {
+        return this.checkPreDefinedRegex(part, valueType, value, wordToken, textDocument);
+   }
+
+  private Boolean checkPreDefinedRegex(String part, String valueType, String value, WordToken wordToken, TextDocument textDocument) {
       Boolean found=false, finished=false;
       CustomRegularExpression logicExpression;
       Document feature = null;
@@ -378,12 +383,12 @@ public class TextLogicBaseExpression extends Arg<WordToken> {
       Integer matchCount=0, index=0, wordIndex=0, position=0, start=0, end=0, finds=0, sentenceIndex=0;
       if ((wordToken != null) && (value.startsWith("$"))) {
           value = value.substring(1,value.length());
-          feature = featureFunction.getPreDefinedFeature(value);
+          feature = featureFunction.getPredefinedRegex(value);
           if ((feature!=null) && (feature.getType().equalsIgnoreCase("regex"))) {
               currentWordList = new ArrayList<>();
               wordIndex = wordToken.getIndex();
               sentenceIndex = wordToken.getSentence();
-              wordTokenList = textBlock.getTextDocument().getSentenceAtIndex(wordToken.getSentence());
+              wordTokenList = textDocument.getSentenceAtIndex(wordToken.getSentence());
               if (wordIndex==0) {
                   while (index<wordTokenList.size()) {
                         wordItem = wordTokenList.get(index);
