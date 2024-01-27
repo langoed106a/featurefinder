@@ -60,7 +60,7 @@ public class Model {
         structural.put("nonnativecomma","10.0,25.0");
         structural.put("nomainverb","0.0,0.0");
         structural.put("numberregularword","25.0,45.0");
-        structural.put()"participle","10,25");
+        structural.put("participle","10,25");
         structural.put("passives","5.0,17.5");
         structural.put("presentparticiple","1,20");
         structural.put("presentonly","0.0,50.0");
@@ -77,7 +77,7 @@ public class Model {
         structural.put("ascount","1,20");
         structural.put("semicoloncount","1,20");
         structural.put("singleverb","20.0,50.0");
-        structural.put("wordcount","0.0,9999.99")
+        structural.put("wordcount","0.0,9999.99");
         structural.put("whichcount","1,20");
         structural.put("incount","1,20");
         structural.put("uncommonwords","28.0,45.0");
