@@ -12,6 +12,8 @@ public class WordToken {
     private Integer sentence;
     private String spacingleft;
     private String wordtype;
+    private String spellcorrectionPostag;
+    private String spellcorrectionToken;
 
     public WordToken() {
         this.token="";
@@ -22,6 +24,8 @@ public class WordToken {
         this.sentence=0;
         this.spacingleft="";
         this.wordtype="";
+        this.spellcorrectionPostag="";
+        this.spellcorrectionToken="";
     }
 
     public WordToken(String token, String lemma, String postag, String dependency, Integer index, Integer sentence ) {
@@ -33,6 +37,8 @@ public class WordToken {
         this.sentence=sentence;
         this.spacingleft="";
         this.wordtype="";
+        this.spellcorrectionPostag="";
+        this.spellcorrectionToken="";
     }
 
     public String getPostag() {
@@ -99,8 +105,24 @@ public class WordToken {
         this.sentence = sentence;
     }
 
+    public String getSpellCorrectionPostag() {
+        return spellcorrectionPostag;
+    }
+
+    public void setSpellcorrectionPostag(String spellcorrectionPostag) {
+        this.spellcorrectionPostag = spellcorrectionPostag;
+    }
+
+    public String getSpellCorrectionToken() {
+        return spellcorrectionToken;
+    }
+
+    public void setSpellcorrectionToken(String spellcorrectionToken) {
+        this.spellcorrectionToken = spellcorrectionToken;
+    }
+
     public String toString() {
-        return ("token:"+token+" lemma:"+lemma+" postag:"+postag+" wordtype:"+wordtype+" dependency:"+dependency+" spacingleft:"+spacingleft+" index:"+index+" sentence:"+sentence);
+        return ("token:"+token+" lemma:"+lemma+" postag:"+postag+" wordtype:"+wordtype+" dependency:"+dependency+" spacingleft:"+spacingleft+" index:"+index+" sentence:"+sentence+" spelcorrection_postag:"+spellcorrectionPostag+" spellcorrection_token:"+spellcorrectionToken);
     }
 
     public void fromJson(JSONObject jsonObject) {
@@ -111,11 +133,19 @@ public class WordToken {
         this.wordtype = (String) jsonObject.get("wordtype");
         this.dependency = (String) jsonObject.get("dependency");
         this.spacingleft = (String) jsonObject.get("spacingleft");
+        this.spellcorrectionToken = (String) jsonObject.get("spellcorrection_token");
+        this.spellcorrectionPostag = (String) jsonObject.get("spellcorrection_postag");
         if ((this.dependency==null) || (this.dependency.length()==0)) {
             this.dependency="notknown";
         }
         if (this.spacingleft==null) {
             this.spacingleft="";
+        }
+        if (this.spellcorrectionPostag==null) {
+            this.spellcorrectionPostag="";
+        }
+         if (this.spellcorrectionToken==null) {
+            this.spellcorrectionToken="";
         }
         strIndex = (String)jsonObject.get("index");
         this.index = Integer.valueOf(strIndex);
@@ -128,6 +158,8 @@ public class WordToken {
         cloneToken = new WordToken(this.token, this.lemma, this.postag, this.dependency, this.index, this.sentence );
         cloneToken.setWordType(this.wordtype);
         cloneToken.setSpacingLeft(this.spacingleft);
+        cloneToken.setSpellcorrectionPostag(this.spellcorrectionPostag);
+        cloneToken.setSpellcorrectionToken(this.spellcorrectionToken);
         return cloneToken;
     }
 

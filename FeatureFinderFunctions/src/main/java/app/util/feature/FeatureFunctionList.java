@@ -20,6 +20,7 @@ import java.lang.reflect.Type;
 import org.apache.commons.lang3.StringUtils;
 
 public class FeatureFunctionList {
+	private FunctionCallback functionCallback;
 	private WordStorage wordStorage;
 	private DocumentStore documentStore;
 	private List<String> definedRegexList;
@@ -40,17 +41,37 @@ public class FeatureFunctionList {
 	public void setDocumentStore(DocumentStore documentStore) {
 		this.documentStore = documentStore;
 	}
+
+	public void setCallbackHandler(FunctionCallback functionCallback) {
+		this.functionCallback = functionCallback;
+	}
 	
-	public Document getPreDefinedFeature(String name) {
+	public Document getPredefinedRegex(String name) {
 		Document featureDocument=null;
 		featureDocument = documentStore.getDocumentByName(name);
 		return featureDocument;
 	}
 
-	public List<String> getPreDefinedList(String name) {
+	public List<String> getPredefinedList(String name) {
 		List<String> list = null;
 		list = wordStorage.getList(name);
 		return list;
+	}
+
+	public Boolean isPredefinedRegex(String name) {
+		Boolean exists = false;
+		Document document = null;
+		document = this.getPredefinedRegex(name);
+		if ((document != null) && (document.getType().equalsIgnoreCase("regex"))) {
+           exists = true;
+		}
+		return exists;
+	}
+
+	public Boolean isPredefinedList(String name) {
+		Boolean exists = false;
+		exists = this.getWordStorage().listExists(name);
+		return exists;
 	}
 
 	public void setWordStorage(WordStorage wordStorage) {
@@ -104,11 +125,6 @@ public class FeatureFunctionList {
 			}
 		}
 		      return found; 
-	}
-
-	public boolean anything(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
-		Boolean found = true;
-		return found; 
 	}
 
 	public boolean emoji(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
@@ -177,7 +193,7 @@ public class FeatureFunctionList {
 		String content = General.getValue(part, wordToken), vowelStr="", letter="", newWord="", tempStr="", partWord1="", partWord2="";
 		WordToken token = null;
 		if ((parameters.size()>0) && (part.equalsIgnoreCase("token"))) {
-			if (!(this.checkPreDefinedList(part, wordToken, textDocument, "commonword"))) {
+			if (!(this.isPredefinedList(content))) {
 				count = 0;
 				times = 0;
 
@@ -194,9 +210,9 @@ public class FeatureFunctionList {
 									if ((!letter.equalsIgnoreCase(vowelStr)) && (!tempStr.equalsIgnoreCase("ei")) && (!tempStr.equalsIgnoreCase("ei")))  {
 										newWord = partWord1 + letter + partWord2;
 										token = new WordToken(newWord, "", "", "", 0, 0);
-										if (this.checkPreDefinedList(part, wordToken, textDocument, "commonword")) {
-											found = true;
-									    }
+										//if (this.isPreDefinedList(part, wordToken, textDocument, "commonword")) {
+									    //		found = true;
+									    //}
 									}
 									paraIndex++;
 								}
@@ -213,9 +229,9 @@ public class FeatureFunctionList {
 											if ((!letter.equalsIgnoreCase(vowelStr)) && (!tempStr.equalsIgnoreCase("ei")) && (!tempStr.equalsIgnoreCase("ei")))  {
 												newWord = partWord1 + letter + partWord2;
 												token = new WordToken(newWord, "", "", "", 0, 0);
-												if (this.checkPreDefinedList(part, wordToken, textDocument, "commonword")) {
-													found = true;
-												}
+												//if (this.checkPreDefinedList(part, wordToken, textDocument, "commonword")) {
+												//	found = true;
+												//}
 											}
 											paraIndex++;
 										}
@@ -432,7 +448,8 @@ public class FeatureFunctionList {
 			while ((!finish) && (index<params.size())) {
 				item = params.get(index);
 				if (item.startsWith("$")) {
-					itemFound = this.checkPreDefinedList(part, wordToken, textDocument, item);
+					itemFound = true;
+					//this.checkPredefinedList(part, wordToken, textDocument, item);
 					if (itemFound) {
 						temp = currentItem.toLowerCase();
 						indicator = temp.compareTo(currentItem);
@@ -465,7 +482,8 @@ public class FeatureFunctionList {
 			while ((!finish) && (index<params.size())) {
 				item = params.get(index);
 				if (item.startsWith("$")) {
-					itemFound = this.checkPreDefinedList(part, wordToken, textDocument, item);
+					itemFound = true;
+					//this.checkPreDefinedList(part, wordToken, textDocument, item);
 					if (itemFound) {
 						temp = currentItem.toUpperCase();
 						indicator = temp.compareTo(currentItem);
@@ -633,25 +651,33 @@ public class FeatureFunctionList {
 
 	public boolean notin(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = true, finish = false, itemFound = false;
+		Document regexDocument = null;
 		Integer index = 0, sentenceIndex=0;
-		String currentItem = "", item="";
+		String currentItem = "", item="", itemName="";
+		List<String> wordList = null;
 		if ((wordToken!=null) && (params.size()>0)) {
-			             currentItem = General.getValue(part, wordToken);
-				                  sentenceIndex = wordToken.getSentence();
-						  while ((!finish) && (index<params.size())) {
-							  item = params.get(index);
-							  if (item.startsWith("$")) {
-								  itemFound = this.checkPreDefinedList(part, wordToken, textDocument, item);
-								  if (itemFound) {
-									  finish = true;
-									  found = false;
-									                       }
-							  } else if (item.equalsIgnoreCase(currentItem)) {
-								         finish = true;
-									        found = false;
-							  }
-							  index++; 
+			currentItem = General.getValue(part, wordToken);
+			sentenceIndex = wordToken.getSentence();
+			while ((!finish) && (index<params.size())) {
+				item = params.get(index);
+				if (item.startsWith("$")) {
+					itemName = item.substring(1,item.length());
+					if (this.isPredefinedList(itemName)) {
+                          wordList = this.getPredefinedList(itemName);
+						  if (wordList.contains(currentItem)) {
+							  finish = true;
 						  }
+					} else if (this.isPredefinedRegex(itemName)) {
+                              finish = functionCallback.doFunction(part, "definedregex", item, wordToken, textDocument);
+					}
+				} else if (item.equalsIgnoreCase(currentItem)) {
+						finish = true;
+				}
+				index++; 
+			}
+			if (finish) {
+				found = false;
+			}
 		}
 		return found;
 	}
@@ -733,6 +759,7 @@ public class FeatureFunctionList {
 					}
 					return found;
 	}
+	
 	public boolean nan(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
 		String currentWord = "";
@@ -741,12 +768,11 @@ public class FeatureFunctionList {
 			currentWord = wordToken.getToken();
 			try {
 				 value = Long.valueOf(currentWord);
-				  found = false;
 			} catch (Exception exception) {
 				found = true;
 			}
 		}
-		return !found;
+		return found;
 	}
 
 	public boolean punctuation(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
@@ -1266,11 +1292,6 @@ public class FeatureFunctionList {
 			}
 			return wordToken; 
 		}
-
-	public Boolean checkPreDefinedList(String part, WordToken wordToken, TextDocument TextDocument, String str) {
-		return true;
-
-	}
 
 }
 

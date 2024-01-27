@@ -94,36 +94,35 @@ public class FeatureFunction {
 		featureFunctionList.setDocumentStore(documentStore);
 	}
 
-	public Document getPreDefinedFeature(String name) {
-		return featureFunctionList.getPreDefinedFeature(name);
-	}
-
-	public List<String> getPreDefinedList(String name) {
-		return featureFunctionList.getPreDefinedList(name);
-	}
-
-	public Boolean regexExists(String name) {
-		Boolean exists = false;
-		Document document = null;
-		document = featureFunctionList.getPreDefinedFeature(name);
-		if ((document != null) && (document.getType().equalsIgnoreCase("regex"))) {
-           exists = true;
-		}
-		return exists;
-	}
-
-	public Boolean listExists(String name) {
-		Boolean exists = false;
-		exists = featureFunctionList.getWordStorage().listExists(name);
-		return exists;
-	}
-
-
 	public void setWordStorage(WordStorage wordStorage) {
 		featureFunctionList.setWordStorage(wordStorage);
 	}
 
-	public Boolean doFunction(String part, String name, String value, WordToken wordToken, TextDocument textDocument) {
+	public Document getPredefinedRegex(String name) {
+		Document document;
+		document = featureFunctionList.getPredefinedRegex(name);
+		return document;
+	}
+
+	public List<String> getPredefinedList(String name) {
+		List<String> alist;
+		alist = featureFunctionList.getPredefinedList(name);
+		return alist;
+	}
+
+	public Boolean isPredefinedRegex(String name) {
+		Boolean exists = false;
+		exists = featureFunctionList.isPredefinedRegex(name);
+		return exists;
+	}
+
+	public Boolean isPredefinedList(String name) {
+		Boolean exists = false;
+		exists = featureFunctionList.isPredefinedList(name);
+		return exists;
+	}
+
+	public Boolean doFunction(String part, String name, String value, WordToken wordToken, TextDocument textDocument, FunctionCallback functionCallback) {
 		Boolean found = false;
 		Class<?> classObj = null;
 		String content = "", description="";
@@ -140,6 +139,7 @@ public class FeatureFunction {
 		if (functionExists(name)) {
 			classObj = this.getClass();
 			try {
+				 featureFunctionList.setCallbackHandler(functionCallback);
 			     functionMethod = FeatureFunctionList.class.getMethod(name, String.class, WordToken.class, TextDocument.class, List.class);
 				 found = (Boolean)functionMethod.invoke(featureFunctionList, part, wordToken, textDocument, parameters); 
 			}

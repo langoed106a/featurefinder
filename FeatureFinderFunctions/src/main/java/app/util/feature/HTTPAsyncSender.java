@@ -88,14 +88,7 @@ public class HTTPAsyncSender {
                 }
             } else if (destination.startsWith("file")) {
                 destination = params.get("param1");
-                System.out.println("*****Destination:"+destination);
-                System.out.println("*****File:"+params.get("param2"));
                 if ((destination!=null) && (destination.length()>0)) {
-                    if (destination.endsWith("/")) {
-                        destination = destination + params.get("param2") + ".dat";
-                    } else {
-                        destination = destination + File.separator + params.get("param2") + ".dat";
-                    }
                     try {
                          message = writeToFile(destination, content);
                     } catch (Exception exception) {
