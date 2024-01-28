@@ -1,0 +1,21 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v2.5.3)
+
+2024-01-28 09:51:06.379  INFO 12162 --- [           main] a.util.feature.SpellCheckingApplication  : Starting SpellCheckingApplication v1.1 using Java 17.0.8 on localhost.localdomain with PID 12162 (/home/vboxuser/featurefinder/FeatureFinderSpellChecker/bin/FeatureFinderSpellChecker-1.1.jar started by vboxuser in /home/vboxuser/featurefinder/FeatureFinderSpellChecker/bin)
+2024-01-28 09:51:06.383  INFO 12162 --- [           main] a.util.feature.SpellCheckingApplication  : No active profile set, falling back to default profiles: default
+2024-01-28 09:51:10.016  INFO 12162 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8040 (http)
+2024-01-28 09:51:10.038  INFO 12162 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-01-28 09:51:10.044  INFO 12162 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.50]
+2024-01-28 09:51:10.338  INFO 12162 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-01-28 09:51:10.350  INFO 12162 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3524 ms
+2024-01-28 09:51:11.532  INFO 12162 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8040 (http) with context path ''
+2024-01-28 09:51:11.552  INFO 12162 --- [           main] a.util.feature.SpellCheckingApplication  : Started SpellCheckingApplication in 7.074 seconds (JVM running for 8.112)
+2024-01-28 09:51:36.554  INFO 12162 --- [nio-8040-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-01-28 09:51:36.554  INFO 12162 --- [nio-8040-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-01-28 09:51:36.555  INFO 12162 --- [nio-8040-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
