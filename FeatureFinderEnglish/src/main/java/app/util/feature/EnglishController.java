@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.util.ResourceUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
  
@@ -30,6 +31,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import java.io.File;
 
 import org.json.simple.JSONArray;
 
@@ -42,7 +45,9 @@ import io.swagger.annotations.ApiOperation;
 public class EnglishController { 
    private static final Logger logger=LoggerFactory.getLogger(EnglishController.class);
    private static String PROPERTIES_NAME="server.properties";
+   private static String EMOJI_LIST="emojis";
    private EnglishParser englishParser;
+   private Map<String, Emoji> emojiMap;
    private FeatureFunction featureFunction;
    private HTTPSyncSender syncSender;
    private HTTPAsyncSender asyncSender;
@@ -62,13 +67,19 @@ public class EnglishController {
    @PostConstruct
    public void initialise() {
 	    String properties_location = System.getProperty(PROPERTIES_NAME);
+		String resourcePath = "";
+		Document emojiDocument;
+		File file;
+		EmojiBuilder emojiBuilder = new EmojiBuilder();
         featureFunction = new FeatureFunction();
 		syncSender = new HTTPSyncSender(restTemplate);
         serviceLocator = new ServiceLocator(properties_location);
 		asyncSender = new HTTPAsyncSender(serviceLocator);
 		documentDatabase.setJdbcTemplate(jdbcTemplate);
 		wordStorage = new WordStorage(documentDatabase);
-		englishParser = new EnglishParser(applicationContext, wordStorage);
+		emojiDocument = wordStorage.getWordListByName(EMOJI_LIST);
+		emojiMap = emojiBuilder.build(emojiDocument);
+		englishParser = new EnglishParser(applicationContext, wordStorage, emojiMap);
 		objectMapper = new ObjectMapper();
    }
 		
@@ -83,6 +94,18 @@ public class EnglishController {
 			exception.printStackTrace();
 		}
       return jsonStr;
+    }
+
+	@RequestMapping(value = "/codepoint", method = RequestMethod.POST)
+    public String codePoint(@RequestBody String text ) { 
+		String codePointStr="";
+	    EmojiChecker emojiChecker = new EmojiChecker(emojiMap);
+		try {
+			 codePointStr = emojiChecker.getCodepoint(text);
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+      return codePointStr;
     }
 
 	@RequestMapping(value = "/asyncparsetext", method = RequestMethod.POST)

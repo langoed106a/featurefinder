@@ -22,7 +22,7 @@ public class DocumentDatabase {
 
     public Document getDocument(Integer id) {
         List<Document> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE id="+id,(resultSet, rowNum) -> new Document(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getBinaryStream("contents"),resultSet.getString("description"),resultSet.getString("label"),resultSet.getString("origin")));
-        if ((documents!=null) && (documents.size()>=0)) {
+        if ((documents!=null) && (documents.size()>0)) {
             return documents.get(0);
         } else {
             return null;
@@ -31,7 +31,7 @@ public class DocumentDatabase {
 
     public Document getDocumentById(Integer id) {
         List<Document> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE id="+id,(resultSet, rowNum)-> new Document(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getBinaryStream("contents"),resultSet.getString("description"),resultSet.getString("label"),resultSet.getString("origin")));
-        if ((documents!=null) && (documents.size()>=0)) {
+        if ((documents!=null) && (documents.size()>0)) {
             return documents.get(0);
         } else {
             return null;
@@ -40,7 +40,7 @@ public class DocumentDatabase {
 
     public Document getDocumentByName(String name) {
         List<Document> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE name=\""+name+"\"",(resultSet, rowNum)-> new Document(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getBinaryStream("contents"),resultSet.getString("description"),resultSet.getString("label"),resultSet.getString("origin")));
-        if ((documents!=null) && (documents.size()>=0)) {
+        if ((documents!=null) && (documents.size()>0)) {
             return documents.get(0);
         } else {
             return null;
@@ -70,7 +70,7 @@ public class DocumentDatabase {
 
     public List<Document> getDocumentByGroup(String groupname) {
         List<Document> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE type=\""+groupname+"\"",(resultSet, rowNum) -> new Document(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),resultSet.getBinaryStream("contents"),resultSet.getString("description"),resultSet.getString("label"),resultSet.getString("origin")));
-        if ((documents!=null) && (documents.size()>=0)) {
+        if ((documents!=null) && (documents.size()>0)) {
             return documents;
         } else {
             return null;
@@ -79,7 +79,7 @@ public class DocumentDatabase {
 
     public List<String> getDocumentNameList() {
         List<String> documentNameList = jdbcTemplate.query("SELECT name FROM featuredocumentstore WHERE type=\"list\"",(resultSet, rowNum) -> new String(resultSet.getString("name")));
-        if ((documentNameList!=null) && (documentNameList.size()>=0)) {
+        if ((documentNameList!=null) && (documentNameList.size()>0)) {
             return documentNameList;
         } else {
             return null;
@@ -89,12 +89,11 @@ public class DocumentDatabase {
     public List<Document> getDocumentByType(String type) {
         String contents="";
         List<Document> documents = jdbcTemplate.query("SELECT * FROM featuredocumentstore WHERE type=\""+type+"\"",(resultSet, rowNum) -> new Document(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("type"),new ByteArrayInputStream(contents.getBytes()),resultSet.getString("description"),resultSet.getString("label"),resultSet.getString("origin")));
-        if ((documents!=null) && (documents.size()>=0)) {
+        if ((documents!=null) && (documents.size()>0)) {
             return documents;
         } else {
             return null;
         }
     }
-
 
 }

@@ -45,13 +45,18 @@ public class EnglishParser {
     private Boolean termsLoaded;
     private SentenceSplitterNLP sentenceSplitter;
     private WebApplicationContext applicationContext;
+    private Map<String, Emoji> emojiMap;
+    private EmojiChecker emojiChecker;
     private WordStorage wordStorage;
    
-    public EnglishParser(WebApplicationContext applicationContext, WordStorage wordStorage) {
+    public EnglishParser(WebApplicationContext applicationContext, WordStorage wordStorage, Map<String, Emoji> emojiMap) {
         Properties props = new Properties();
         this.applicationContext = applicationContext;
         this.wordStorage = wordStorage;
+        this.emojiMap = emojiMap;
+        this.emojiChecker = new EmojiChecker(emojiMap);
         sentenceSplitter = new SentenceSplitterNLP(applicationContext);
+
         try {
                props.setProperty("annotators","tokenize,ssplit,pos,lemma,parse");
                props.setProperty("tokenize.options","ptb3Escaping=false");
@@ -70,21 +75,32 @@ public class EnglishParser {
         List<CoreLabel> coreLabelList=null;
         Sentence sentence = null;
         String[] wordParts = null, objectParts = null;
-        String lemma="", tag="", token="", dependency="", endofline="", graphOfText="", storedWord="", subject="", object="", action="";
+        String str="",lemma="", tag="", token="", dependency="", endofline="", graphOfText="", storedWord="", subject="", object="", action="", newline="";
         TextDocument textDocument = new TextDocument();
         List<WordToken> wordTokenList = null;
         List<WordToken> tokenList = null;
         List<String> wordList=null;
+        List<UTFCharacter> characterList=null;
+        Character ch=null;
+        char[] charArray = null;
         List<String> sentences = this.getSentences(text);
         WordToken wordToken=null, itemToken=null;
-        System.out.println("*****************Text*****************");
-        System.out.println(text);
-        System.out.println("********Number of sentence:"+sentences.size());
         for (String line:sentences) {
+            /*
+             characterList = emojiChecker.getUTFList(line);
+             for (UTFCharacter character: characterList) {
+                if (character.getType().equalsIgnoreCase("emoji")) {
+                    charArray = Character.toChars(0x1F600);
+                    ch = charArray[0];
+                } else {
+                    ch = character.getCharacter();
+                }
+                newline = newline + ch;
+             }
+             */
              document = new Annotation(line);
              stanfordParser.annotate(document);
              wordTokenList = new ArrayList<>();
-             System.out.println("********Line:"+line);
              for (CoreLabel item: document.get(TokensAnnotation.class)) {
                   tag = item.get(CoreAnnotations.PartOfSpeechAnnotation.class);
                   token = item.originalText();
