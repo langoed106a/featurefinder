@@ -91,7 +91,7 @@ public class RemoteAnalyzer {
 		HttpHeaders headers = null;
 		HttpEntity<String> httpEntity = null;
 		String destinationUrl = serviceLocator.getService(SERVICE_NAME);
-		String result="";
+		String result="", response="", filename=token+".csv";
 		String urlencodedtext="";
 		if (destinationUrl != null) {
            headers = new HttpHeaders();
@@ -100,7 +100,7 @@ public class RemoteAnalyzer {
 		   destinationUrl = destinationUrl.replace("%1","getresults?token="+token+"&runname="+runname+"&model="+model); 
            result = restTemplate.getForObject(destinationUrl, String.class);
 		}
-	 return result;	   
+		return result; 
     }
 
 	public String getResultsById(String runid, String model) {	

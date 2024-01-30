@@ -1,0 +1,26 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v2.5.3)
+
+2024-01-30 20:38:07.687  INFO 5976 --- [           main] app.util.feature.RegexApplication        : Starting RegexApplication v1.1 using Java 17.0.8 on localhost.localdomain with PID 5976 (/home/vboxuser/featurefinder/FeatureFinderInterface/bin/FeatureFinderInterface-1.1.jar started by vboxuser in /home/vboxuser/featurefinder/FeatureFinderInterface/bin)
+2024-01-30 20:38:07.691  INFO 5976 --- [           main] app.util.feature.RegexApplication        : No active profile set, falling back to default profiles: default
+2024-01-30 20:38:11.020  INFO 5976 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2024-01-30 20:38:11.038  INFO 5976 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-01-30 20:38:11.039  INFO 5976 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.50]
+2024-01-30 20:38:11.319  INFO 5976 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-01-30 20:38:11.320  INFO 5976 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3435 ms
+2024-01-30 20:38:15.264  INFO 5976 --- [           main] pertySourcedRequestMappingHandlerMapping : Mapped URL path [/v2/api-docs] onto method [springfox.documentation.swagger2.web.Swagger2Controller#getDocumentation(String, HttpServletRequest)]
+2024-01-30 20:38:15.976  INFO 5976 --- [           main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2024-01-30 20:38:16.611  INFO 5976 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2024-01-30 20:38:16.616  INFO 5976 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2024-01-30 20:38:16.715  INFO 5976 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2024-01-30 20:38:16.944  INFO 5976 --- [           main] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2024-01-30 20:38:18.010  INFO 5976 --- [           main] app.util.feature.RegexApplication        : Started RegexApplication in 11.247 seconds (JVM running for 12.228)
+2024-01-30 20:38:25.541  INFO 5976 --- [nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-01-30 20:38:25.542  INFO 5976 --- [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-01-30 20:38:25.544  INFO 5976 --- [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms

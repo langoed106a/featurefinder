@@ -9,7 +9,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.net.URLDecoder;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
@@ -31,6 +34,9 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
 
 import app.util.database.DocumentDatabase;
 import app.util.feature.FeatureDocument;
@@ -211,19 +218,27 @@ public class RegexService {
       return response;
     }
 
-	@RequestMapping(value = "/modelresults", method = RequestMethod.GET)
-    public String getModelResults(@RequestParam String token, @RequestParam String runname, @RequestParam String model) { 
+	@RequestMapping(value = "/modelresults", method = RequestMethod.GET, produces = "text/csv; charset=UTF-8")
+	public ResponseEntity<String> getModelResults(@RequestParam String token, @RequestParam String runname, @RequestParam String model) {
 	  featureFunction.initialise();
 	  String response="";
+	  PrintWriter printWriter = null;
+	  StringWriter stringWriter = new StringWriter();
 	  if ((token!=null) && (token.length()>0)) {
 	      response = remoteAnalyzer.getResults(token, runname, model);
-	  }	 
-	  try {
-           response = URLEncoder.encode(response, "UTF-8");
-	  } catch (Exception exception) {
-		  exception.printStackTrace();
-	  } 
-      return response;
+	      try {
+			      printWriter = new PrintWriter(stringWriter);
+			      printWriter.println(response);
+				  printWriter.flush();
+		   } catch (Exception exception) {//
+			    response = "{\"error\":\"Failed to build results file:"+token+".dat\"}";
+ 		   }
+     
+	 }
+     return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, "text/csv; charset=UTF-8")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+token+".csv\"")
+                .body(stringWriter.toString());
     }
 
 	@RequestMapping(value = "/addmodel", method = RequestMethod.GET)
@@ -458,9 +473,11 @@ public class RegexService {
 					} else {
 		                documents = documentDatabase.getDocumentByType(someType);
 					}
-				    for (Document document:documents) {
-					    allDocuments.add(document);
-				    }
+					if (documents!=null) {
+				        for (Document document:documents) {
+					        allDocuments.add(document);
+				        }
+					}
 				    if (someType.equalsIgnoreCase("model")) {
 					    tempDocument = new Document("", "none", "model", "", "");
 					    allDocuments.add(tempDocument);
