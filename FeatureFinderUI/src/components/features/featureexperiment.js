@@ -163,11 +163,12 @@ function FeatureExperiment() {
                   <Form.Control type="text" placeholder="$matches=3" defaultValue={form.post_input} ref={postcondition} />
                   <Form.Label>Invariant</Form.Label>
                   <Form.Control type="text" placeholder="<token='word'>" defaultValue={form.inv_input}  ref={invariant} />
+                  <Form.Label>Language</Form.Label>
                   <Form.Select aria-label="Default select example" defaultValue={form.lang_input} ref={language}>
-                    <option>Language</option>
                     <option value="1">English</option>
                     <option value="2">Chinese</option>
                     <option value="3">Russian</option>
+                    <option value="4">Pinyin</option>
                   </Form.Select>
                   <Row>
                     <Col>

@@ -81,7 +81,7 @@ const storeModel = createStore (
            }),
            get_results_list: thunk(async (actions, form) => {
             try {
-              const res = await axios.get(service_url+'/modelresults?runname='+form.runname+"&modelname="+form.modelname);
+              const res = await axios.get(service_url+'/modelresults?token='+form.token+"&runname="+form.runname+"&model="+form.model);
               actions.set_results_list(res?.data);
             } catch (error) {
               console.log(error);
