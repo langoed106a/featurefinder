@@ -3,6 +3,8 @@ package app.util.feature;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class WordToken {
     private String postag;
     private String token;
@@ -12,7 +14,9 @@ public class WordToken {
     private Integer sentence;
     private String spacingleft;
     private String wordtype;
+    @JsonProperty("spellCorrectionPostag")
     private String spellcorrectionPostag;
+    @JsonProperty("spellCorrectionToken")
     private String spellcorrectionToken;
 
     public WordToken() {
