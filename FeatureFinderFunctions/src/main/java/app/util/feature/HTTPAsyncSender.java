@@ -61,7 +61,7 @@ public class HTTPAsyncSender {
     public String sendpost(String documentType, String content, Map<String, String> params) {
         BoundRequestBuilder builder=null;
         Future<String> reply=null;
-        String message="500", destination="";
+        String message="500", destination="", filename="";
         List<String> paramList = null;
         Map<String, List<String>> queryParams=null;
         destination = serviceLocator.getService(documentType);
@@ -88,8 +88,14 @@ public class HTTPAsyncSender {
                 }
             } else if (destination.startsWith("file")) {
                 destination = params.get("param1");
+                filename = params.get("param2");
                 if ((destination!=null) && (destination.length()>0)) {
                     try {
+                         if (destination.endsWith("/")) {
+                             destination = destination+filename+".dat";
+                         } else {
+                             destination = destination+"/"+filename+".dat";
+                         }
                          message = writeToFile(destination, content);
                     } catch (Exception exception) {
                         message="500";
