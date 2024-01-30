@@ -66,15 +66,15 @@ public class HTTPAsyncSender {
         Map<String, List<String>> queryParams=null;
         destination = serviceLocator.getService(documentType);
         if (destination !=null) {
-            if (params!=null) {
-                queryParams = new HashMap<>();
-                for (String key:params.keySet()) {
-                    paramList = new ArrayList<>();
-                    paramList.add(params.get(key));
-                    queryParams.put(key, paramList);
-                }
-            }
             if (destination.startsWith("http")) {
+                if (params!=null) {
+                    queryParams = new HashMap<>();
+                    for (String key:params.keySet()) {
+                        paramList = new ArrayList<>();
+                        paramList.add(params.get(key));
+                        queryParams.put(key, paramList);
+                    }
+                }
                 builder =  httpClient.preparePost(destination);
                 builder.addHeader("Content-type", "application/json;charset=utf-8");
                 builder.addHeader("Accept", "application/json");
