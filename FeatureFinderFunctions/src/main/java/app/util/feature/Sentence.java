@@ -11,6 +11,9 @@ public class Sentence {
     @JsonProperty("sentence")
     public List<WordToken> tokenList;
 
+    @JsonProperty("text")
+    public String text;
+
     public Sentence() {
         tokenList = new ArrayList<>();
     }
@@ -24,8 +27,16 @@ public class Sentence {
         tokenList=line;
     }
 
+    public String getText() {
+        return text;
+    }
+
+    public void setTextList(String text) {
+        this.text=text;
+    }
+
     public String toString() {
-        String line="";
+        String line="text:"+text+",";
         for (WordToken wordToken:tokenList) {
             line.join(" ", wordToken.getToken());
         }
