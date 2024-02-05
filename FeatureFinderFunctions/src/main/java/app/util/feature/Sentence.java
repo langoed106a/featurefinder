@@ -31,7 +31,7 @@ public class Sentence {
         return text;
     }
 
-    public void setTextList(String text) {
+    public void setText(String text) {
         this.text=text;
     }
 
