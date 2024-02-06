@@ -24,6 +24,7 @@ public class FeatureFunctionList {
 	private WordStorage wordStorage;
 	private DocumentStore documentStore;
 	private List<String> definedRegexList;
+	private Integer wordCount;
 
 	public FeatureFunctionList() {
 		String[] parts=null;
@@ -88,7 +89,6 @@ public class FeatureFunctionList {
 		String description="";
 		String[] parts=null;
 	    if (wordStorage.listExists(name)) {
-		    sentence = wordToken.getSentence();
 		    if (wordStorage.wordExists(name, wordToken.getToken())) {
 			    found = true;
 		    }
@@ -1278,10 +1278,12 @@ public class FeatureFunctionList {
 		Integer intValue = 0, numberWords = 0, code = 0;
 		List<WordToken> sentence = null;
 		WordToken nextToken = null;
-		sentence = textDocument.getSentenceAtIndex(sentenceIndex);
-		if ((params.size()==1) && (wordIndex==0)) {
+		
+		if (params.size()==1) {
+			wordCount = 0;
 			param = params.get(0);
 			param = param.toLowerCase();
+			sentence = textDocument.getSentenceAtIndex(sentenceIndex);
 			if ((param.startsWith("eq")) || (param.startsWith("lt")) || (param.startsWith("gt"))) {
 				operator = param.substring(0,2);
 				value = param.substring(2, param.length());
@@ -1319,8 +1321,7 @@ public class FeatureFunctionList {
 							}
 					}
 				}
-			}
-			
+			}	
 		}
 		return found;
 	}

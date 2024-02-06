@@ -65,7 +65,7 @@ public class WordStorage {
 		this.restTemplate = restTemplate;
     } 
     
-    public Boolean wordExists(String word, String listname) {	
+    public Boolean wordExists(String listname, String word) {	
     	String destinationUrl = serviceLocator.getService(SERVICE_NAME); 
     	Boolean response=false;
 		HttpHeaders headers = null;

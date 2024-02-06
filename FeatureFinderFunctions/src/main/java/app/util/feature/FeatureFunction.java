@@ -147,9 +147,10 @@ public class FeatureFunction {
 			}
 			catch (Exception exception) {
 				logger.error("Unable to call function:"+name);
+				exception.printStackTrace();
 			}
 		} else {
-			found = featureFunctionList.checkExists(part, name, wordToken, textDocument, parameters);
+			found = featureFunctionList.checkExists(name, part, wordToken, textDocument, parameters);
 		}
 	   return found;
 	}
