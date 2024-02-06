@@ -62,7 +62,8 @@ import app.util.feature.TextDocument;
 @RestController
 public class RegexService { 
 	private static String RESULTS_LOCATION="/tmp";
-	private static String DEFAULT_LANGUAGE="english";
+	private static String DEFAULT_LANGUAGE="1";
+	private static String[] LANGUAGE_LIST={"","english","chinese","russian","pinyin"};
 	private static String DEFAULT_GRANULARITY="text";
 	private static String PROPERTIES_NAME="server.properties";
 	private static final Logger logger=LoggerFactory.getLogger(RegexService.class);
@@ -132,7 +133,7 @@ public class RegexService {
 	  RegexDocumentList regexDocumentList = null;
 	  String result="", matchesStr="", text="", tokensStr="", entry="", regex="", highlight="", language="", granularity="", precondition="", postcondition="", invariant="";
 	  String[] parts=null;	
-	  Integer matchcount = 0;
+	  Integer matchcount = 0, languageId = 0;
 	  JSONParser jsonParser=null;
 	  JSONObject jsonObject=null;
 	  List<Match> matches=null;
@@ -145,8 +146,6 @@ public class RegexService {
 	  try {
          jsonParser = new JSONParser();
 		 object = jsonParser.parse(body);
-		 System.out.println("***Body:");
-		 System.out.println(body);
 	     if (object != null) {
 			 object = jsonParser.parse(body);
              jsonObject = (JSONObject)object;
@@ -175,9 +174,11 @@ public class RegexService {
 				 if ((granularity==null) || (granularity.length()==0)) {
 					granularity = DEFAULT_GRANULARITY;
 				 }
-				 if ((language!=null) && (language.length()>0)) {
+				 if ((language==null) || (language.length()==0)) {
 					language = DEFAULT_LANGUAGE;
-				 }
+				 } 
+				 languageId = Integer.valueOf(language);
+				 language = LANGUAGE_LIST[languageId];
 				
 
 				 if ((regex!=null) && (regex.length()>0) && (text!=null) && (text.length()>0)) {
@@ -195,7 +196,7 @@ public class RegexService {
 					regexDocumentList.setMessageType("add");
 
 					result = remoteProcessor.processFeature(regexDocumentList, "experiment");
-					result = remoteProcessor.processText(text, "experiment");
+					result = remoteProcessor.processText(text, language, "experiment");
 		        }
 			  }  
 		    }
@@ -461,8 +462,9 @@ public class RegexService {
 		 List<Document> allDocuments = new ArrayList<>();
 		 List<String> typeList = new ArrayList<>();
 		 Document tempDocument = null;
-		 String someType="";
-		 String[] allTypes = type.split(",");
+		 String someType="", function="";
+		 String[] allTypes = type.split(","), parts = null;
+	     String[] functionList = FeatureFunction.FUNCTION_FEATURES;
 		 if (allTypes.length>0) {
 			for (int i=0; i<allTypes.length; i++) {
 				someType = allTypes[i];
@@ -470,6 +472,14 @@ public class RegexService {
 					typeList.add(someType);
 					if (someType.equalsIgnoreCase("list")) {
 						documents = remoteParser.getDocuments(DEFAULT_LANGUAGE, someType);
+					} else if (someType.equalsIgnoreCase("function")) {
+						      documents = new ArrayList<>();
+					          for (int j=0; j<functionList.length; j++) {
+			                       function = functionList[j];
+			                       parts = function.split(":");
+                                   tempDocument = new Document(null, parts[0], "function", parts[3], parts[1]);
+                                   documents.add(tempDocument);
+			                  }
 					} else {
 		                documents = documentDatabase.getDocumentByType(someType);
 					}

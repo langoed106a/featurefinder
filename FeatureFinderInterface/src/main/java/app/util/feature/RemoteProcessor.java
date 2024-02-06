@@ -63,19 +63,14 @@ public class RemoteProcessor {
 		httpAsyncSender = new HTTPAsyncSender(serviceLocator);
     } 
 
-	public String processText(String text, String runname) {
+	public String processText(String text, String language, String runname) {
 		Map<String, String> params=null;
-		String languageUrl = serviceLocator.getService(SERVICE_SYNC_PARSER);
+		String languageKey = SERVICE_SYNC_PARSER + "_" + language;
+		String languageUrl = serviceLocator.getService(languageKey);
 		String processorUrl = serviceLocator.getService(SERVICE_SYNC_PROCESS_TEXT);
 		String response = "";
 		try {
-			  System.out.println("***Sending***");
-			  System.out.println(text);
-			  System.out.println("*************");
 			  response=httpSyncSender.sendpost(languageUrl, text);
-			  System.out.println("***From Parser***");
-			  System.out.println(response);
-			  System.out.println("*************");
 			  if (response!=null) {
 				   processorUrl = processorUrl + "?runname="+runname;
                    response=httpSyncSender.sendpost(processorUrl, response);
