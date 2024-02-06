@@ -26,7 +26,7 @@ public class General {
            wordToken = tokenList.get(index);
            if (wordToken.getIndex()==tokenIndex) {
                finish = true;
-               foundToken = wordToken;
+               foundToken = wordToken.clone();
            }
            index++;    
        }

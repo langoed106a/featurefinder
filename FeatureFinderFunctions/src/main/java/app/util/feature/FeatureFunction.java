@@ -27,6 +27,7 @@ public class FeatureFunction {
 						                       "anycase:alters text so that its case insensitive:function:none:function",
 										       "anyword:represents any generic word:function:none:function",
 											   "anything:represents any generic word, symbol etc:function:none:function",
+											   "badconsonant:identifies a mispelt word that uses an incorrect consonant:function:none:function",
 											   "conjunction:identifies whether a phrase is a conjunction:function:none:function",
 											   "causative:identifies whether a phrase is a causative:function:none:function",
 											   "coordinatingconjunction:identifies whether a phrase is a coordinating conjunction:function:none:function",
@@ -78,6 +79,7 @@ public class FeatureFunction {
 											   "validafterreplace:identifies whether a word is still a known word when text is replaced:function:none:function",
 											   "verblinked:identifies whether a word islinked to a verb:function:none:function",
 											   "verb:identifies whether a word is a verb:function:none:function",
+											   "wordsinasentence:identifies whether the number of words in a sentence is below or greater than a given value:function:none:function",
 											   "wordslice:removes a portion of a word and check whether the remaining is aknown token,postag or lemma:function:none:function"};
 
 	private FeatureFunctionList featureFunctionList;

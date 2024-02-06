@@ -127,6 +127,34 @@ public class FeatureFunctionList {
 		      return found; 
 	}
 
+    public boolean badconsonant(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
+        boolean found = false;
+		String word = wordToken.getToken(), temp = "", goodWord = "", consonant = "";
+		String[] parts = null;
+		String[] badconsonants={"dly","scr","shr","str","thr","ght","mpl"};
+		Integer charIndex = 0, index = 0;
+		if (!wordStorage.wordExists("commonword", word)) {
+			temp = word;
+            temp = temp.replaceAll("[AEIOUaeiou]","a");
+            parts = temp.split("a");
+            for (String partWord:parts) {
+				index=0;
+			    while ((index<badconsonants.length) && (!found)) {
+                    consonant = badconsonants[index];
+					charIndex = consonant.indexOf(partWord);
+					if ((charIndex>0) && (partWord.length()<consonant.length())) {
+                        goodWord = word.replace(partWord, consonant);
+						if (wordStorage.wordExists("commonword", goodWord)) {
+							found = true;
+						}
+					}
+				    index++;
+				}
+			}
+		}
+        return found;
+    }
+
 	public boolean emoji(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
         boolean found = false;
 		String word = wordToken.getToken();
@@ -1242,6 +1270,60 @@ public class FeatureFunctionList {
 		return found;
 	}
 
+	public boolean wordsinasentence(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
+		boolean found = false, isAWord = false;
+		String param = "", value = "", word = "", operator = "";
+		Integer wordIndex = wordToken.getIndex();
+		Integer sentenceIndex = wordToken.getSentence();
+		Integer intValue = 0, numberWords = 0, code = 0;
+		List<WordToken> sentence = null;
+		WordToken nextToken = null;
+		sentence = textDocument.getSentenceAtIndex(sentenceIndex);
+		if ((params.size()==1) && (wordIndex==0)) {
+			param = params.get(0);
+			param = param.toLowerCase();
+			if ((param.startsWith("eq")) || (param.startsWith("lt")) || (param.startsWith("gt"))) {
+				operator = param.substring(0,2);
+				value = param.substring(2, param.length());
+				try {
+				      intValue = Integer.valueOf(value); 
+				} catch (Exception exception) {
+				      intValue = -1;
+				}
+				if (intValue>=0) {
+                    for (WordToken token:sentence) {
+						word = token.getToken();
+						isAWord = true;
+						for (int i = 0; i < word.length(); i++) {
+							code = (int) word.charAt(i);
+                            if (!(code > 64 && code < 91) && // upper alpha (A-Z)
+                                !(code > 96 && code < 123)) { // lower alpha (a-z)
+						        isAWord=false;
+							} 
+					    }
+						if (isAWord) {
+                            numberWords++;
+						}
+					}
+					if (operator.equalsIgnoreCase("eq")) {
+						if (numberWords==intValue) {
+							found = true;
+						}
+					} else if (operator.equalsIgnoreCase("lt")) {
+							if (numberWords<intValue) {
+								found = true;
+							}
+					} else if (operator.equalsIgnoreCase("gt")) {
+							if (numberWords>intValue) {
+								found = true;
+							}
+					}
+				}
+			}
+			
+		}
+		return found;
+	}
 
 	public boolean notnext(String part, WordToken wordToken, TextDocument textDocument, List<String> params) {
 		boolean found = false;
