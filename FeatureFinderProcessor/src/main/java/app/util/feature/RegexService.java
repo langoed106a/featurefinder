@@ -66,8 +66,7 @@ public class RegexService {
              jsonStr = regexResult.toJson();
              response = asyncSender.sendpost("regexresult", jsonStr, params);
         } catch(Exception exception) {
-            exception.printStackTrace();
-            logger.error("Error: async regex error");
+            logger.error("Error: async regex error"+exception.getMessage());
         }		
         return CompletableFuture.completedFuture(response);
     }

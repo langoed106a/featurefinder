@@ -1,0 +1,23 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v2.5.3)
+
+2024-02-06 13:03:46.624  INFO 13031 --- [           main] a.u.feature.FeatureProcessorApplication  : Starting FeatureProcessorApplication v1.1 using Java 17.0.8 on localhost.localdomain with PID 13031 (/home/vboxuser/featurefinder/FeatureFinderProcessor/bin/FeatureFinderProcessor-1.1.jar started by vboxuser in /home/vboxuser/featurefinder/FeatureFinderProcessor/bin)
+2024-02-06 13:03:46.628  INFO 13031 --- [           main] a.u.feature.FeatureProcessorApplication  : No active profile set, falling back to default profiles: default
+2024-02-06 13:03:51.401  INFO 13031 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8090 (http)
+2024-02-06 13:03:51.428  INFO 13031 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-02-06 13:03:51.429  INFO 13031 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.50]
+2024-02-06 13:03:51.627  INFO 13031 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-02-06 13:03:51.627  INFO 13031 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 4805 ms
+2024-02-06 13:03:54.239  INFO 13031 --- [           main] pertySourcedRequestMappingHandlerMapping : Mapped URL path [/v2/api-docs] onto method [springfox.documentation.swagger2.web.Swagger2Controller#getDocumentation(String, HttpServletRequest)]
+2024-02-06 13:03:54.515  INFO 13031 --- [           main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2024-02-06 13:03:54.720  INFO 13031 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8090 (http) with context path ''
+2024-02-06 13:03:54.721  INFO 13031 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Context refreshed
+2024-02-06 13:03:54.798  INFO 13031 --- [           main] d.s.w.p.DocumentationPluginsBootstrapper : Found 1 custom documentation plugin(s)
+2024-02-06 13:03:54.870  INFO 13031 --- [           main] s.d.s.w.s.ApiListingReferenceScanner     : Scanning for api listing references
+2024-02-06 13:03:55.154  INFO 13031 --- [           main] a.u.feature.FeatureProcessorApplication  : Started FeatureProcessorApplication in 9.26 seconds (JVM running for 10.139)
