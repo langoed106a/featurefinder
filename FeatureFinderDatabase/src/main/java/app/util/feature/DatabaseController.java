@@ -56,17 +56,10 @@ public class DatabaseController {
 		List<Document> documents = new ArrayList<>();
 		String[] parts=null;
 		String function="";
-		if (type.equalsIgnoreCase(FUNCTION_TYPE)) {
-            for (int i=0; i<functionList.length; i++) {
-			   function = functionList[i];
-			   parts = function.split(":");
-               document = new Document(null, parts[0], FUNCTION_TYPE, parts[3], parts[1]);
-               documents.add(document);
-			}
-		} else {
-		      documents = documentDatabase.getDocumentByType(type);
+        documents = documentDatabase.getDocumentByType(type);
+		if (documents!=null) {
+		    documentList.setDocumentList(documents);
 		}
-		documentList.setDocumentList(documents);
 		return documentList;
 	}
 
