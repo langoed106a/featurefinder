@@ -325,24 +325,13 @@ public class TextLogicBaseExpression extends Arg<WordToken> implements FunctionC
          found = featureFunction.doFunction(part,functionName,value,wordToken,textBlock.getTextDocument(), this);
          return found;
       }
-     
-      private Boolean checkPreDefinedList(String part, String valueType, String value, WordToken wordToken, TextDocument textDocument) {
+  
+     private Boolean checkPreDefinedList(String part, String valueType, String value, WordToken wordToken, TextDocument textDocument) {
           Boolean found=false;
-          Integer index=0;
-          List<String> wordList = null; 
-          String word = "", currentWord = "";
-          String[] words = null;
+          String functionName = "";
           if ((wordToken != null) && (valueType.equalsIgnoreCase("predefinedlist"))) {  
-              currentWord = wordToken.getToken();
-              value = value.substring(1, value.length());
-              wordList = featureFunction.getPredefinedList(value);
-              while ((!found) && (index<wordList.size())) {
-                word = wordList.get(index);
-                if (word.equalsIgnoreCase(currentWord)) {
-                    found = true;
-                }
-                index++;
-              }
+              functionName = value.substring(1, value.length());
+              found = featureFunction.doFunction(part,functionName,value,wordToken,textDocument, this);
           }    
         return found;
        }
