@@ -20,6 +20,7 @@ import edu.washington.cs.knowitall.regex.Match;
 
 public class TextLogicBaseExpression extends Arg<WordToken> implements FunctionCallback {
   private static String[] PART_LIST = {"firsttoken","FIRSTTOKEN","firstpostag","FIRSTPOSTAG","postag","POSTAG","token","TOKEN","lemma","LEMMA","type","TYPE","text","TEXT","phrase","PHRASE"};
+  private static Integer FIRST_TOKEN_INDEX=0;
   private CustomRegularExpressionParser customRegularExpressionParser;
   private List<Match<WordToken>> customMatches;
   private String part;
@@ -51,18 +52,16 @@ public class TextLogicBaseExpression extends Arg<WordToken> implements FunctionC
   public boolean apply(WordToken wordToken) {
     Boolean found = false;
     Integer index = 0, position = 0;
+    WordToken tempToken = null;
     if ((valueType!=null) && (part!=null)) {
         if (part.equalsIgnoreCase("text")) {
              found = this.checkText(part, value, valueType, wordToken, textBlock);
         } else if (part.equalsIgnoreCase("firsttoken")) {
-             if (isFirstPosition(textBlock, wordToken)) {
-                 found=applyWordToken("token", value, valueType, wordToken, textBlock);
-            }
+                 tempToken = General.getWordToken(FIRST_TOKEN_INDEX, textBlock.getTextDocument().getSentenceAtIndex(wordToken.getSentence()));
+                 found=applyWordToken("token", value, valueType, tempToken, textBlock);
         } else if (part.equalsIgnoreCase("firstpostag")) {
-                 index = wordToken.getIndex();
-                if (isFirstPosition(textBlock, wordToken)) {
-                    found=applyWordToken("postag", value, valueType, wordToken, textBlock);
-                }
+                 tempToken = General.getWordToken(FIRST_TOKEN_INDEX, textBlock.getTextDocument().getSentenceAtIndex(wordToken.getSentence()));
+                 found=applyWordToken("postag", value, valueType, tempToken, textBlock);
         } else {  
                 found=applyWordToken(part, value, valueType, wordToken, textBlock);
         }  
@@ -119,7 +118,6 @@ public class TextLogicBaseExpression extends Arg<WordToken> implements FunctionC
             }
         }
     }
-    System.out.println("***Type:"+type+"    Value"+value);
    return type;
   };
 
@@ -219,7 +217,6 @@ public class TextLogicBaseExpression extends Arg<WordToken> implements FunctionC
         if (prefix.equalsIgnoreCase("$")) {
            value = value.substring(1, value.length());
            exists = featureFunction.isPredefinedRegex(value);
-           System.out.println("***Value:"+value+"   Exists:"+exists);
            if (exists) {
             type="predefinedregex";
            }
@@ -278,21 +275,6 @@ public class TextLogicBaseExpression extends Arg<WordToken> implements FunctionC
      sentenceIndex = wordToken.getSentence();
      found = General.theSame(part, wordToken, textBlock.getTextDocument().getSentenceAtIndex(sentenceIndex), value);
      return found;
-      }
-     
-      private Boolean isFirstPosition(TextBlock textBlock, WordToken wordToken) {
-         List<WordToken> sentence,test;
-         Boolean firstPosition = false;
-         WordToken firstWordToken = null;
-         Integer sentenceNumber = wordToken.getSentence();
-         sentence = textBlock.getTextDocument().getSentenceAtIndex(sentenceNumber);
-         if ((sentence !=null) && (sentence.size()>0)) {
-              firstWordToken = sentence.get(0);
-              if (firstWordToken.getIndex()==wordToken.getIndex()) {
-                    firstPosition = true;
-              }
-         }
-        return firstPosition;
       }
      
       private Boolean checkText(String part, String value, String valueType, WordToken wordToken, TextBlock textBlock) {
