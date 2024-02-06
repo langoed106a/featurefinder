@@ -281,11 +281,11 @@ public class TextLogicBaseExpression extends Arg<WordToken> implements FunctionC
       }
      
       private Boolean isFirstPosition(TextBlock textBlock, WordToken wordToken) {
-         List<WordToken> sentence;
+         List<WordToken> sentence,test;
          Boolean firstPosition = false;
          WordToken firstWordToken = null;
          Integer sentenceNumber = wordToken.getSentence();
-         sentence = textBlock.getTextDocument().getSentenceAtIndex(wordToken.getIndex());
+         sentence = textBlock.getTextDocument().getSentenceAtIndex(sentenceNumber);
          if ((sentence !=null) && (sentence.size()>0)) {
               firstWordToken = sentence.get(0);
               if (firstWordToken.getIndex()==wordToken.getIndex()) {
