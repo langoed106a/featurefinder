@@ -76,7 +76,7 @@ public class EnglishController {
         serviceLocator = new ServiceLocator(properties_location);
 		asyncSender = new HTTPAsyncSender(serviceLocator);
 		documentDatabase.setJdbcTemplate(jdbcTemplate);
-		wordStorage = new WordStorage(documentDatabase);
+		wordStorage = new WordStorage(documentDatabase, applicationContext);
 		emojiDocument = wordStorage.getWordListByName(EMOJI_LIST);
 		emojiMap = emojiBuilder.build(emojiDocument);
 		englishParser = new EnglishParser(applicationContext, wordStorage, emojiMap);

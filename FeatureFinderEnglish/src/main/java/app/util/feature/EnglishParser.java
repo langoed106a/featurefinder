@@ -110,6 +110,7 @@ public class EnglishParser {
                   wordTokenList.add(wordToken);
              }
              sentence = new Sentence();
+             sentence.setText(line);
              sentence.setTokenList(wordTokenList);
              textDocument.addSentence(sentence);
              sentenceIndex++;

@@ -2,6 +2,7 @@ package app.util.feature;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
@@ -34,14 +35,21 @@ import app.util.database.DocumentDatabase;
 public class WordStorage {
    private static final Logger logger=LoggerFactory.getLogger(WordStorage.class);
    private static String WORD_LIST_FOLDER="wordlists";
+   private static String DICTIONARY="commonword";
    private static String WORD_FILE_EXTENSION=".dat";
+   private WebApplicationContext applicationContext;
    private BigInteger[] commonHashWords;
    private Map<String, List<String>> wordsMap;
    private DocumentDatabase documentDatabase;
    private PostagSearch postagSearch;
        
-   public WordStorage(DocumentDatabase documentDatabase) {
+   public WordStorage(DocumentDatabase documentDatabase, WebApplicationContext applicationContext) {
+        List<String> wordList = null;
         this.documentDatabase = documentDatabase;
+        this.applicationContext = applicationContext;
+        wordsMap = new HashMap<>();
+        wordList = this.loadResource(DICTIONARY+".dat");
+        wordsMap.put(DICTIONARY, wordList);
     }
 
     public List<String> getNameofWordLists() {
@@ -81,10 +89,17 @@ public class WordStorage {
         ObjectMapper objectMapper = null;
         String contents="", value="";
         List<String> listType = null;
-        document = documentDatabase.getDocumentByName(listname);
-        if (document != null) {
-            contents = document.getContents();
-            try {
+        if (listname.equalsIgnoreCase(DICTIONARY)) {
+            listType = wordsMap.get(DICTIONARY);
+            word = word.toLowerCase();
+            if (listType.contains(word)) {
+                exists = true;
+            }
+        } else {
+           document = documentDatabase.getDocumentByName(listname);
+           if (document != null) {
+               contents = document.getContents();
+               try {
                   contents=URLDecoder.decode(contents);
                   objectMapper = new ObjectMapper();
                   listType = objectMapper.readValue(contents, new TypeReference<List<String>>(){});
@@ -97,9 +112,10 @@ public class WordStorage {
                         index++;
                      }
                   }
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
+               } catch (Exception exception) {
+                   exception.printStackTrace();
+               }
+           }
         }
         return exists;
     }
@@ -107,11 +123,42 @@ public class WordStorage {
     public boolean listExists(String listname) {
         Boolean exists = false;
         Document document = null;
-        document = documentDatabase.getDocumentByName(listname);
-        if (document != null) {
+        if (listname.equalsIgnoreCase(DICTIONARY)){
             exists = true;
+        } else {
+            document = documentDatabase.getDocumentByName(listname);
+            if (document != null) {
+                exists = true;
+            }
         }
     return exists;
+    }
+
+    public List<String> loadResource(String filename) {
+        List<String> contents = new ArrayList<>();
+        String line="";
+        BufferedReader bufferedReader=null;
+        InputStreamReader inputStreamReader = null;
+        InputStream inputStream = null;
+        try {
+            //File file = ResourceUtils.getFile("classpath:wordlists/"+filename);
+            inputStream = inputStream = applicationContext.getResource("classpath:wordlists/"+filename).getInputStream();
+            //InputStream inputStream = new FileInputStream(file);
+            inputStreamReader = new InputStreamReader(inputStream);
+            bufferedReader = new BufferedReader(inputStreamReader);
+            line = bufferedReader.readLine();
+            while (line!=null) {
+                if ((line!=null) && (line.length()>0)) {
+                   contents.add(line);
+                }
+                line = bufferedReader.readLine();
+            }
+            bufferedReader.close();
+            inputStreamReader.close();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return contents;
     }
    
     public List<String> readResource(Resource resource) {
