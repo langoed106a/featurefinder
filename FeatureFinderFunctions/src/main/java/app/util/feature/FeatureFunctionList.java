@@ -130,7 +130,7 @@ public class FeatureFunctionList {
     public boolean badconsonant(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
         boolean found = false;
 		Map<String, List<String>> badconsonantMap = null;
-		String word = wordToken.getToken(), temp = "", goodWord = "", consonant = "";
+		String word = wordToken.getToken(), temp = "", goodWord = "", consonant = "", partWord = "";
 		String[] parts = null;
 		List<String> misspeltConsonantList=null;
 		Integer charIndex = 0, index = 0;
@@ -146,18 +146,20 @@ public class FeatureFunctionList {
 			temp = word;
             temp = temp.replaceAll("[AEIOUaeiou]","a");
             parts = temp.split("a");
-            for (String partWord:parts) {
-				index=0;
+			index = 0;
+            while ((index<parts.length) && (!found)) {
+				partWord = parts[index];
 				goodWord = word;
 			    for (String key:badconsonantMap.keySet()) {
 					misspeltConsonantList = badconsonantMap.get(key);
-					if (misspeltConsonantList.contains(part)) {
-						goodWord = word.replace(part, key);
+					if (misspeltConsonantList.contains(partWord)) {
+						goodWord = word.replace(partWord, key);
 						if (wordStorage.wordExists("commonword", goodWord)) {
 							found = true;
 						}
 					}
 				}
+				index++;
 			}
 		}
         return found;
