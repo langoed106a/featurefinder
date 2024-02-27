@@ -129,26 +129,34 @@ public class FeatureFunctionList {
 
     public boolean badconsonant(String part, WordToken wordToken, TextDocument textDocument, List<String> parameters) {
         boolean found = false;
+		Map<String, List<String>> badconsonantMap = null;
 		String word = wordToken.getToken(), temp = "", goodWord = "", consonant = "";
 		String[] parts = null;
-		String[] badconsonants={"dly","scr","shr","str","thr","ght","mpl"};
+		List<String> misspeltConsonantList=null;
 		Integer charIndex = 0, index = 0;
 		if (!wordStorage.wordExists("commonword", word)) {
+			badconsonantMap = new HashMap<>();
+			badconsonantMap.put("dly", List.of("dl","dy","ly"));
+			badconsonantMap.put("scr", List.of("sc","sr","cr"));
+			badconsonantMap.put("shr", List.of("sh","sr","hr"));
+			badconsonantMap.put("str", List.of("st","sr","tr"));
+			badconsonantMap.put("thr", List.of("th","tr","hr"));
+			badconsonantMap.put("ght", List.of("gh","gt","ht"));
+			badconsonantMap.put("mpl", List.of("mp","ml","pl"));
 			temp = word;
             temp = temp.replaceAll("[AEIOUaeiou]","a");
             parts = temp.split("a");
             for (String partWord:parts) {
 				index=0;
-			    while ((index<badconsonants.length) && (!found)) {
-                    consonant = badconsonants[index];
-					charIndex = consonant.indexOf(partWord);
-					if ((charIndex>0) && (partWord.length()<consonant.length())) {
-                        goodWord = word.replace(partWord, consonant);
+				goodWord = word;
+			    for (String key:badconsonantMap.keySet()) {
+					misspeltConsonantList = badconsonantMap.get(key);
+					if (misspeltConsonantList.contains(part)) {
+						goodWord = word.replace(part, key);
 						if (wordStorage.wordExists("commonword", goodWord)) {
 							found = true;
 						}
 					}
-				    index++;
 				}
 			}
 		}
