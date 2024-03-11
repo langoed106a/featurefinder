@@ -413,12 +413,13 @@ public class RegexService {
 	@CrossOrigin(origins = "*")
 	@RequestMapping(value = "/adddocument", method = RequestMethod.POST)
     public String adddocument(@RequestBody Document document) { 
-       String response = "";
-	   String type="";
+       String response = "", language = "", type = "";
+	   Integer languageId = Integer.valueOf(DEFAULT_LANGUAGE);
 	   try {
 			 type = document.getType();
 			 if (type.equalsIgnoreCase("list")) {
-				 remoteParser.addList(DEFAULT_LANGUAGE, document);
+				 language = LANGUAGE_LIST[languageId];
+				 remoteParser.addList(language, document);
 			 } else {
 			     documentDatabase.addDocument(document);
 			 }
@@ -440,7 +441,10 @@ public class RegexService {
 	@RequestMapping(value = "/getlistdocument", method = RequestMethod.GET)
     public Document getlistdocument(@RequestParam String documentid) { 
 		 Document document = null;
-         document = remoteParser.getList(DEFAULT_LANGUAGE, documentid);
+		 String language = "";
+		 Integer languageId = Integer.valueOf(DEFAULT_LANGUAGE);
+		 language = LANGUAGE_LIST[languageId];
+         document = remoteParser.getList(language, documentid);
 	     return document;
     }
 
@@ -458,11 +462,12 @@ public class RegexService {
 	@CrossOrigin(origins = "*")
 	@RequestMapping(value = "/getdocuments", method = RequestMethod.GET)
     public List<Document> getdocuments(@RequestParam String type) { 
+		 Integer languageId=Integer.valueOf(DEFAULT_LANGUAGE);
 		 List<Document> documents = null;
 		 List<Document> allDocuments = new ArrayList<>();
 		 List<String> typeList = new ArrayList<>();
 		 Document tempDocument = null;
-		 String someType="", function="";
+		 String someType="", function="", language = "";
 		 String[] allTypes = type.split(","), parts = null;
 	     String[] functionList = FeatureFunction.FUNCTION_FEATURES;
 		 if (allTypes.length>0) {
@@ -471,7 +476,8 @@ public class RegexService {
 				if (!typeList.contains(someType)) {
 					typeList.add(someType);
 					if (someType.equalsIgnoreCase("list")) {
-						documents = remoteParser.getDocuments(DEFAULT_LANGUAGE, someType);
+				        language = LANGUAGE_LIST[languageId];
+						documents = remoteParser.getDocuments(language, someType);
 					} else if (someType.equalsIgnoreCase("function")) {
 						      documents = new ArrayList<>();
 					          for (int j=0; j<functionList.length; j++) {
