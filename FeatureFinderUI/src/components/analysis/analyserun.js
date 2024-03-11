@@ -4,7 +4,6 @@ import {Accordion, Button, Col, Container, Form, Row} from 'react-bootstrap';
 import { useStoreState, useStoreActions } from 'easy-peasy'
 import TopNavBar from '../navbar/topnavbar';
 import AnalysisSideBar from '../navbar/analysissidebar';
-import ModelResults from '../analysis/modelresults';
 import FeatureSpinner from '../navbar/featurespinner';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import words_img from '../../images/featurefinder.jpg';
@@ -14,6 +13,7 @@ function AnalyseRun() {
    const[viewresults, setViewResults] = useState(false)
    const populate_runlist = useStoreActions((actions) => actions.get_run_list)
    const populate_modellist = useStoreActions((actions) => actions.get_model_list)
+   const get_results_list = useStoreActions((actions) => actions.get_results_list)
    const delete_document = useStoreActions((actions) => actions.delete_document)
    const model_arr = useStoreState(state => state.modellist)
    const run_arr = useStoreState(state => state.runlist)
@@ -47,6 +47,14 @@ function AnalyseRun() {
              </Form.Select>)
    }
 
+   const get_data_results = (token, runname, model) => {
+      let form = {}
+      form.token = token
+      form.runname = runname
+      form.model = model
+      get_results_list(form)
+   }
+
    const handleAnalyse = (e) => {
       e.preventDefault();
       var index = e.target.id
@@ -60,12 +68,9 @@ function AnalyseRun() {
          modelname = model[index]
          token = run_arr[index].contents
          runname = run_arr[index].name
+         get_data_results(token, runname, modelname)
       }
-
-      navigate({ 
-         pathname: '/modelresults', 
-         search: createSearchParams({ token: token, runname:runname, model: modelname}).toString() 
-      });
+     
     };
 
    const handleDelete = (e) => {

@@ -81,8 +81,16 @@ const storeModel = createStore (
            }),
            get_results_list: thunk(async (actions, form) => {
             try {
-              const res = await axios.get(service_url+'/modelresults?token='+form.token+"&runname="+form.runname+"&model="+form.model);
-              actions.set_results_list(res?.data);
+              fetch(service_url+'/modelresults?token='+form.token+"&runname="+form.runname+"&model="+form.model).
+                 then(response => {const filename =  response.headers.get('Content-Disposition').split('filename=')[1];
+                       response.blob().then(blob => {
+                       let url = window.URL.createObjectURL(blob);
+                       let a = document.createElement('a');
+                       a.href = url;
+                       a.download = filename;
+                       a.click()
+                       })
+                      });
             } catch (error) {
               console.log(error);
             }

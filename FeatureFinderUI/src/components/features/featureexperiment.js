@@ -141,6 +141,10 @@ function FeatureExperiment() {
     __html: add_highlight('postag')
   })
 
+  const highlightPinyin = () => ({
+    __html: add_highlight('pinyin')
+  })
+
   const MainContent = () => {
     return (<div>
       <TopNavBar />
@@ -185,6 +189,11 @@ function FeatureExperiment() {
                         <Tab eventKey="postags" title="Postags">
                           <div
                             dangerouslySetInnerHTML={highlightPostags()}
+                          />
+                        </Tab>
+                        <Tab eventKey="pinyin" title="Pinyin">
+                          <div
+                            dangerouslySetInnerHTML={highlightPinyin()}
                           />
                         </Tab>
                       </Tabs>

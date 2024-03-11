@@ -1,0 +1,27 @@
+
+
+.tablestyle  {
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 40px 90px 55px -20px rgba(155, 184, 243, 0.2);
+  }
+  
+.tableheaderstyle {
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+    background-color: #6D95E0;
+    border-bottom: 1px solid #ddd;
+    padding: 15px;
+    text-align: left;
+  }
+  
+.tablecellstyle {
+    font-size: 14px;
+    font-weight: 500;
+    border-bottom: 1px solid #ddd;
+    padding: 15px;
+    background-color: #fff;
+  }

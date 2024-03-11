@@ -19,7 +19,6 @@ import ModelNew from '../analysis/modelnew';
 import ConfusionMatrix from '../analysis/confusionmatrix';
 
 function HomePage() {
-   
         return (
             <div>
                 <div>
