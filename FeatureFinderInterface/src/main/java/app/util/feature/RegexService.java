@@ -4,9 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
 import java.net.URLEncoder;
 import java.net.URLDecoder;
 import java.io.PrintWriter;
@@ -62,6 +69,7 @@ import app.util.feature.TextDocument;
 @RestController
 public class RegexService { 
 	private static String RESULTS_LOCATION="/tmp";
+	private static String VOLUME_LOCATION="/data";
 	private static String DEFAULT_LANGUAGE="1";
 	private static String[] LANGUAGE_LIST={"","english","chinese","russian","pinyin"};
 	private static String DEFAULT_GRANULARITY="text";
@@ -430,6 +438,49 @@ public class RegexService {
 	   }
        return response;
     }
+
+  @PostMapping(value = "/uploaddatazip", produces = "application/json")
+  public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile filezip) {
+	Boolean saved = null;
+	Integer dotLocation = 0;
+    String message = "Successfully unpacked zip file";
+	String destDir = "", filename="", filePath;
+	File directory = null, zipFile = null;
+	ZipInputStream zipStream = null;
+	ZipEntry zipEntry = null;
+    try {
+		  filename = filezip.getOriginalFilename();
+		  dotLocation = filename.indexOf(".");
+		  if (dotLocation>0) {
+             filename = filename.substring(0, dotLocation);
+		  }
+          directory = new File(String.valueOf(filename));
+          if (!directory.exists()) {
+             directory.mkdir();
+          }
+          zipStream = new ZipInputStream(filezip.getInputStream());
+
+          zipEntry = zipStream.getNextEntry();
+        // iterates over entries in the zip file
+          while (zipEntry != null) {
+            filePath = directory + File.separator + zipEntry.getName();
+            if (!zipEntry.isDirectory()) {
+                // if the entry is a file, extracts it
+                extractFile(zipStream, filePath);
+            } else {
+                // if the entry is a directory, make the directory
+                directory = new File(filePath);
+                directory.mkdirs();
+            }
+            zipStream.closeEntry();
+            zipEntry = zipStream.getNextEntry();
+          }
+          zipStream.close();
+	  } catch (Exception exception) {
+		  message="Failed to extract zip file";
+	  }
+	  return ResponseEntity.ok().body(message);
+    }
 	
 	@RequestMapping(value = "/getdocument", method = RequestMethod.GET)
     public Document getdocument(@RequestParam String documentid) { 
@@ -554,5 +605,22 @@ public class RegexService {
 	  String docs = documentation.getDocumentation(applicationContext);
       return docs;
     }
-	
+
+
+    private void extractFile(ZipInputStream zipIn, String filePath) {
+		Integer BUFFER_SIZE = 4096;
+        BufferedOutputStream bos = null;
+        byte[] bytesIn = new byte[BUFFER_SIZE];
+        int read = 0;
+		try {
+			 bos = new BufferedOutputStream(new FileOutputStream(filePath));
+             while ((read = zipIn.read(bytesIn)) != -1) {
+                bos.write(bytesIn, 0, read);
+             }
+             bos.close();
+		} catch (Exception exception) {
+			  exception.printStackTrace();
+		}
+    }
+
 }
