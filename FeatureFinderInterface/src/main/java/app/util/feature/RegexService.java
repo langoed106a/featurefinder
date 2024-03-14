@@ -68,8 +68,8 @@ import app.util.feature.TextDocument;
 @CrossOrigin
 @RestController
 public class RegexService { 
-	private static String RESULTS_LOCATION="/tmp";
-	private static String VOLUME_LOCATION="/data";
+	private static String RESULTS_LOCATION="datalocation";
+	private static String STORAGE_LOCATION="datalocation";
 	private static String DEFAULT_LANGUAGE="1";
 	private static String[] LANGUAGE_LIST={"","english","chinese","russian","pinyin"};
 	private static String DEFAULT_GRANULARITY="text";
@@ -79,6 +79,7 @@ public class RegexService {
 	private FeatureFunction featureFunction;
 	private ServiceLocator serviceLocator;
 	private WordStorage wordStorage;
+	private String dataLocation;
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -106,7 +107,8 @@ public class RegexService {
 		featureFunction = new FeatureFunction();
 		String properties_location = System.getProperty(PROPERTIES_NAME);
 		serviceLocator = new ServiceLocator(properties_location);
-	
+		dataLocation = serviceLocator.getService(STORAGE_LOCATION);
+		
 		remoteParser.setRestTemplate(restTemplate);
 		remoteParser.setServiceLocator(serviceLocator);
 
@@ -439,39 +441,45 @@ public class RegexService {
        return response;
     }
 
-  @PostMapping(value = "/uploaddatazip", produces = "application/json")
-  public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile filezip) {
+  @PostMapping(value = "/uploaddatazip", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
+  public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
 	Boolean saved = null;
-	Integer dotLocation = 0;
+	Integer dotLocation = 0, position = 0;
     String message = "Successfully unpacked zip file";
-	String destDir = "", filename="", filePath;
-	File directory = null, zipFile = null;
+	String destDir = "", filename = "", filelocation = "", filePath ="", entryName = "";
+	File directory = null, zipFile = null, zipLocation = null;
 	ZipInputStream zipStream = null;
 	ZipEntry zipEntry = null;
     try {
-		  filename = filezip.getOriginalFilename();
+		  filename = file.getOriginalFilename();
 		  dotLocation = filename.indexOf(".");
 		  if (dotLocation>0) {
-             filename = filename.substring(0, dotLocation);
+             filelocation = filename.substring(0, dotLocation);
 		  }
-          directory = new File(String.valueOf(filename));
+          filelocation = dataLocation + File.separator + filelocation;
+          directory = new File(String.valueOf(filelocation));
           if (!directory.exists()) {
-             directory.mkdir();
+             directory.mkdirs();
           }
-          zipStream = new ZipInputStream(filezip.getInputStream());
-
+          zipStream = new ZipInputStream(file.getInputStream());
           zipEntry = zipStream.getNextEntry();
         // iterates over entries in the zip file
           while (zipEntry != null) {
-            filePath = directory + File.separator + zipEntry.getName();
             if (!zipEntry.isDirectory()) {
                 // if the entry is a file, extracts it
+				filePath = directory + File.separator + zipEntry.getName();
+			    entryName = zipEntry.getName();
+			    position = entryName.lastIndexOf(File.separator);
+			    if (position>0) {
+                   entryName = entryName.substring(0, position);
+			       destDir = directory + File.separator + entryName;
+			       zipLocation = new File(destDir);
+			       if (!zipLocation.exists()) {
+				      zipLocation.mkdirs();
+			       }
+			    }
                 extractFile(zipStream, filePath);
-            } else {
-                // if the entry is a directory, make the directory
-                directory = new File(filePath);
-                directory.mkdirs();
-            }
+            } 
             zipStream.closeEntry();
             zipEntry = zipStream.getNextEntry();
           }
