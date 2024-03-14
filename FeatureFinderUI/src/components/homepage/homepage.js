@@ -11,6 +11,7 @@ import FeatureGroupNew from '../features/featuregroupnew';
 import FeatureSearch from '../features/featuresearch';
 import FeatureSpinner from '../navbar/featurespinner';
 import DocumentList from '../documents/documentlist';
+import DataUpload from '../documents/dataupload';
 import Settings from '../configuration/settings';
 import DocumentNew from '../documents/documentnew';
 import DocumentDetail from '../documents/documentdetail';
@@ -38,6 +39,7 @@ function HomePage() {
                          <Route path="/documentnew" element={<DocumentNew />} exact />
                          <Route path="/documentdetail" element={<DocumentDetail />} exact />
                          <Route path="/listdetail" element={<ListDetail />} exact />
+                         <Route path="/uploaddata" element={<DataUpload />} exact />
                          <Route path="/modelnew" element={<ModelNew />} exact />
                          <Route path="/confusionmatrix" element={<ConfusionMatrix />} exact />
                          <Route path="/settings" element={<Settings />} exact />

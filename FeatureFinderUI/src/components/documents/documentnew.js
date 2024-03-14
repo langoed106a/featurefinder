@@ -17,7 +17,7 @@ function DocumentNew() {
     const content = React.createRef()
     const navigate=useNavigate()
 
-   const perform_add = (event) => {
+    const perform_add = (event) => {
        var form={}
        event.preventDefault();
        if (name.current.value) {
@@ -38,7 +38,7 @@ function DocumentNew() {
             }
             navigate("/");
         }
-   }
+    }
         
     return (<div>
       <TopNavBar />

@@ -73,9 +73,9 @@ function FeatureGroupRun() {
               <Form onSubmit={perform_run} id="grouprun">
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1" role="form">
                   <Form.Label>Run Name</Form.Label>
-                  <Form.Control type="text" placeholder="name" ref={runname} required/>
+                  <Form.Control type="text" placeholder="name" ref={runname} maxlength="15" required/>
                   <Form.Label>Run Description</Form.Label>
-                  <Form.Control type="text" placeholder="description" ref={description} required/>
+                  <Form.Control type="text" placeholder="description" ref={description} maxlength="15" required/>
                   <Form.Label>Feature Groups ( separate with a comma )</Form.Label>
                   <Form.Control type="text" placeholder="feature1,feature2" ref={featuregroup} required/>
                   <Form.Label>Document Groups ( separate with a comma )</Form.Label>

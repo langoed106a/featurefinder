@@ -14,6 +14,9 @@ function DocumentSideBar() {
                <Nav.Item>
                    <Link className="nav-link" to="/documentlist">Document list</Link>
                </Nav.Item>
+               <Nav.Item>
+                   <Link className="nav-link" to="/uploaddata">Data zip upload</Link>
+               </Nav.Item>
          </Nav> 
         );
 }

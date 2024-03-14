@@ -257,6 +257,19 @@ const storeModel = createStore (
           set_bulk_results: action((state, bulkresults) => {
             state.bulkresults = bulkresults
           }),
+          upload_file: thunk(async (actions, form) => {
+            try {
+              actions.set_searching();
+              const res = await axios.post(service_url+'/uploaddatazip', form, {
+                  headers: {
+                    'Content-Type': 'multipart/form-data'
+                  }
+                });
+              actions.set_searching();
+            } catch (error) {
+             console.log(error);
+           }
+          }),
   })
 )
 
